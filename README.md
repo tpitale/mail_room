@@ -1,12 +1,12 @@
-# Owney #
+# mail_room #
 
-Owney is a configuration based process that will idle on IMAP connections and POST to a delivery URL whenever a new message is received on the configured mailbox and folder.
+mail_room is a configuration based process that will idle on IMAP connections and POST to a delivery URL whenever a new message is received on the configured mailbox and folder.
 
 ## Installation ##
 
 Add this line to your application's Gemfile:
 
-    gem 'owney'
+    gem 'mail_room'
 
 And then execute:
 
@@ -14,11 +14,11 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install owney
+    $ gem install mail_room
 
 ## Usage ##
 
-    bin/owney -f /path/to/config.yml -d
+    bin/mail_room -f /path/to/config.yml -d
 
 ## Configuration ##
 

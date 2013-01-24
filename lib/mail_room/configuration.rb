@@ -1,4 +1,4 @@
-module Owney
+module MailRoom
   class Configuration
     attr_accessor :mailboxes, :daemonize, :log_path, :pid_path
 
@@ -10,7 +10,7 @@ module Owney
 
       self.daemonize = options.fetch(:daemonize, false)
       self.log_path = options.fetch(:log_path, nil)
-      self.pid_path = options.fetch(:pid_path, "/var/run/owney.pid")
+      self.pid_path = options.fetch(:pid_path, "/var/run/mail_room.pid")
     end
 
     def load_mailboxes(mailboxes_config)

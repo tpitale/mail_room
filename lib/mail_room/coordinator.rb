@@ -1,4 +1,4 @@
-module Owney
+module MailRoom
   class Coordinator
     attr_accessor :handlers
 

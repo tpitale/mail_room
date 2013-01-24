@@ -1,4 +1,4 @@
-module Owney
+module MailRoom
   Mailbox = Struct.new(:email, :password, :name, :delivery_url, :delivery_token)
 
   class Mailbox

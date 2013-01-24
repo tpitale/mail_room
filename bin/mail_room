@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby -Ilib
+
+require 'mail_room'
+
+MailRoom::CLI.new(ARGV).run

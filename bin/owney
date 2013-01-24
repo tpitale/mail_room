@@ -1,5 +1,0 @@
-#!/usr/bin/env ruby -Ilib
-
-require 'owney'
-
-Owney::CLI.new(ARGV).run
