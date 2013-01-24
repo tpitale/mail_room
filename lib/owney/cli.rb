@@ -2,8 +2,6 @@ module Owney
   class CLI
     attr_accessor :configuration
 
-    ROOT = File.expand_path('../..', File.dirname(__FILE__))
-
     def initialize(args)
       options = {}
 
@@ -14,7 +12,7 @@ module Owney
         ].compact.join
 
         parser.on('-c', '--config FILE') do |path|
-          options[:config_path] = File.expand_path(path, ROOT)
+          options[:config_path] = path
         end
 
         parser.on("-d", "--daemon", "Daemonize mode") do |v|
@@ -22,11 +20,11 @@ module Owney
         end
 
         parser.on("-l", "--log FILE") do |path|
-          options[:log_path] = File.expand_path(path, ROOT)
+          options[:log_path] = path
         end
 
         parser.on("-p", "--pid FILE") do |path|
-          options[:pid_path] = File.expand_path(path, ROOT)
+          options[:pid_path] = path
         end
 
         parser.on_tail("-?", "--help", "Display this usage information.") do
