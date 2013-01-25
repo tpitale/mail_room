@@ -8,9 +8,9 @@ Gem::Specification.new do |gem|
   gem.version       = MailRoom::VERSION
   gem.authors       = ["Tony Pitale"]
   gem.email         = ["tpitale@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.description   = %q{mail_room will proxy email (gmail) from IMAP to a callback URL}
+  gem.summary       = %q{mail_room will proxy email (gmail) from IMAP to a callback URL}
+  gem.homepage      = "http://github.com/tpitale/mail_room"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
