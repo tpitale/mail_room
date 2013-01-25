@@ -1,4 +1,3 @@
-require 'celluloid'
 require 'net/imap'
 require 'fileutils'
 require 'optparse'

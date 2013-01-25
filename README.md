@@ -37,10 +37,6 @@ Or install it yourself as:
           :delivery_url: "http://localhost:3000/inbox"
           :delivery_token: "abcdefg"
 
-## Dependencies ##
-
-* celluloid
-
 ## Contributing ##
 
 1. Fork it

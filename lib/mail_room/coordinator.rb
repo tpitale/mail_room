@@ -9,11 +9,11 @@ module MailRoom
     end
 
     def run
-      handlers.each(&:run!)
+      handlers.each(&:run)
     end
 
     def quit
-      handlers.each(&:quit!)
+      handlers.each(&:quit)
     end
   end
 end

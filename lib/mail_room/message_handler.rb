@@ -1,7 +1,5 @@
 module MailRoom
   class MessageHandler
-    include Celluloid
-
     def initialize(mailbox)
       @mailbox = mailbox
       @imap = Net::IMAP.new('imap.gmail.com', :port => 993, :ssl => true)
@@ -43,7 +41,6 @@ module MailRoom
 
     def log_in
       @imap.login(@mailbox.email, @mailbox.password)
-      # @imap.authenticate('XOAUTH2', @mailbox["email"], @mailbox["token"])
       @logged_in = true
     end
 
@@ -113,12 +110,10 @@ module MailRoom
 
       @imap.idle_done
       @idling_thread.join
-      @idling = false
     end
 
     def quit
       @running = false
-      puts "Quitting"
       stop_idling
     end
   end
