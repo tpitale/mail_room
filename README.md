@@ -52,3 +52,5 @@ Or install it yourself as:
 2. finish code for POSTing to callback with auth
 3. add example rails endpoint, with auth examples
 4. add example configs for god/upstart
+5. log to stdout
+6. add a development mode that opens in letter_opener by ryanb
