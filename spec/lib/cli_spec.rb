@@ -1,34 +1,56 @@
 require 'spec_helper'
 
 describe MailRoom::CLI do
-  it 'parses arguments into configuration' do
-    MailRoom::Configuration.stubs(:new).returns('a config')
+  let(:config_path) {File.expand_path('../fixtures/test_config.yml', File.dirname(__FILE__))}
+  let!(:configuration) {MailRoom::Configuration.new({:config_path => config_path})}
+  let(:coordinator) {stub(:run => true, :quit => true)}
 
-    args = ["-c", "a path"]
+  describe '.new' do
+    let(:args) {["-c", "a path"]}
 
-    MailRoom::CLI.new(args).configuration.should eq('a config')
+    before :each do
+      MailRoom::Configuration.stubs(:new).returns(configuration)
+      MailRoom::Coordinator.stubs(:new).returns(coordinator)
+    end
 
-    MailRoom::Configuration.should have_received(:new).with({:config_path => 'a path'})
+    it 'parses arguments into configuration' do
+      MailRoom::CLI.new(args).configuration.should eq(configuration)
+      MailRoom::Configuration.should have_received(:new).with({:config_path => 'a path'})
+    end
+
+    it 'creates a new coordinator with configuration' do
+      MailRoom::CLI.new(args).coordinator.should eq(coordinator)
+      MailRoom::Coordinator.should have_received(:new).with(configuration.mailboxes)
+    end
   end
 
-  context "when starting" do
-    let(:config_path) {File.expand_path('../fixtures/test_config.yml', File.dirname(__FILE__))}
+  describe '#start' do
     let(:cli) {MailRoom::CLI.new([])}
-    let(:configuration) {MailRoom::Configuration.new({:config_path => config_path})}
 
     before :each do
       cli.configuration = configuration
+      cli.coordinator = coordinator
     end
 
-    it 'starts running a new coordinator' do
-      coordinator = stub(:run)
-      MailRoom::Coordinator.stubs(:new).returns(coordinator)
-
-      cli.stubs(:running?).returns(false) # do not loop forever
+    it 'starts running the coordinator' do
       cli.start
 
-      MailRoom::Coordinator.should have_received(:new).with(configuration.mailboxes)
       coordinator.should have_received(:run)
+    end
+  end
+
+  describe '#stop' do
+    let(:cli) {MailRoom::CLI.new([])}
+
+    before :each do
+      cli.configuration = configuration
+      cli.coordinator = coordinator
+    end
+
+    it 'quits the coordinator' do
+      cli.stop
+
+      coordinator.should have_received(:quit)
     end
   end
 end

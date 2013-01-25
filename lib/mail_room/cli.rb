@@ -1,6 +1,6 @@
 module MailRoom
   class CLI
-    attr_accessor :configuration
+    attr_accessor :configuration, :coordinator
 
     def initialize(args)
       options = {}
@@ -26,17 +26,10 @@ module MailRoom
       end.parse!(args)
 
       self.configuration = Configuration.new(options)
-    end
-
-    def running?
-      @running
+      self.coordinator = Coordinator.new(configuration.mailboxes)
     end
 
     def start
-      @running = true
-
-      (@coordinator ||= Coordinator.new(configuration.mailboxes)).run
-
       Signal.trap(:INT) do
         stop
       end
@@ -45,15 +38,11 @@ module MailRoom
         exit
       end
 
-      while(running?) do; sleep 1; end
+      coordinator.run
     end
 
     def stop
-      return unless @coordinator
-
-      @coordinator.quit
-
-      @running = false
+      coordinator.quit
     end
   end
 end

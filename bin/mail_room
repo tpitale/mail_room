@@ -2,4 +2,4 @@
 
 require 'mail_room'
 
-MailRoom::CLI.new(ARGV).run
+MailRoom::CLI.new(ARGV).start

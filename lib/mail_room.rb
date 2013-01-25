@@ -1,9 +1,11 @@
 require 'net/imap'
-require 'fileutils'
 require 'optparse'
 require 'yaml'
 
 module MailRoom
+  def self.logger
+    @logger ||= Logger.new(STDOUT)
+  end
 end
 
 require "mail_room/version"
