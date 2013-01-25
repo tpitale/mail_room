@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage ##
 
-    bin/mail_room -f /path/to/config.yml
+    bin/mail_room -c /path/to/config.yml
 
 ## Configuration ##
 
@@ -55,5 +55,4 @@ Or install it yourself as:
 1. specs, this is just a (working) proof of concept
 2. finish code for POSTing to callback with auth
 3. add example rails endpoint, with auth examples
-4. remove backgrounding
-5. add example configs for god/upstart
+4. add example configs for god/upstart
