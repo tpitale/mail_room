@@ -28,10 +28,6 @@ module MailRoom
       self.configuration = Configuration.new(options)
     end
 
-    def run
-      start
-    end
-
     def running?
       @running
     end
@@ -39,8 +35,7 @@ module MailRoom
     def start
       @running = true
 
-      @coordinator ||= Coordinator.new(configuration.mailboxes)
-      @coordinator.run
+      (@coordinator ||= Coordinator.new(configuration.mailboxes)).run
 
       Signal.trap(:INT) do
         stop

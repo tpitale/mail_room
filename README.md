@@ -50,7 +50,8 @@ Or install it yourself as:
 
 1. specs, this is just a (working) proof of concept
 2. finish code for POSTing to callback with auth
-3. add example rails endpoint, with auth examples
-4. add example configs for god/upstart
-5. log to stdout
-6. add a development mode that opens in letter_opener by ryanb
+3. accept mailbox configuration for one account directly on the commandline; or ask for it
+4. add example rails endpoint, with auth examples
+5. add example configs for god/upstart
+6. log to stdout
+7. add a development mode that opens in letter_opener by ryanb

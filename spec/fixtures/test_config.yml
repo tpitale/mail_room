@@ -1,0 +1,14 @@
+---
+:mailboxes:
+  -
+    :email: "user1@gmail.com"
+    :password: "password"
+    :name: "inbox"
+    :delivery_url: "http://localhost:3000/inbox"
+    :delivery_token: "abcdefg"
+  -
+    :email: "user2@gmail.com"
+    :password: "password"
+    :name: "inbox"
+    :delivery_url: "http://localhost:3000/inbox"
+    :delivery_token: "abcdefg"
