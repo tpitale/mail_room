@@ -49,3 +49,11 @@ Or install it yourself as:
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 6. If accepted, ask for commit rights
+
+## TODO ##
+
+1. specs, this is just a (working) proof of concept
+2. finish code for POSTing to callback with auth
+3. add example rails endpoint, with auth examples
+4. remove backgrounding
+5. add example configs for god/upstart
