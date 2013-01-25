@@ -1,17 +1,17 @@
 module MailRoom
   class Coordinator
-    attr_accessor :handlers, :running
+    attr_accessor :watchers, :running
 
     def initialize(mailboxes)
-      self.handlers = []
+      self.watchers = []
 
-      mailboxes.each {|mb| self.handlers << MessageHandler.new(mb)}
+      mailboxes.each {|box| self.watchers << MailboxWatcher.new(box)}
     end
 
     alias :running? :running
 
     def run
-      handlers.each(&:run)
+      watchers.each(&:run)
 
       self.running = true
 
@@ -19,7 +19,7 @@ module MailRoom
     end
 
     def quit
-      handlers.each(&:quit)
+      watchers.each(&:quit)
 
       self.running = false
     end
