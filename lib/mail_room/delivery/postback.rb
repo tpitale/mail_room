@@ -13,9 +13,9 @@ module MailRoom
 
         connection.post do |request|
           request.url @mailbox.delivery_url
+          request.body = message
           # request.options[:timeout] = 3
           # request.headers['Content-Type'] = 'text/plain'
-          request.body = message
         end
       end
     end

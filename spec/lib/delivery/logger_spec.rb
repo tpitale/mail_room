@@ -1,0 +1,48 @@
+require 'spec_helper'
+require 'mail_room/delivery/logger'
+
+describe MailRoom::Delivery::Logger do
+  
+
+  describe '#initialize' do
+    context "without a log path" do
+      let(:mailbox) {MailRoom::Mailbox.new}
+
+      it 'creates a new ruby logger' do
+        ::Logger.stubs(:new)
+
+        MailRoom::Delivery::Logger.new(mailbox)
+
+        ::Logger.should have_received(:new).with(STDOUT)
+      end
+    end
+
+    context "with a log path" do
+      let(:mailbox) {MailRoom::Mailbox.new(:log_path => '/var/log/mail-room.log')}
+
+      it 'creates a new file to append to' do
+        ::Logger.stubs(:new)
+        file = stub(:sync=)
+        ::File.stubs(:open).returns(file)
+
+        MailRoom::Delivery::Logger.new(mailbox)
+
+        File.should have_received(:open).with('/var/log/mail-room.log', 'a')
+        ::Logger.should have_received(:new).with(file)
+      end
+    end
+  end
+
+  describe '#deliver' do
+    let(:mailbox) {MailRoom::Mailbox.new}
+
+    it 'writes the message to info' do
+      logger = stub(:info)
+      ::Logger.stubs(:new).returns(logger)
+
+      MailRoom::Delivery::Logger.new(mailbox).deliver('a message')
+
+      logger.should have_received(:info).with('a message')
+    end
+  end
+end
