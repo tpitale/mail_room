@@ -1,3 +1,5 @@
+require 'faraday'
+
 module MailRoom
   module Delivery
     class Postback
@@ -11,7 +13,7 @@ module MailRoom
 
         connection.post do |request|
           request.url @mailbox.delivery_url
-          request.options[:timeout] = 3
+          # request.options[:timeout] = 3
           # request.headers['Content-Type'] = 'text/plain'
           request.body = message
         end

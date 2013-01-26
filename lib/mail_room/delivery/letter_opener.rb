@@ -1,3 +1,6 @@
+require 'mail'
+require 'letter_opener'
+
 module MailRoom
   module Delivery
     class LetterOpener

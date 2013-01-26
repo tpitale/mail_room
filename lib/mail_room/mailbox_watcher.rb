@@ -1,5 +1,8 @@
 module MailRoom
+  # split up between processing and idling?
   class MailboxWatcher
+    attr_accessor :idling_thread
+
     def initialize(mailbox)
       @mailbox = mailbox
 
@@ -10,6 +13,10 @@ module MailRoom
 
     def imap
       @imap ||= Net::IMAP.new('imap.gmail.com', :port => 993, :ssl => true)
+    end
+
+    def handler
+      @handler ||= MailboxHandler.new(@mailbox, imap)
     end
 
     def running?
@@ -52,7 +59,15 @@ module MailRoom
       @idling = false
     end
 
+    def process_mailbox
+      handler.process
+    end
+
     def stop_idling
+      return unless idling?
+
+      imap.idle_done
+      idling_thread.join
     end
 
     def run
@@ -60,12 +75,12 @@ module MailRoom
 
       @running = true
 
-      @idling_thread = Thread.start do
+      self.idling_thread = Thread.start do
         while(running?) do
           # block until we stop idling
           idle
           # when new messages are ready
-          process_new_messages
+          process_mailbox
         end
       end
     end
