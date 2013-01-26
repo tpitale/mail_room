@@ -2,8 +2,6 @@ require 'spec_helper'
 require 'mail_room/delivery/logger'
 
 describe MailRoom::Delivery::Logger do
-  
-
   describe '#initialize' do
     context "without a log path" do
       let(:mailbox) {MailRoom::Mailbox.new}
