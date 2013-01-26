@@ -10,7 +10,7 @@ module MailRoom
         @logger = Logger.new(io)
       end
 
-      def deliver!(message)
+      def deliver(message)
         @logger.info message
       end
     end

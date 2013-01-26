@@ -1,10 +1,10 @@
 module MailRoom
   module Delivery
-    class Logger
+    class Noop
       def initialize(*)
       end
 
-      def deliver!(*)
+      def deliver(*)
       end
     end
   end

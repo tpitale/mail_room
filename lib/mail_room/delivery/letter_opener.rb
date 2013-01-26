@@ -8,7 +8,7 @@ module MailRoom
         @mailbox = mailbox
       end
 
-      def deliver!(message)
+      def deliver(message)
         method = LetterOpener::DeliveryMethod.new(:location => @mailbox.location)
         method.deliver!(Mail.read_from_string(message))
       end

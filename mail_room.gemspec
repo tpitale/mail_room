@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = MailRoom::VERSION
   gem.authors       = ["Tony Pitale"]
   gem.email         = ["tpitale@gmail.com"]
-  gem.description   = %q{mail_room will proxy email (gmail) from IMAP to a callback URL}
-  gem.summary       = %q{mail_room will proxy email (gmail) from IMAP to a callback URL}
+  gem.description   = %q{mail_room will proxy email (gmail) from IMAP to a delivery method}
+  gem.summary       = %q{mail_room will proxy email (gmail) from IMAP to a callback URL, logger, or letter_opener}
   gem.homepage      = "http://github.com/tpitale/mail_room"
 
   gem.files         = `git ls-files`.split($/)
@@ -22,4 +22,9 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "mocha"
   gem.add_development_dependency "bourne"
   gem.add_development_dependency "simplecov"
+
+  # for testing delivery methods
+  gem.add_development_dependency "faraday"
+  gem.add_development_dependency "mail"
+  gem.add_development_dependency "letter_opener"
 end

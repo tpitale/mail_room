@@ -13,6 +13,26 @@ module MailRoom
   class Mailbox
     def initialize(attributes={})
       super(*attributes.values_at(*members))
+
+      require_relative("./delivery/#{(delivery_method || 'postback')}")
+    end
+
+    # move to a mailbox deliverer class?
+    def delivery_klass
+      case delivery_method
+      when "noop"
+        Delivery::Noop
+      when "logger"
+        Delivery::Logger
+      when "letter_opener"
+        Delivery::LetterOpener
+      else
+        Delivery::Postback
+      end
+    end
+
+    def deliver(message)
+      delivery_klass.new(self).deliver(message.attr['RFC822'])
     end
   end
 end

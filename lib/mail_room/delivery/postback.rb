@@ -7,7 +7,7 @@ module MailRoom
         @mailbox = mailbox
       end
 
-      def deliver!(message)
+      def deliver(message)
         connection = Faraday.new
         connection.token_auth @mailbox.delivery_token
 
