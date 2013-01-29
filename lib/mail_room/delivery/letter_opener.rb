@@ -1,3 +1,4 @@
+require 'erb'
 require 'mail'
 require 'letter_opener'
 
