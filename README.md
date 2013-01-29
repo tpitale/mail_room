@@ -54,11 +54,25 @@ Or install it yourself as:
 
 ### postback ###
 
+The default delivery method, requires _delivery_url_ and _delivery_token_ in configuration.
+
 ### logger ###
+
+Configured with `:delivery_method: logger`.
+
+If `:log_path:` is not provided, defaults to `STDOUT`
 
 ### noop ###
 
+Configured with `:delivery_method: noop`.
+
+Does nothing, like it says.
+
 ### letter_opener ###
+
+Configured with `:delivery_method: letter_opener`.
+
+Uses Ryan Bates' excellent [letter_opener](https://github.com/ryanb/letter_opener) gem.
 
 ## Contributing ##
 
@@ -71,7 +85,7 @@ Or install it yourself as:
 
 ## TODO ##
 
-1. specs, this is just a (working) proof of concept
+1. specs, this is just a (working) proof of concept √
 2. finish code for POSTing to callback with auth √
 3. accept mailbox configuration for one account directly on the commandline; or ask for it
 4. add example rails endpoint, with auth examples

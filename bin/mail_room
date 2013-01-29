@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -Ilib
+#!/usr/bin/env ruby
 
 require 'mail_room'
 
