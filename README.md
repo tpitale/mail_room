@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage ##
 
-    bin/mail_room -c /path/to/config.yml
+    mail_room -c /path/to/config.yml
 
 ## Configuration ##
 
