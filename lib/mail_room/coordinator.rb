@@ -12,7 +12,9 @@ module MailRoom
 
     def run
       watchers.each(&:run)
+      
       self.running = true
+      
       sleep_while_running
     end
     
@@ -22,8 +24,8 @@ module MailRoom
 
     def quit
       watchers.each(&:quit)
+      
       self.running = false
     end
-    
   end
 end
