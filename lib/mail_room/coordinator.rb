@@ -12,16 +12,18 @@ module MailRoom
 
     def run
       watchers.each(&:run)
-
       self.running = true
-
+      sleep_while_running
+    end
+    
+    def sleep_while_running
       while(running?) do; sleep 1; end
     end
 
     def quit
       watchers.each(&:quit)
-
       self.running = false
     end
+    
   end
 end
