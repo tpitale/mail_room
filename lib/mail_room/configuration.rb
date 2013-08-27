@@ -1,3 +1,5 @@
+require File.expand_path('../../../config/environment',  __FILE__)
+
 module MailRoom
   class Configuration
     attr_accessor :mailboxes, :daemonize, :log_path, :pid_path
@@ -6,7 +8,7 @@ module MailRoom
       self.mailboxes = []
 
       if options.has_key?(:config_path)
-        config_file = YAML.load_file(options[:config_path])
+        config_file = YAML.load(ERB.new(File.new(options[:config_path]).read).result)
 
         set_mailboxes(config_file[:mailboxes])
       end
