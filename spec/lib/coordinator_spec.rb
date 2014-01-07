@@ -21,12 +21,15 @@ describe MailRoom::Coordinator do
 
   describe '#run' do
     it 'runs each watcher' do
-      watcher = stub(:run)
+      watcher = stub
+      watcher.stubs(:run)
+      watcher.stubs(:quit)
       MailRoom::MailboxWatcher.stubs(:new).returns(watcher)
       coordinator = MailRoom::Coordinator.new(['mailbox1'])
       coordinator.stubs(:sleep_while_running)
       coordinator.run
       watcher.should have_received(:run)
+      watcher.should have_received(:quit)
     end
     
     it 'should go to sleep after running watchers' do
@@ -60,12 +63,6 @@ describe MailRoom::Coordinator do
       coordinator = MailRoom::Coordinator.new(['mailbox1'])
       coordinator.quit
       watcher.should have_received(:quit)
-    end
-    
-    it 'should set state attribute running to false' do
-      coordinator = MailRoom::Coordinator.new([])
-      coordinator.quit
-      coordinator.running.should eq(false)
     end
   end
 end

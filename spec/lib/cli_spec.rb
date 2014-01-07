@@ -38,19 +38,4 @@ describe MailRoom::CLI do
       coordinator.should have_received(:run)
     end
   end
-
-  describe '#stop' do
-    let(:cli) {MailRoom::CLI.new([])}
-
-    before :each do
-      cli.configuration = configuration
-      cli.coordinator = coordinator
-    end
-
-    it 'quits the coordinator' do
-      cli.stop
-
-      coordinator.should have_received(:quit)
-    end
-  end
 end

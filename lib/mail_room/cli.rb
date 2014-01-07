@@ -31,7 +31,7 @@ module MailRoom
 
     def start
       Signal.trap(:INT) do
-        stop
+        coordinator.running = false
       end
 
       Signal.trap(:TERM) do
@@ -39,10 +39,6 @@ module MailRoom
       end
 
       coordinator.run
-    end
-
-    def stop
-      coordinator.quit
     end
   end
 end

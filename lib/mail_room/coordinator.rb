@@ -16,6 +16,8 @@ module MailRoom
       self.running = true
       
       sleep_while_running
+
+      quit
     end
     
     def sleep_while_running
@@ -24,8 +26,6 @@ module MailRoom
 
     def quit
       watchers.each(&:quit)
-      
-      self.running = false
     end
   end
 end
