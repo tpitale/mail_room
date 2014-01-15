@@ -56,7 +56,11 @@ Or install it yourself as:
 
 ### postback ###
 
-The default delivery method, requires _delivery_url_ and _delivery_token_ in configuration.
+The default delivery method, requires `delivery_url` and `delivery_token` in configuration.
+
+As the postback is essentially using your app as if it were an API endpoint, you may need to disable
+forgery protection as you would with a JSON API. In our case, the postback is plaintext, but the
+protection will still need to be disabled.
 
 ### logger ###
 
