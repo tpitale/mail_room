@@ -18,6 +18,8 @@ Or install it yourself as:
 
     $ gem install mail_room
 
+You will also need to install `faraday` or `letter_opener` if you use the `postback` or `letter_opener` delivery methods, respectively.
+
 ## Usage ##
 
     mail_room -c /path/to/config.yml
@@ -58,6 +60,10 @@ Or install it yourself as:
 
 Requires `faraday` gem be installed.
 
+*NOTE:* If you're using Ruby `>= 2.0`, you'll need
+to use Faraday from `master` for the time being. I will investigate any issues
+once version `0.9.0` final is released.
+
 The default delivery method, requires `delivery_url` and `delivery_token` in 
 configuration.
 
@@ -85,6 +91,14 @@ Requires `letter_opener` gem be installed.
 Configured with `:delivery_method: letter_opener`.
 
 Uses Ryan Bates' excellent [letter_opener](https://github.com/ryanb/letter_opener) gem.
+
+## Receiving `postback` in Rails ##
+
+If you have a controller that you're sending to, with forgery protection
+disabled, you can get the raw string of the email using `request.body.read`.
+
+I would recommend having the `mail` gem bundled and parse the email using
+`Mail.read_from_string(request.body.read)`.
 
 ## Contributing ##
 
