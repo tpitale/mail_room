@@ -56,11 +56,15 @@ Or install it yourself as:
 
 ### postback ###
 
-The default delivery method, requires `delivery_url` and `delivery_token` in configuration.
+Requires `faraday` gem be installed.
 
-As the postback is essentially using your app as if it were an API endpoint, you may need to disable
-forgery protection as you would with a JSON API. In our case, the postback is plaintext, but the
-protection will still need to be disabled.
+The default delivery method, requires `delivery_url` and `delivery_token` in 
+configuration.
+
+As the postback is essentially using your app as if it were an API endpoint, 
+you may need to disable forgery protection as you would with a JSON API. In 
+our case, the postback is plaintext, but the protection will still need to be 
+disabled.
 
 ### logger ###
 
@@ -75,6 +79,8 @@ Configured with `:delivery_method: noop`.
 Does nothing, like it says.
 
 ### letter_opener ###
+
+Requires `letter_opener` gem be installed.
 
 Configured with `:delivery_method: letter_opener`.
 
