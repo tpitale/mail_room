@@ -60,9 +60,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
 
 Requires `faraday` gem be installed.
 
-*NOTE:* If you're using Ruby `>= 2.0`, you'll need
-to use Faraday from `master` for the time being. I will investigate any issues
-once version `0.9.0` final is released.
+*NOTE:* If you're using Ruby `>= 2.0`, you'll need to use Faraday from `>= 0.8.9`. Versions before this seem to have some weird behavior with `mail_room`.
 
 The default delivery method, requires `delivery_url` and `delivery_token` in 
 configuration.

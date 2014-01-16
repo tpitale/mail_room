@@ -34,9 +34,11 @@ describe MailRoom::Coordinator do
     
     it 'should go to sleep after running watchers' do
       coordinator = MailRoom::Coordinator.new([])
-      coordinator.stubs(:sleep_while_running)
+      coordinator.stubs(:running=)
+      coordinator.stubs(:running?).returns(false)
       coordinator.run
-      coordinator.should have_received(:sleep_while_running)
+      coordinator.should have_received(:running=).with(true)
+      coordinator.should have_received(:running?)
     end
 
     it 'should set attribute running to true' do
@@ -44,15 +46,6 @@ describe MailRoom::Coordinator do
       coordinator.stubs(:sleep_while_running)
       coordinator.run
       coordinator.running.should eq(true)
-    end
-  end
-
-  describe '#sleep_while_running' do
-    it 'should check the running state' do
-      coordinator = MailRoom::Coordinator.new([])
-      coordinator.stubs(:running?).returns(false)
-      coordinator.sleep_while_running
-      coordinator.should have_received(:running?)
     end
   end
 

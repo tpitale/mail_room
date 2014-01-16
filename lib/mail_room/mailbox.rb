@@ -1,5 +1,6 @@
 module MailRoom
-  Mailbox = Struct.new(*[
+  # Mailbox Configuration fields
+  FIELDS = [
     :email,
     :password,
     :name,
@@ -8,9 +9,13 @@ module MailRoom
     :delivery_url, # for postback
     :delivery_token, # for postback
     :location # for letter_opener
-  ])
+  ]
 
-  class Mailbox
+  # Holds configuration for each of the email accounts we wish to monitor
+  #   and deliver email to when new emails arrive over imap
+  Mailbox = Struct.new(*FIELDS) do
+    # Store the configuration and require the appropriate delivery method
+    # @param attributes [Hash] configuration options
     def initialize(attributes={})
       super(*attributes.values_at(*members))
 
@@ -31,6 +36,8 @@ module MailRoom
       end
     end
 
+    # deliver the imap email message
+    # @param message [Net::IMAP::FetchData]
     def deliver(message)
       delivery_klass.new(self).deliver(message.attr['RFC822'])
     end

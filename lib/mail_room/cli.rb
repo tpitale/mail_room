@@ -1,7 +1,13 @@
 module MailRoom
+  # The CLI parses ARGV into configuration to start the coordinator with.
+  # @author Tony Pitale
   class CLI
     attr_accessor :configuration, :coordinator
 
+    # Initialize a new CLI instance to handle option parsing from arguments
+    #   into configuration to start the coordinator running on all mailboxes
+    #
+    # @param args [Array] `ARGV` passed from `bin/mail_room`
     def initialize(args)
       options = {}
 
@@ -29,6 +35,7 @@ module MailRoom
       self.coordinator = Coordinator.new(configuration.mailboxes)
     end
 
+    # Start the coordinator running, sets up signal traps
     def start
       Signal.trap(:INT) do
         coordinator.running = false
