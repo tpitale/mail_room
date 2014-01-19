@@ -3,6 +3,7 @@
 mail_room is a configuration based process that will idle on IMAP connections and POST to a delivery URL whenever a new message is received on the configured mailbox and folder.
 
 [![Build Status](https://travis-ci.org/tpitale/mail_room.png?branch=master)](https://travis-ci.org/tpitale/mail_room)
+[![Code Climate](https://codeclimate.com/github/tpitale/mail_room.png)](https://codeclimate.com/github/tpitale/mail_room)
 
 ## Installation ##
 
