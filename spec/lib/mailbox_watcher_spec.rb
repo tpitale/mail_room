@@ -30,6 +30,14 @@ describe MailRoom::MailboxWatcher do
 
       Net::IMAP.should have_received(:new).with('imap.gmail.com', :port => 993, :ssl => true)
     end
+    
+    it 'builds a new Net::IMAP object with server param' do
+      Net::IMAP.stubs(:new).returns('imap')
+      mailbox = stub(:server => 'outlook.office365.com', :email => 'drrosen@rosen.edu', :password => 'password', :name => 'inbox')
+      MailRoom::MailboxWatcher.new(mailbox).imap.should eq('imap')
+
+       Net::IMAP.should have_received(:new).with('outlook.office365.com', :port => 993, :ssl => true)
+    end
   end
 
   describe '#setup' do
