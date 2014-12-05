@@ -11,9 +11,8 @@ module MailRoom
     def initialize(mailbox)
       @mailbox = mailbox
 
+      reset
       @running = false
-      @logged_in = false
-      @idling = false
     end
 
     # build a net/imap connection to google imap
@@ -44,6 +43,12 @@ module MailRoom
       @idling
     end
 
+    # is the imap connection closed?
+    # @return [Boolean]
+    def disconnected?
+      @imap.disconnected?
+    end
+
     # is the connection ready to idle?
     # @return [Boolean]
     def ready_to_idle?
@@ -59,8 +64,17 @@ module MailRoom
 
     # log in and set the mailbox
     def setup
+      reset
       log_in
       set_mailbox
+    end
+
+    # clear disconnected imap
+    # reset imap state
+    def reset
+      @imap = nil
+      @logged_in = false
+      @idling = false
     end
 
     # send the imap login command to google
@@ -81,7 +95,7 @@ module MailRoom
       @idling = true
 
       imap.idle(&idle_handler)
-
+    ensure
       @idling = false
     end
 
@@ -101,18 +115,27 @@ module MailRoom
 
       self.idling_thread = Thread.start do
         while(running?) do
-          # block until we stop idling
-          idle
-          # when new messages are ready
-          process_mailbox
+          begin
+            # block until we stop idling
+            idle
+
+            # when new messages are ready
+            process_mailbox
+          rescue Net::IMAP::Error => e
+            # we've been disconnected, so re-setup
+            setup
+          end
         end
       end
+
+      idling_thread.abort_on_exception = true
     end
 
     # stop running
     def quit
       @running = false
       stop_idling
+      # disconnect
     end
 
     # trigger the handler to process this mailbox for new messages

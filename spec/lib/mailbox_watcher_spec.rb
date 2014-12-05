@@ -126,7 +126,7 @@ describe MailRoom::MailboxWatcher do
 
   describe '#stop_idling' do
     let(:imap) {stub}
-    let(:idling_thread) {stub}
+    let(:idling_thread) {stub(:abort_on_exception=)}
     let(:watcher) {MailRoom::MailboxWatcher.new(nil)}
 
     before :each do
@@ -168,7 +168,7 @@ describe MailRoom::MailboxWatcher do
     let(:watcher) {MailRoom::MailboxWatcher.new(nil)}
 
     before :each do
-      Thread.stubs(:start).yields
+      Thread.stubs(:start).yields.returns(stub(:abort_on_exception=))
       watcher.stubs(:setup)
     end
 
