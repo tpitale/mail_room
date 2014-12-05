@@ -1,4 +1,4 @@
-# mail_room #
+# developmental work for non gmail servers for mail_room #
 
 mail_room is a configuration based process that will idle on IMAP connections and POST to a delivery URL whenever a new message is received on the configured mailbox and folder.
 
