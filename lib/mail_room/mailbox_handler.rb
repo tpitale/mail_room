@@ -26,6 +26,9 @@ module MailRoom
     # @private
     # fetch all messages for the new message ids
     def new_messages
+      # Both of these calls may results in
+      #   imap raising an EOFError, we handle
+      #   this exception in the watcher
       messages_for_ids(new_message_ids)
     end
 
