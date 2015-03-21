@@ -101,6 +101,10 @@ disabled, you can get the raw string of the email using `request.body.read`.
 I would recommend having the `mail` gem bundled and parse the email using
 `Mail.read_from_string(request.body.read)`.
 
+## Running in Production ##
+
+I suggest running with either upstart or init.d. Check out this wiki page for some example scripts for both: https://github.com/tpitale/mail_room/wiki/Init-Scripts-for-Running-mail_room
+
 ## Contributing ##
 
 1. Fork it
@@ -116,6 +120,6 @@ I would recommend having the `mail` gem bundled and parse the email using
 2. finish code for POSTing to callback with auth √
 3. accept mailbox configuration for one account directly on the commandline; or ask for it
 4. add example rails endpoint, with auth examples
-5. add example configs for god/upstart
+5. add example configs for upstart/init.d √
 6. log to stdout √
 7. add a development mode that opens in letter_opener by ryanb √
