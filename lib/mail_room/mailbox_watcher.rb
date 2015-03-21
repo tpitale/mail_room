@@ -17,7 +17,7 @@ module MailRoom
 
     # build a net/imap connection to google imap
     def imap
-      @imap ||= Net::IMAP.new('imap.gmail.com', :port => 993, :ssl => true)
+      @imap ||= Net::IMAP.new(( @mailbox && @mailbox.server) || 'imap.gmail.com', :port => 993, :ssl => true)
     end
 
     # build a handler to process mailbox messages

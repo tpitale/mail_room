@@ -19,9 +19,9 @@ module MailRoom
 
         connection.post do |request|
           request.url @mailbox.delivery_url
-          request.body = message
+          request.body = message.force_encoding('UTF-8')
           # request.options[:timeout] = 3
-          # request.headers['Content-Type'] = 'text/plain'
+          request.headers['Content-Type'] = 'text/plain'
         end
       end
     end

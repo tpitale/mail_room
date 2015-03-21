@@ -39,7 +39,7 @@ module MailRoom
     # search for all new (unseen) message ids
     # @return [Array<Integer>] message ids
     def new_message_ids
-      @imap.search('UNSEEN')
+      @imap.search('NEW')
     end
 
     # @private

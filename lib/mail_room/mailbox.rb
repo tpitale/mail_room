@@ -1,6 +1,7 @@
 module MailRoom
   # Mailbox Configuration fields
   FIELDS = [
+    :server,
     :email,
     :password,
     :name,
