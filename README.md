@@ -106,6 +106,10 @@ I would recommend having the `mail` gem bundled and parse the email using
 
 This setting allows configuration of the IMAP search command sent to the server. This still defaults 'UNSEEN'. You may find that 'NEW' works better for you.
 
+## IMAP Server Configuration ##
+
+You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), and `port` (default: true).
+
 ## Running in Production ##
 
 I suggest running with either upstart or init.d. Check out this wiki page for some example scripts for both: https://github.com/tpitale/mail_room/wiki/Init-Scripts-for-Running-mail_room
