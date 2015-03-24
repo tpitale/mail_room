@@ -1,8 +1,12 @@
 module MailRoom
   # Mailbox Configuration fields
-  FIELDS = [
+  MAILBOX_FIELDS = [
     :email,
     :password,
+    :host,
+    :port,
+    :ssl,
+    :search_command,
     :name,
     :delivery_method, # :noop, :logger, :postback, :letter_opener
     :log_path, # for logger
@@ -13,13 +17,22 @@ module MailRoom
 
   # Holds configuration for each of the email accounts we wish to monitor
   #   and deliver email to when new emails arrive over imap
-  Mailbox = Struct.new(*FIELDS) do
+  Mailbox = Struct.new(*MAILBOX_FIELDS) do
+    # Default attributes for the mailbox configuration
+    DEFAULTS = {
+      :search_command => 'UNSEEN',
+      :delivery_method => 'postback',
+      :host => 'imap.gmail.com',
+      :port => 993,
+      :ssl => true
+    }
+
     # Store the configuration and require the appropriate delivery method
     # @param attributes [Hash] configuration options
     def initialize(attributes={})
-      super(*attributes.values_at(*members))
+      super(*DEFAULTS.merge(attributes).values_at(*members))
 
-      require_relative("./delivery/#{(delivery_method || 'postback')}")
+      require_relative("./delivery/#{(delivery_method)}")
     end
 
     # move to a mailbox deliverer class?

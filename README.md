@@ -36,6 +36,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :name: "inbox"
     :delivery_url: "http://localhost:3000/inbox"
     :delivery_token: "abcdefg"
+    :search_command: 'NEW'
   -
     :email: "user2@gmail.com"
     :password: "password"
@@ -100,6 +101,14 @@ disabled, you can get the raw string of the email using `request.body.read`.
 
 I would recommend having the `mail` gem bundled and parse the email using
 `Mail.read_from_string(request.body.read)`.
+
+## Search Command ##
+
+This setting allows configuration of the IMAP search command sent to the server. This still defaults 'UNSEEN'. You may find that 'NEW' works better for you.
+
+## IMAP Server Configuration ##
+
+You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), and `port` (default: true).
 
 ## Running in Production ##
 
