@@ -108,7 +108,7 @@ This setting allows configuration of the IMAP search command sent to the server.
 
 ## IMAP Server Configuration ##
 
-You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), and `port` (default: true).
+You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), and `ssl` (default: true).
 
 ## Running in Production ##
 
