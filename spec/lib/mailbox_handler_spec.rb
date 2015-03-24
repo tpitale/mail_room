@@ -22,12 +22,13 @@ describe MailRoom::MailboxHandler do
     it 'returns no messages if there are no ids' do
       imap.stubs(:search).returns([])
       imap.stubs(:fetch)
+      mailbox.search_command = 'NEW'
       mailbox.stubs(:deliver)
 
       handler = MailRoom::MailboxHandler.new(mailbox, imap)
       handler.process
 
-      imap.should have_received(:search).with('UNSEEN')
+      imap.should have_received(:search).with('NEW')
       imap.should have_received(:fetch).never
       mailbox.should have_received(:deliver).never
     end

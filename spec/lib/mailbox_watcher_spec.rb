@@ -23,10 +23,12 @@ describe MailRoom::MailboxWatcher do
   end
 
   describe '#imap' do
+    let(:mailbox) {MailRoom::Mailbox.new}
+
     it 'builds a new Net::IMAP object' do
       Net::IMAP.stubs(:new).returns('imap')
 
-      MailRoom::MailboxWatcher.new(nil).imap.should eq('imap')
+      MailRoom::MailboxWatcher.new(mailbox).imap.should eq('imap')
 
       Net::IMAP.should have_received(:new).with('imap.gmail.com', :port => 993, :ssl => true)
     end
