@@ -8,6 +8,7 @@ module MailRoom
     :ssl,
     :search_command,
     :name,
+    :delete_after_delivery,
     :delivery_method, # :noop, :logger, :postback, :letter_opener
     :log_path, # for logger
     :delivery_url, # for postback
@@ -26,6 +27,7 @@ module MailRoom
       :host => 'imap.gmail.com',
       :port => 993,
       :ssl => true,
+      :delete_after_delivery => false,
       :delivery_options => {}
     }
 
