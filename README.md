@@ -25,6 +25,8 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
 
     mail_room -c /path/to/config.yml
 
+**Note:** To ignore missing config file or missing `mailboxes` key, use `-q` or `--quiet`
+
 ## Configuration ##
 
 ```yaml
