@@ -32,6 +32,8 @@ module MailRoom
           # request.options[:timeout] = 3
           # request.headers['Content-Type'] = 'text/plain'
         end
+
+        true
       end
     end
   end

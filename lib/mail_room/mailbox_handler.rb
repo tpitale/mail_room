@@ -18,8 +18,14 @@ module MailRoom
         # puts msg.attr['RFC822']
 
         # loop over delivery methods and deliver each
-        @mailbox.deliver(msg)
+        delivered = @mailbox.deliver(msg)
+
+        if delivered && @mailbox.delete_after_delivery
+          @imap.store(msg.seqno, "+FLAGS", [Net::IMAP::DELETED])
+        end
       end
+
+      @imap.expunge if @mailbox.delete_after_delivery
     end
 
     private
