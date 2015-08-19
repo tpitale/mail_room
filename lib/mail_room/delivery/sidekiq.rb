@@ -32,6 +32,8 @@ module MailRoom
         item = item_for(message)
 
         client.lpush("queue:#{options.queue}", JSON.generate(item))
+
+        true
       end
 
       private
