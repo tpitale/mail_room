@@ -34,28 +34,33 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :email: "user1@gmail.com"
     :password: "password"
     :name: "inbox"
-    :delivery_url: "http://localhost:3000/inbox"
-    :delivery_token: "abcdefg"
     :search_command: 'NEW'
+    :delivery_options:
+      :delivery_url: "http://localhost:3000/inbox"
+      :delivery_token: "abcdefg"
+    
   -
     :email: "user2@gmail.com"
     :password: "password"
     :name: "inbox"
     :delivery_method: postback
-    :delivery_url: "http://localhost:3000/inbox"
-    :delivery_token: "abcdefg"
+    :delivery_options:
+      :delivery_url: "http://localhost:3000/inbox"
+      :delivery_token: "abcdefg"
   -
     :email: "user3@gmail.com"
     :password: "password"
     :name: "inbox"
     :delivery_method: logger
-    :log_path: "/var/log/user3-email.log"
+    :delivery_options:
+      :log_path: "/var/log/user3-email.log"
   -
     :email: "user4@gmail.com"
     :password: "password"
     :name: "inbox"
     :delivery_method: letter_opener
-    :location: "/tmp/user4-email"
+    :delivery_options:
+      :location: "/tmp/user4-email"
 ```
 
 ## delivery_method ##
