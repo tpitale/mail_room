@@ -20,12 +20,15 @@ describe MailRoom::Coordinator do
   end
 
   describe '#run' do
-    it 'runs each watcher' do
-      watcher = stub
-      watcher.stubs(:run)
-      watcher.stubs(:quit)
+    let(:mailbox) {MailRoom::Mailbox.new}
+    let(:watcher) {stub(:run => true, :quit => true)}
+
+    before(:each) do
       MailRoom::MailboxWatcher.stubs(:new).returns(watcher)
-      coordinator = MailRoom::Coordinator.new(['mailbox1'])
+    end
+
+    it 'runs each watcher' do
+      coordinator = MailRoom::Coordinator.new([mailbox])
       coordinator.stubs(:sleep_while_running)
       coordinator.run
       watcher.should have_received(:run)
@@ -33,7 +36,7 @@ describe MailRoom::Coordinator do
     end
     
     it 'should go to sleep after running watchers' do
-      coordinator = MailRoom::Coordinator.new([])
+      coordinator = MailRoom::Coordinator.new([mailbox])
       coordinator.stubs(:running=)
       coordinator.stubs(:running?).returns(false)
       coordinator.run
@@ -42,7 +45,7 @@ describe MailRoom::Coordinator do
     end
 
     it 'should set attribute running to true' do
-      coordinator = MailRoom::Coordinator.new([])
+      coordinator = MailRoom::Coordinator.new([mailbox])
       coordinator.stubs(:sleep_while_running)
       coordinator.run
       coordinator.running.should eq(true)
