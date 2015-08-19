@@ -25,6 +25,12 @@ module MailRoom
       @handler ||= MailboxHandler.new(@mailbox, imap)
     end
 
+    # do we want to process this mailbox before idling
+    # @return [Boolean]
+    def prefetch_messages?
+      @mailbox.prefetch_messages
+    end
+
     # are we running?
     # @return [Boolean]
     def running?
@@ -112,6 +118,8 @@ module MailRoom
       setup
 
       @running = true
+
+      process_mailbox if prefetch_messages?
 
       self.idling_thread = Thread.start do
         while(running?) do
