@@ -18,7 +18,7 @@ module MailRoom
     def run
       watchers.each(&:run)
       
-      self.running = (true && !watchers.empty?)
+      self.running = !watchers.empty?
       
       sleep_while_running
     ensure
