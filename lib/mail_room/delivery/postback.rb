@@ -5,20 +5,29 @@ module MailRoom
     # Postback Delivery method
     # @author Tony Pitale
     class Postback
-      # Build a new delivery, hold the mailbox configuration
-      # @param [MailRoom::Mailbox]
-      def initialize(mailbox)
-        @mailbox = mailbox
+      Options = Struct.new(:delivery_url, :delivery_token) do
+        def initialize(mailbox)
+          delivery_url = mailbox.delivery_url || mailbox.delivery_options[:delivery_url]
+          delivery_token = mailbox.delivery_token || mailbox.delivery_options[:delivery_token]
+
+          super(delivery_url, delivery_token)
+        end
       end
 
-      # deliver the message using Faraday to the configured mailbox url
+      # Build a new delivery, hold the delivery options
+      # @param [MailRoom::Delivery::Postback::Options]
+      def initialize(delivery_options)
+        @delivery_options = delivery_options
+      end
+
+      # deliver the message using Faraday to the configured delivery_options url
       # @param message [String] the email message as a string, RFC822 format
       def deliver(message)
         connection = Faraday.new
-        connection.token_auth @mailbox.delivery_token
+        connection.token_auth @delivery_options.delivery_token
 
         connection.post do |request|
-          request.url @mailbox.delivery_url
+          request.url @delivery_options.delivery_url
           request.body = message
           # request.options[:timeout] = 3
           # request.headers['Content-Type'] = 'text/plain'

@@ -12,7 +12,8 @@ module MailRoom
     :log_path, # for logger
     :delivery_url, # for postback
     :delivery_token, # for postback
-    :location # for letter_opener
+    :location, # for letter_opener
+    :delivery_options
   ]
 
   # Holds configuration for each of the email accounts we wish to monitor
@@ -24,7 +25,8 @@ module MailRoom
       :delivery_method => 'postback',
       :host => 'imap.gmail.com',
       :port => 993,
-      :ssl => true
+      :ssl => true,
+      :delivery_options => {}
     }
 
     # Store the configuration and require the appropriate delivery method
@@ -52,7 +54,12 @@ module MailRoom
     # deliver the imap email message
     # @param message [Net::IMAP::FetchData]
     def deliver(message)
-      delivery_klass.new(self).deliver(message.attr['RFC822'])
+      delivery_klass.new(parsed_delivery_options).deliver(message.attr['RFC822'])
+    end
+
+    private
+    def parsed_delivery_options
+      delivery_klass::Options.new(self)
     end
   end
 end

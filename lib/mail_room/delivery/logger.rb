@@ -5,11 +5,19 @@ module MailRoom
     # File/STDOUT Logger Delivery method
     # @author Tony Pitale
     class Logger
-      # Build a new delivery, hold the mailbox configuration
-      #   open a file or stdout for IO depending on the configuration
-      # @param [MailRoom::Mailbox]
-      def initialize(mailbox)
-        io = File.open(mailbox.log_path, 'a') if mailbox.log_path
+      Options = Struct.new(:log_path) do
+        def initialize(mailbox)
+          log_path = mailbox.log_path || mailbox.delivery_options[:log_path]
+
+          super(log_path)
+        end
+      end
+
+      # Build a new delivery, hold the delivery options
+      #   open a file or stdout for IO depending on the options
+      # @param [MailRoom::Delivery::Logger::Options]
+      def initialize(delivery_options)
+        io = File.open(delivery_options.log_path, 'a') if delivery_options.log_path
         io ||= STDOUT
 
         io.sync = true

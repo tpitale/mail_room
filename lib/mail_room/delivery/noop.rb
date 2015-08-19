@@ -3,6 +3,12 @@ module MailRoom
     # Noop Delivery method
     # @author Tony Pitale
     class Noop
+      Options = Class.new do
+        def initialize(*)
+          super()
+        end
+      end
+
       # build a new delivery, do nothing
       def initialize(*)
       end
