@@ -46,6 +46,8 @@ module MailRoom
         Delivery::Logger
       when "letter_opener"
         Delivery::LetterOpener
+      when "sidekiq"
+        Delivery::Sidekiq
       else
         Delivery::Postback
       end
