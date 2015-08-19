@@ -63,6 +63,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :password: "password"
     :name: "inbox"
     :delivery_method: letter_opener
+    :delete_after_delivery: true
     :delivery_options:
       :location: "/tmp/user4-email"
   -

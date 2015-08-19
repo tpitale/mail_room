@@ -29,6 +29,8 @@ module MailRoom
       # @param message [String] the email message as a string, RFC822 format
       def deliver(message)
         @logger.info message
+
+        true
       end
     end
   end

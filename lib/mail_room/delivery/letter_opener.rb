@@ -26,6 +26,8 @@ module MailRoom
       def deliver(message)
         method = ::LetterOpener::DeliveryMethod.new(:location => @delivery_options.location)
         method.deliver!(Mail.read_from_string(message))
+
+        true
       end
     end
   end
