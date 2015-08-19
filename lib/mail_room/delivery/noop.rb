@@ -15,6 +15,7 @@ module MailRoom
 
       # accept the delivery, do nothing
       def deliver(*)
+        true
       end
     end
   end
