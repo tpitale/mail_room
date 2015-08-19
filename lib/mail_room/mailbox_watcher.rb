@@ -113,6 +113,9 @@ module MailRoom
 
       @running = true
 
+      # prefetch messages before first idle
+      process_mailbox
+
       self.idling_thread = Thread.start do
         while(running?) do
           begin

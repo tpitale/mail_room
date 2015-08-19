@@ -1,23 +1,25 @@
 require 'spec_helper'
 
 describe MailRoom::MailboxWatcher do
+  let(:mailbox) {MailRoom::Mailbox.new}
+
   describe '#running?' do
     it 'is false by default' do
-      watcher = MailRoom::MailboxWatcher.new(nil)
+      watcher = MailRoom::MailboxWatcher.new(mailbox)
       watcher.running?.should eq(false)
     end
   end
 
   describe '#logged_in?' do
     it 'is false by default' do
-      watcher = MailRoom::MailboxWatcher.new(nil)
+      watcher = MailRoom::MailboxWatcher.new(mailbox)
       watcher.logged_in?.should eq(false)
     end
   end
 
   describe '#idling?' do
     it 'is false by default' do
-      watcher = MailRoom::MailboxWatcher.new(nil)
+      watcher = MailRoom::MailboxWatcher.new(mailbox)
       watcher.idling?.should eq(false)
     end
   end
@@ -159,11 +161,13 @@ describe MailRoom::MailboxWatcher do
   end
 
   describe '#run' do
-    let(:watcher) {MailRoom::MailboxWatcher.new(nil)}
+    let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
 
     before :each do
+      Net::IMAP.stubs(:new).returns(stub)
       Thread.stubs(:start).yields.returns(stub(:abort_on_exception=))
       watcher.stubs(:setup)
+      watcher.handler.stubs(:process)
     end
 
     it 'sets up' do
@@ -186,7 +190,6 @@ describe MailRoom::MailboxWatcher do
       watcher.stubs(:running?).returns(true, false)
 
       watcher.stubs(:idle)
-      watcher.stubs(:process_mailbox)
 
       watcher.run
 
@@ -197,7 +200,6 @@ describe MailRoom::MailboxWatcher do
       watcher.stubs(:running?).returns(true, false)
 
       watcher.stubs(:idle)
-      watcher.stubs(:process_mailbox)
 
       watcher.run
 
@@ -208,16 +210,15 @@ describe MailRoom::MailboxWatcher do
       watcher.stubs(:running?).returns(true, false)
 
       watcher.stubs(:idle)
-      watcher.stubs(:process_mailbox)
 
       watcher.run
 
-      watcher.should have_received(:process_mailbox).once
+      watcher.handler.should have_received(:process).times(2)
     end
   end
 
   describe '#quit' do
-    let(:watcher) {MailRoom::MailboxWatcher.new(nil)}
+    let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
 
     it 'stops idling' do
       watcher.stubs(:stop_idling)
