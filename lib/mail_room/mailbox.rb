@@ -7,6 +7,7 @@ module MailRoom
     :port,
     :ssl,
     :search_command,
+    :prefetch_messages,
     :name,
     :delivery_method, # :noop, :logger, :postback, :letter_opener
     :log_path, # for logger
@@ -20,6 +21,7 @@ module MailRoom
   Mailbox = Struct.new(*MAILBOX_FIELDS) do
     # Default attributes for the mailbox configuration
     DEFAULTS = {
+      :prefetch_messages => false,
       :search_command => 'UNSEEN',
       :delivery_method => 'postback',
       :host => 'imap.gmail.com',

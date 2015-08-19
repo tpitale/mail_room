@@ -34,6 +34,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :email: "user1@gmail.com"
     :password: "password"
     :name: "inbox"
+    :prefetch_messages: false # default
     :delivery_url: "http://localhost:3000/inbox"
     :delivery_token: "abcdefg"
     :search_command: 'NEW'
@@ -41,6 +42,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :email: "user2@gmail.com"
     :password: "password"
     :name: "inbox"
+    :prefetch_messages: true # get mail before first idle
     :delivery_method: postback
     :delivery_url: "http://localhost:3000/inbox"
     :delivery_token: "abcdefg"
