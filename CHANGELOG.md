@@ -3,7 +3,7 @@
 * Sidekiq delivery method
 * Option to delete messages after delivered
 
-    *Douwe Mann <@DouweM>*
+    *Douwe Maan <@DouweM>*
 
 * -q/--quiet do not raise errors on missing configuration
 * prefetch mail messages before idling
