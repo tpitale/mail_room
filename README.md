@@ -25,9 +25,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
 
     mail_room -c /path/to/config.yml
 
-**Note:** To ignore missing config file or missing `mailboxes` key, use `-q` or `--quiet`.
-
-**It is important to properly configure MailRoom when using `-q` in conjunction with a process manager like upstart/god/monit/etc, or to configure the manager to not restart a process infinitely. MailRoom will stop running immediately if it has no settings for mailboxes.**
+**Note:** To ignore missing config file or missing `mailboxes` key, use `-q` or `--quiet`
 
 ## Configuration ##
 
