@@ -1,3 +1,16 @@
+## mail_room 0.4.0 ##
+
+* Sidekiq delivery method
+* Option to delete messages after delivered
+
+    *Douwe Mann <@DouweM>*
+
+* -q/--quiet do not raise errors on missing configuration
+* prefetch mail messages before idling
+* delivery-method-specific delivery options configuration
+
+    *Tony Pitale <@tpitale>*
+
 ## mail_room 0.3.1 ##
 
 * Rescue from EOFError and re-setup mailroom
