@@ -58,7 +58,10 @@ module MailRoom
     # deliver the imap email message
     # @param message [Net::IMAP::FetchData]
     def deliver(message)
-      delivery_klass.new(parsed_delivery_options).deliver(message.attr['RFC822'])
+      message = message.attr['RFC822']
+      return true unless message
+      
+      delivery_klass.new(parsed_delivery_options).deliver(message)
     end
 
     private
