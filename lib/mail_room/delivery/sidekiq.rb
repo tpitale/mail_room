@@ -9,10 +9,10 @@ module MailRoom
     class Sidekiq
       Options = Struct.new(:redis_url, :namespace, :queue, :worker) do
         def initialize(mailbox)
-          redis_url = mailbox.delivery_options[:redis_url]
+          redis_url = mailbox.delivery_options[:redis_url] || "redis://localhost:6379"
           namespace = mailbox.delivery_options[:namespace]
-          queue     = mailbox.delivery_options[:queue]  || "default"
-          worker    = mailbox.delivery_options[:worker] || "redis://localhost:6379"
+          queue     = mailbox.delivery_options[:queue] || "default"
+          worker    = mailbox.delivery_options[:worker]
 
           super(redis_url, namespace, queue, worker)
         end
