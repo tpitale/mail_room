@@ -49,5 +49,17 @@ describe MailRoom::Mailbox do
         letter_opener.should have_received(:deliver).with('a message')
       end
     end
+
+    context "without an RFC822 attribute" do
+      it "doesn't deliver the message" do
+        mailbox = MailRoom::Mailbox.new({:delivery_method => 'noop'})
+        noop = stub(:deliver)
+        MailRoom::Delivery::Noop.stubs(:new => noop)
+
+        mailbox.deliver(stub(:attr => {'FLAGS' => [:Seen, :Recent]}))
+
+        noop.should have_received(:deliver).never
+      end
+    end
   end
 end
