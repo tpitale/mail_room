@@ -124,7 +124,7 @@ module MailRoom
 
             # when new messages are ready
             process_mailbox
-          rescue Net::IMAP::Error, EOFError => e
+          rescue Net::IMAP::Error, IOError => e
             # we've been disconnected, so re-setup
             setup
           end
