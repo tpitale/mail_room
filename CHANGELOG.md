@@ -1,3 +1,9 @@
+## mail_room 0.4.2 ##
+
+* rescue from all IOErrors, not just EOFError
+
+    *Douwe Maan <@DouweM>*
+
 ## mail_room 0.4.1 ##
 
 * Fix redis default host/port configuration
