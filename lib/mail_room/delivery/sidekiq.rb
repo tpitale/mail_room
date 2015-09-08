@@ -4,8 +4,8 @@ require "json"
 
 module MailRoom
   module Delivery
-    # Postback Delivery method
-    # @author Tony Pitale
+    # Sidekiq Delivery method
+    # @author Douwe Maan
     class Sidekiq
       Options = Struct.new(:redis_url, :namespace, :queue, :worker) do
         def initialize(mailbox)
@@ -21,7 +21,7 @@ module MailRoom
       attr_accessor :options
 
       # Build a new delivery, hold the mailbox configuration
-      # @param [MailRoom::Mailbox]
+      # @param [MailRoom::Delivery::Sidekiq::Options]
       def initialize(options)
         @options = options
       end

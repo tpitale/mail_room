@@ -50,6 +50,8 @@ module MailRoom
         Delivery::LetterOpener
       when "sidekiq"
         Delivery::Sidekiq
+      when "que"
+        Delivery::Que
       else
         Delivery::Postback
       end
