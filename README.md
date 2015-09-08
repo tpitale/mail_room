@@ -1,6 +1,10 @@
 # mail_room #
 
-mail_room is a configuration based process that will idle on IMAP connections and POST to a delivery URL whenever a new message is received on the configured mailbox and folder.
+mail_room is a configuration based process that will idle on IMAP connections and execute a delivery method when a new message is received. Examples of delivery methods include:
+
+* POST to a delivery URL (Postback)
+* Queue a job to Sidekiq or Que for later processing (Sidekiq or Que)
+* Log the message or open with LetterOpener (Logger or LetterOpener)
 
 [![Build Status](https://travis-ci.org/tpitale/mail_room.png?branch=master)](https://travis-ci.org/tpitale/mail_room)
 [![Code Climate](https://codeclimate.com/github/tpitale/mail_room.png)](https://codeclimate.com/github/tpitale/mail_room)
@@ -116,6 +120,40 @@ class EmailReceiverWorker
   include Sidekiq::Worker
 
   def perform(message)
+    mail = Mail::Message.new(message)
+
+    puts "New mail from #{mail.from.first}: #{mail.subject}"
+  end
+end
+```
+
+### que ###
+
+Deliver the message by pushing it onto the configured Que queue to be handled by a custom worker.
+
+Requires `pg` gem to be installed.
+
+Configured with `:delivery_method: que`.
+
+Delivery options:
+- **host**: The postgresql server host to connect with. Use the database you use with Que.
+  Required, defaults to `localhost`.
+- **port**: The postgresql server port to connect with. Use the database you use with Que.
+  Required, defaults to `5432`.
+- **database**: The postgresql database to use. Use the database you use with Que.
+  Required.
+- **queue**: The Que queue the job is pushed onto. Make sure Que actually reads off this queue.
+  Required, defaults to `default`.
+- **job_class**: The worker class that will handle the message.
+  Required.
+- **priority**: The priority you want this job to run at.
+  Required, defaults to `100`, lowest Que default priority.
+
+An example worker implementation looks like this:
+
+```ruby
+class EmailReceiverJob < Que::Job
+  def run(message)
     mail = Mail::Message.new(message)
 
     puts "New mail from #{mail.from.first}: #{mail.subject}"

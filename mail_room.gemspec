@@ -28,4 +28,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "mail"
   gem.add_development_dependency "letter_opener"
   gem.add_development_dependency "redis"
+  gem.add_development_dependency "pg"
 end
