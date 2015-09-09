@@ -19,7 +19,7 @@ describe MailRoom::Delivery::Que do
 
     it 'stores the message in que_jobs table' do
       PG.stubs(:connect).returns(connection)
-      connection.stubs(:execute)
+      connection.stubs(:exec)
 
       MailRoom::Delivery::Que.new(options).deliver('email')
 
@@ -31,12 +31,14 @@ describe MailRoom::Delivery::Que do
         password: ''
       })
 
-      expect(connection).to have_received(:execute).with(
-        "INSERT INTO que_jobs (priority, job_class, queue, args) VALUES (?, ?, ?, ?)",
-        5,
-        'ParseMailJob',
-        'default',
-        JSON.dump(['email'])
+      expect(connection).to have_received(:exec).with(
+        "INSERT INTO que_jobs (priority, job_class, queue, args) VALUES ($1, $2, $3, $4)",
+        [
+          5,
+          'ParseMailJob',
+          'default',
+          JSON.dump(['email'])
+        ]
       )
     end
   end

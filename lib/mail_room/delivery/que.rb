@@ -52,9 +52,9 @@ module MailRoom
       end
 
       def queue_job(*args)
-        sql = "INSERT INTO que_jobs (priority, job_class, queue, args) VALUES (?, ?, ?, ?)"
+        sql = "INSERT INTO que_jobs (priority, job_class, queue, args) VALUES ($1, $2, $3, $4)"
 
-        connection.execute(sql, options.priority, options.job_class, options.queue, JSON.dump(args))
+        connection.exec(sql, [options.priority, options.job_class, options.queue, JSON.dump(args)])
       end
     end
   end
