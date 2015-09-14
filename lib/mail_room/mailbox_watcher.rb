@@ -4,7 +4,7 @@ module MailRoom
   # Watch a Mailbox
   # @author Tony Pitale
   class MailboxWatcher
-    attr_accessor :idling_thread
+    attr_accessor :idling_thread, :timeout_thread
 
     # Watch a new mailbox
     # @param mailbox [MailRoom::Mailbox] the mailbox to watch
@@ -94,8 +94,19 @@ module MailRoom
 
       @idling = true
 
+      self.timeout_thread = Thread.start do
+        # The IMAP server will close the connection after 30 minutes, so re-idle
+        # every 29 minutes, as suggested by the spec: https://tools.ietf.org/html/rfc2177
+        sleep 29 * 60
+
+        imap.idle_done if idling?
+      end
+      timeout_thread.abort_on_exception = true
+
       imap.idle(&idle_handler)
     ensure
+      timeout_thread.kill if timeout_thread
+      self.timeout_thread = nil
       @idling = false
     end
 
@@ -104,7 +115,9 @@ module MailRoom
       return unless idling?
 
       imap.idle_done
+      
       idling_thread.join
+      self.idling_thread = nil
     end
 
     # run the mailbox watcher
