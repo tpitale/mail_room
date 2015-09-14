@@ -95,8 +95,9 @@ module MailRoom
       @idling = true
 
       self.timeout_thread = Thread.start do
-        # The IMAP server will close the connection after 30 minutes, so re-idle
-        # every 29 minutes, as suggested by the spec: https://tools.ietf.org/html/rfc2177
+        # The IMAP server will close the connection after 30 minutes of inactivity
+        # (which sending IDLE and then nothing technically is), so we re-idle every
+        # 29 minutes, as suggested by the spec: https://tools.ietf.org/html/rfc2177
         sleep 29 * 60
 
         imap.idle_done if idling?
