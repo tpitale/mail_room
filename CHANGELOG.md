@@ -1,3 +1,9 @@
+## mail_room 0.5.1 ##
+
+* Re-idle after 29 minutes to maintain IDLE connection
+
+    *Douwe Maan <@DouweM>*
+
 ## mail_room 0.5.0 ##
 
 * Que delivery method
