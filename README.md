@@ -195,7 +195,7 @@ This setting allows configuration of the IMAP search command sent to the server.
 
 ## IMAP Server Configuration ##
 
-You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), and `ssl` (default: true). 
+You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), `ssl` (default: true), and `start_tls` (default: false).
 
 If you're seeing the error `Please log in via your web browser: https://support.google.com/mail/accounts/answer/78754 (Failure)`, you need to configure your Gmail account to allow less secure apps to access it: https://support.google.com/accounts/answer/6010255.
 

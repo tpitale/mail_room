@@ -37,10 +37,17 @@ describe MailRoom::MailboxWatcher do
   end
 
   describe '#setup' do
+    let(:imap) {stub(:login => true, :select => true)}
+
+    let(:mailbox) {
+      MailRoom::Mailbox.new(:email => 'user1@gmail.com', :password => 'password', :name => 'inbox', )
+    }
+
+    let(:watcher) {
+      MailRoom::MailboxWatcher.new(mailbox)
+    }
+
     it 'logs in and sets the mailbox to watch' do
-      imap = stub(:login => true, :select => true)
-      mailbox = stub(:email => 'user1@gmail.com', :password => 'password', :name => 'inbox')
-      watcher = MailRoom::MailboxWatcher.new(mailbox)
       watcher.stubs(:imap).returns(imap)
 
       watcher.setup
@@ -48,6 +55,20 @@ describe MailRoom::MailboxWatcher do
       imap.should have_received(:login).with('user1@gmail.com', 'password')
       watcher.logged_in?.should eq(true)
       imap.should have_received(:select).with('inbox')
+    end
+
+    context 'with start_tls configured as true' do
+      before(:each) do
+        mailbox.start_tls = true
+        imap.stubs(:starttls)
+        watcher.stubs(:imap).returns(imap)
+      end
+
+      it 'sets up tls session on imap setup' do
+        watcher.setup
+
+        imap.should have_received(:starttls)
+      end
     end
   end
 
