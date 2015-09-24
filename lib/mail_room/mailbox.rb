@@ -6,6 +6,7 @@ module MailRoom
     :host,
     :port,
     :ssl,
+    :start_tls,
     :search_command,
     :name,
     :delete_after_delivery,
@@ -27,6 +28,7 @@ module MailRoom
       :host => 'imap.gmail.com',
       :port => 993,
       :ssl => true,
+      :start_tls => false,
       :delete_after_delivery => false,
       :delivery_options => {}
     }

@@ -65,6 +65,7 @@ module MailRoom
     # log in and set the mailbox
     def setup
       reset
+      start_tls
       log_in
       set_mailbox
     end
@@ -75,6 +76,11 @@ module MailRoom
       @imap = nil
       @logged_in = false
       @idling = false
+    end
+
+    # start a TLS session
+    def start_tls
+      imap.starttls if @mailbox.start_tls
     end
 
     # send the imap login command to google
