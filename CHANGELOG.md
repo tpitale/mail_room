@@ -1,3 +1,9 @@
+## mail_room 0.5.2 ##
+
+* Fix Sidekiq delivery method for non-UTF8 email
+
+    *Douwe Maan <@DouweM>*
+
 ## mail_room 0.5.1 ##
 
 * Re-idle after 29 minutes to maintain IDLE connection

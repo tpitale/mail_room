@@ -1,6 +1,7 @@
 require "redis"
 require "securerandom"
 require "json"
+require "charlock_holmes"
 
 module MailRoom
   module Delivery
@@ -53,13 +54,26 @@ module MailRoom
       def item_for(message)
         {
           'class'       => options.worker,
-          'args'        => [message],
+          'args'        => [utf8_encode_message(message)],
 
           'queue'       => options.queue,
           'jid'         => SecureRandom.hex(12),
           'retry'       => false,
           'enqueued_at' => Time.now.to_f
         }
+      end
+
+      def utf8_encode_message(message)
+        message = message.dup
+
+        message.force_encoding("UTF-8")
+        return message if message.valid_encoding?
+
+        detection = CharlockHolmes::EncodingDetector.detect(message)
+        return message unless detection && detection[:encoding]
+
+        # Convert non-UTF-8 body UTF-8 so it can be dumped as JSON.
+        CharlockHolmes::Converter.convert(message, detection[:encoding], 'UTF-8')
       end
     end
   end
