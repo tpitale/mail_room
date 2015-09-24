@@ -4,6 +4,10 @@
 
     *Douwe Maan <@DouweM>*
 
+* Add StartTLS session support
+
+    *Tony Pitale <@tpitale>*
+
 ## mail_room 0.5.1 ##
 
 * Re-idle after 29 minutes to maintain IDLE connection
