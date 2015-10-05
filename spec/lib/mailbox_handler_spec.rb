@@ -7,16 +7,18 @@ describe MailRoom::MailboxHandler do
 
     it 'fetches and delivers all new messages from ids' do
       imap.stubs(:search).returns([1,2])
-      imap.stubs(:fetch).returns(['message1', 'message2'])
+      message1 = stub(:attr => {'RFC822' => 'message1'})
+      message2 = stub(:attr => {'RFC822' => 'message2'})
+      imap.stubs(:fetch).returns([message1, message2])
       mailbox.stubs(:deliver)
 
       handler = MailRoom::MailboxHandler.new(mailbox, imap)
       handler.process
 
       imap.should have_received(:search).with('UNSEEN')
-      imap.should have_received(:fetch).with([1,2], 'RFC822')
-      mailbox.should have_received(:deliver).with('message1')
-      mailbox.should have_received(:deliver).with('message2')
+      imap.should have_received(:fetch).with([1,2], ['RFC822', 'UID'])
+      mailbox.should have_received(:deliver).with(message1)
+      mailbox.should have_received(:deliver).with(message2)
     end
 
     it 'returns no messages if there are no ids' do

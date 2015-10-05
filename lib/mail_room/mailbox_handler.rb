@@ -14,14 +14,12 @@ module MailRoom
     def process
       # return if idling? || !running?
 
-      new_messages.each do |msg|
-        # puts msg.attr['RFC822']
-
+      new_messages.each do |message|
         # loop over delivery methods and deliver each
-        delivered = @mailbox.deliver(msg)
+        delivered = @mailbox.deliver(message)
 
         if delivered && @mailbox.delete_after_delivery
-          @imap.store(msg.seqno, "+FLAGS", [Net::IMAP::DELETED])
+          @imap.store(message.seqno, "+FLAGS", [Net::IMAP::DELETED])
         end
       end
 
@@ -55,7 +53,7 @@ module MailRoom
     def messages_for_ids(ids)
       return [] if ids.empty?
 
-      @imap.fetch(ids, "RFC822")
+      @imap.fetch(ids, ["RFC822", "UID"])
     end
   end
 end

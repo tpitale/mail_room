@@ -2,11 +2,39 @@ require 'spec_helper'
 
 describe MailRoom::Mailbox do
   describe "#deliver" do
+    context "with arbitration_method of noop" do
+      it 'arbitrates with a Noop instance' do
+        mailbox = MailRoom::Mailbox.new({:arbitration_method => 'noop'})
+        noop = stub(:deliver?)
+        MailRoom::Arbitration['noop'].stubs(:new => noop)
+
+        message = stub(:attr => {'RFC822' => 'a message'})
+
+        mailbox.deliver(message)
+
+        noop.should have_received(:deliver?).with(message)
+      end
+    end
+
+    context "with arbitration_method of redis" do
+      it 'arbitrates with a Redis instance' do
+        mailbox = MailRoom::Mailbox.new({:arbitration_method => 'redis'})
+        redis = stub(:deliver?)
+        MailRoom::Arbitration['redis'].stubs(:new => redis)
+
+        message = stub(:attr => {'RFC822' => 'a message'})
+        
+        mailbox.deliver(message)
+
+        redis.should have_received(:deliver?).with(message)
+      end
+    end
+
     context "with delivery_method of noop" do
       it 'delivers with a Noop instance' do
         mailbox = MailRoom::Mailbox.new({:delivery_method => 'noop'})
         noop = stub(:deliver)
-        MailRoom::Delivery::Noop.stubs(:new => noop)
+        MailRoom::Delivery['noop'].stubs(:new => noop)
 
         mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
 
@@ -18,7 +46,7 @@ describe MailRoom::Mailbox do
       it 'delivers with a Logger instance' do
         mailbox = MailRoom::Mailbox.new({:delivery_method => 'logger'})
         logger = stub(:deliver)
-        MailRoom::Delivery::Logger.stubs(:new => logger)
+        MailRoom::Delivery['logger'].stubs(:new => logger)
 
         mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
 
@@ -30,7 +58,7 @@ describe MailRoom::Mailbox do
       it 'delivers with a Postback instance' do
         mailbox = MailRoom::Mailbox.new({:delivery_method => 'postback'})
         postback = stub(:deliver)
-        MailRoom::Delivery::Postback.stubs(:new => postback)
+        MailRoom::Delivery['postback'].stubs(:new => postback)
 
         mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
 
@@ -42,7 +70,7 @@ describe MailRoom::Mailbox do
       it 'delivers with a LetterOpener instance' do
         mailbox = MailRoom::Mailbox.new({:delivery_method => 'letter_opener'})
         letter_opener = stub(:deliver)
-        MailRoom::Delivery::LetterOpener.stubs(:new => letter_opener)
+        MailRoom::Delivery['letter_opener'].stubs(:new => letter_opener)
 
         mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
 
@@ -54,12 +82,16 @@ describe MailRoom::Mailbox do
       it "doesn't deliver the message" do
         mailbox = MailRoom::Mailbox.new({:delivery_method => 'noop'})
         noop = stub(:deliver)
-        MailRoom::Delivery::Noop.stubs(:new => noop)
+        MailRoom::Delivery['noop'].stubs(:new => noop)
 
         mailbox.deliver(stub(:attr => {'FLAGS' => [:Seen, :Recent]}))
 
         noop.should have_received(:deliver).never
       end
+    end
+
+    describe "arbitration" do
+      # TODO
     end
   end
 end
