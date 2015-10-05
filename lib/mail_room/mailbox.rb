@@ -68,9 +68,32 @@ module MailRoom
       delivery_klass.new(parsed_delivery_options).deliver(message)
     end
 
+    # true, false, or ssl options hash
+    def ssl_options
+      replace_verify_mode(ssl)
+    end
+
     private
     def parsed_delivery_options
       delivery_klass::Options.new(self)
+    end
+
+    def replace_verify_mode(options)
+      return options unless options.is_a?(Hash)
+      return options unless options.has_key?(:verify_mode)
+
+      options[:verify_mode] = case options[:verify_mode]
+      when :none, 'none'
+        OpenSSL::SSL::VERIFY_NONE
+      when :peer, 'peer'
+        OpenSSL::SSL::VERIFY_PEER
+      when :client_once, 'client_once'
+        OpenSSL::SSL::VERIFY_CLIENT_ONCE
+      when :fail_if_no_peer_cert, 'fail_if_no_peer_cert'
+        OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
+      end
+
+      options
     end
   end
 end
