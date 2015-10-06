@@ -43,17 +43,21 @@ module MailRoom
     # search for all new (unseen) message ids
     # @return [Array<Integer>] message ids
     def new_message_ids
-      @imap.search(@mailbox.search_command)
+      uids = @imap.uid_search(@mailbox.search_command)
+      puts "New message ids: #{uids}"
+      uids.select! { |uid| @mailbox.deliver?(uid) }
+      puts "Deliverable uids: #{uids}"
+      uids
     end
 
     # @private
     # fetch the email for all given ids in RFC822 format
     # @param ids [Array<Integer>] list of message ids
     # @return [Array<Net::IMAP::FetchData>] the net/imap messages for the given ids
-    def messages_for_ids(ids)
-      return [] if ids.empty?
+    def messages_for_ids(uids)
+      return [] if uids.empty?
 
-      @imap.fetch(ids, ["RFC822", "UID"])
+      @imap.uid_fetch(uids, "RFC822")
     end
   end
 end

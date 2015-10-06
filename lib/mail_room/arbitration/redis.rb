@@ -23,8 +23,7 @@ module MailRoom
         @options = options
       end
 
-      def deliver?(message)
-        uid = message.attr["UID"]
+      def deliver?(uid)
         key = "delivered:#{uid}"
 
         incr = nil

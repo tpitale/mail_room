@@ -8,11 +8,11 @@ describe MailRoom::Mailbox do
         noop = stub(:deliver?)
         MailRoom::Arbitration['noop'].stubs(:new => noop)
 
-        message = stub(:attr => {'RFC822' => 'a message'})
+        uid = 123
 
-        mailbox.deliver(message)
+        mailbox.deliver?(uid)
 
-        noop.should have_received(:deliver?).with(message)
+        noop.should have_received(:deliver?).with(uid)
       end
     end
 
@@ -22,11 +22,11 @@ describe MailRoom::Mailbox do
         redis = stub(:deliver?)
         MailRoom::Arbitration['redis'].stubs(:new => redis)
 
-        message = stub(:attr => {'RFC822' => 'a message'})
+        uid = 123
         
-        mailbox.deliver(message)
+        mailbox.deliver?(uid)
 
-        redis.should have_received(:deliver?).with(message)
+        redis.should have_received(:deliver?).with(uid)
       end
     end
 

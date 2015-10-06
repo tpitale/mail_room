@@ -62,13 +62,15 @@ module MailRoom
       @arbitrator ||= arbitration_klass.new(parsed_arbitration_options)
     end
 
+    def deliver?(uid)
+      arbitrator.deliver?(uid)
+    end
+
     # deliver the imap email message
     # @param message [Net::IMAP::FetchData]
     def deliver(message)
       body = message.attr['RFC822']
       return true unless body
-
-      return false unless arbitrator.deliver?(message)
 
       delivery.deliver(body)
     end
