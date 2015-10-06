@@ -36,6 +36,10 @@ module MailRoom
           client.expire(key, EXPIRATION)
         end
 
+        # If INCR returns 1, that means the key didn't exist before, which means
+        # we are the first mail_room to try to deliver this message, so we get to.
+        # If we get any other value, another mail_room already (tried to) deliver
+        # the message, so we don't have to anymore.
         incr.value == 1
       end
 
