@@ -1,6 +1,6 @@
 module MailRoom
   module Delivery
-    def self.[](name)
+    def [](name)
       require_relative("./delivery/#{name}")
 
       case name
@@ -18,5 +18,7 @@ module MailRoom
         Delivery::Noop
       end
     end
+
+    module_function :[]
   end
 end

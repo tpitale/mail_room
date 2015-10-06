@@ -1,6 +1,6 @@
 module MailRoom
   module Arbitration
-    def self.[](name)
+    def [](name)
       require_relative("./arbitration/#{name}")
 
       case name
@@ -10,5 +10,7 @@ module MailRoom
         Arbitration::Noop
       end
     end
+
+    module_function :[]
   end
 end

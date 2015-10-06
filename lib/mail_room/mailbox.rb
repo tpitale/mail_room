@@ -46,12 +46,20 @@ module MailRoom
       super(*DEFAULTS.merge(attributes).values_at(*members))
     end
 
+    def delivery_klass
+      Delivery[delivery_method]
+    end
+
+    def arbitration_klass
+      Arbitration[arbitration_method]
+    end
+
     def delivery
-      @delivery ||= Delivery[delivery_method].new(parsed_delivery_options)
+      @delivery ||= delivery_klass.new(parsed_delivery_options)
     end
 
     def arbitrator
-      @arbitrator ||= Arbitration[arbitration_method].new(parsed_arbitration_options)
+      @arbitrator ||= arbitration_klass.new(parsed_arbitration_options)
     end
 
     # deliver the imap email message
@@ -68,11 +76,11 @@ module MailRoom
     private
 
     def parsed_arbitration_options
-      Arbitration[arbitration_method]::Options.new(self)
+      arbitration_klass::Options.new(self)
     end
 
     def parsed_delivery_options
-      Delivery[delivery_method]::Options.new(self)
+      delivery_klass::Options.new(self)
     end
   end
 end
