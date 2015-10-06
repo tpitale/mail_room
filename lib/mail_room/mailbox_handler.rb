@@ -44,9 +44,7 @@ module MailRoom
     # @return [Array<Integer>] message ids
     def new_message_ids
       uids = @imap.uid_search(@mailbox.search_command)
-      puts "New message ids: #{uids}"
       uids.select! { |uid| @mailbox.deliver?(uid) }
-      puts "Deliverable uids: #{uids}"
       uids
     end
 
