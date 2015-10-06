@@ -12,6 +12,9 @@ module MailRoom
         end
       end
 
+      # Expire after 10 minutes so Redis doesn't get filled up with outdated data.
+      EXPIRATION = 600
+
       attr_accessor :options
 
       # Build a new delivery, hold the mailbox configuration
@@ -30,8 +33,7 @@ module MailRoom
           # the MULTI command returns.
           incr = client.incr(key)
 
-          # Expire after 1 minute so Redis doesn't get filled up with outdated data.
-          client.expire(key, 60)
+          client.expire(key, EXPIRATION)
         end
 
         incr.value == 1
