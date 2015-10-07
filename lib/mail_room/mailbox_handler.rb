@@ -43,9 +43,7 @@ module MailRoom
     # search for all new (unseen) message ids
     # @return [Array<Integer>] message ids
     def new_message_ids
-      uids = @imap.uid_search(@mailbox.search_command)
-      uids.select! { |uid| @mailbox.deliver?(uid) }
-      uids
+      @imap.uid_search(@mailbox.search_command).select { |uid| @mailbox.deliver?(uid) }
     end
 
     # @private

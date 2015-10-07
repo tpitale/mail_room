@@ -17,8 +17,6 @@ module MailRoom
 
       attr_accessor :options
 
-      # Build a new delivery, hold the mailbox configuration
-      # @param [MailRoom::Delivery::Sidekiq::Options]
       def initialize(options)
         @options = options
       end

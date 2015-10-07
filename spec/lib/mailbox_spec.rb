@@ -89,9 +89,5 @@ describe MailRoom::Mailbox do
         noop.should have_received(:deliver).never
       end
     end
-
-    describe "arbitration" do
-      # TODO
-    end
   end
 end

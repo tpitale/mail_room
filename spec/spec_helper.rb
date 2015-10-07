@@ -6,6 +6,7 @@ require 'bundler/setup'
 require 'rspec'
 require 'mocha/api'
 require 'bourne'
+require 'fakeredis/rspec'
 
 require File.expand_path('../../lib/mail_room', __FILE__)
 
