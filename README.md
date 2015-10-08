@@ -203,6 +203,16 @@ If you're seeing the error `Please log in via your web browser: https://support.
 
 I suggest running with either upstart or init.d. Check out this wiki page for some example scripts for both: https://github.com/tpitale/mail_room/wiki/Init-Scripts-for-Running-mail_room
 
+## Arbitration ##
+
+When running multiple instances of MailRoom against a single inbox, to try to prevent delivery of the same message multiple times, we can configure Arbitration using Redis.
+
+*TODO: fill in configuration*
+
+**Note:** This will likely never be a _perfect_ system for preventing multiple deliveries of the same message, so I would advise checking the unique `message_id` if you are running in this situation.
+
+**Note:** There are other scenarios for preventing duplication of messages at scale that _may_ be more appropriate in your particular setup. One such example is using multiple inboxes in reply-by-email situations. Another is to use labels and configure a different `SEARCH` command for each instance of MailRoom.
+
 ## Contributing ##
 
 1. Fork it
