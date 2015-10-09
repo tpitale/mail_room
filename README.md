@@ -205,9 +205,27 @@ I suggest running with either upstart or init.d. Check out this wiki page for so
 
 ## Arbitration ##
 
-When running multiple instances of MailRoom against a single inbox, to try to prevent delivery of the same message multiple times, we can configure Arbitration using Redis.
+When running multiple instances of MailRoom against a single mailbox, to try to prevent delivery of the same message multiple times, we can configure Arbitration using Redis.
 
-*TODO: fill in configuration*
+```yaml
+:mailboxes:
+  -
+    :email: "user1@gmail.com"
+    :password: "password"
+    :name: "inbox"
+    :delivery_method: postback
+    :delivery_options:
+      :delivery_url: "http://localhost:3000/inbox"
+      :delivery_token: "abcdefg"
+     
+    :arbitration_method: redis
+    :arbitration_options:
+      # The Redis server to connect with. Defaults to redis://localhost:6379.
+      :redis_url: redis://redis.example.com:6379
+      # The Redis namespace to house the Redis keys under. Optional. 
+      :namespace: mail_room
+
+```
 
 **Note:** This will likely never be a _perfect_ system for preventing multiple deliveries of the same message, so I would advise checking the unique `message_id` if you are running in this situation.
 
