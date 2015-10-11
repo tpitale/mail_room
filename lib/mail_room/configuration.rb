@@ -1,3 +1,5 @@
+require "erb"
+
 module MailRoom
   # Wraps configuration for a set of individual mailboxes with global config
   # @author Tony Pitale
@@ -11,7 +13,7 @@ module MailRoom
 
       if options.has_key?(:config_path)
         begin
-          config_file = YAML.load_file(options[:config_path])
+          config_file = YAML.load(ERB.new(File.read(options[:config_path])).result)
 
           set_mailboxes(config_file[:mailboxes])
         rescue => e
