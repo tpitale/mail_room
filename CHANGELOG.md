@@ -1,3 +1,9 @@
+## mail_room 0.6.1 ##
+
+* ERB parsing of configuration yml file to enable using ENV variables
+
+    *Douwe Maan <@DouweM>*
+
 ## mail_room 0.6.0 ##
 
 * Add redis Arbitration to reduce multiple deliveries of the same message when running multiple MailRoom instances on the same inbox
