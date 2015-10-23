@@ -89,5 +89,13 @@ describe MailRoom::Mailbox do
         noop.should have_received(:deliver).never
       end
     end
+
+    context "with ssl options hash" do
+      it 'replaces verify mode with constant' do
+        mailbox = MailRoom::Mailbox.new({:ssl => {:verify_mode => :none}})
+
+        expect(mailbox.ssl_options).to eq({:verify_mode => OpenSSL::SSL::VERIFY_NONE})
+      end
+    end
   end
 end
