@@ -207,7 +207,9 @@ I suggest running with either upstart or init.d. Check out this wiki page for so
 
 ## Arbitration ##
 
-When running multiple instances of MailRoom against a single mailbox, to try to prevent delivery of the same message multiple times, we can configure Arbitration using Redis.
+When running multiple instances of MailRoom against a single mailbox, to try to prevent delivery of the same message multiple times, we can configure Arbitration using:
+
+### Redis ###
 
 ```yaml
 :mailboxes:
@@ -233,6 +235,31 @@ When running multiple instances of MailRoom against a single mailbox, to try to 
 
 **Note:** There are other scenarios for preventing duplication of messages at scale that _may_ be more appropriate in your particular setup. One such example is using multiple inboxes in reply-by-email situations. Another is to use labels and configure a different `SEARCH` command for each instance of MailRoom.
 
+### PostgreSQL ###
+
+```yaml
+:mailboxes:
+  -
+    :email: "user1@gmail.com"
+    :password: "password"
+    :name: "inbox"
+    :delivery_method: postback
+    :delivery_options:
+      :delivery_url: "http://localhost:3000/inbox"
+      :delivery_token: "abcdefg"
+     
+    :arbitration_method: postgresql
+    :arbitration_options:
+      # The server to connect with. Defaults to localhost
+      :host: 'your.database.domain.com'
+      # The server port. Defaults to 5432
+      :port: 5432
+      :database: 'your_database'
+      :username: 'your_database_user'
+      :password: 'some_secret_password'
+
+```
+
 ## Contributing ##
 
 1. Fork it
@@ -241,13 +268,3 @@ When running multiple instances of MailRoom against a single mailbox, to try to 
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 6. If accepted, ask for commit rights
-
-## TODO ##
-
-1. specs, this is just a (working) proof of concept √
-2. finish code for POSTing to callback with auth √
-3. accept mailbox configuration for one account directly on the commandline; or ask for it
-4. add example rails endpoint, with auth examples
-5. add example configs for upstart/init.d √
-6. log to stdout √
-7. add a development mode that opens in letter_opener by ryanb √
