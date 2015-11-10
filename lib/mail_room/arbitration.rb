@@ -1,11 +1,13 @@
 module MailRoom
   module Arbitration
-    def [](name)
-      require_relative("./arbitration/#{name}")
+    def [](name = nil)
+      require_relative("./arbitration/#{name}") if name
 
       case name
       when "redis"
         Arbitration::Redis
+      when "postgresql"
+        Arbitration::PostgreSQL
       else
         Arbitration::Noop
       end
