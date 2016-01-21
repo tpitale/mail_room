@@ -7,7 +7,7 @@ mail_room is a configuration based process that will idle on IMAP connections an
 * Log the message or open with LetterOpener (Logger or LetterOpener)
 
 [![Build Status](https://travis-ci.org/tpitale/mail_room.png?branch=master)](https://travis-ci.org/tpitale/mail_room)
-[![Code Climate](https://codeclimate.com/github/tpitale/mail_room.png)](https://codeclimate.com/github/tpitale/mail_room)
+[![Code Climate](https://codeclimate.com/github/tpitale/mail_room/badges/gpa.svg)](https://codeclimate.com/github/tpitale/mail_room)
 
 ## Installation ##
 
