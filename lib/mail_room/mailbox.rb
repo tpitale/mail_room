@@ -63,6 +63,8 @@ module MailRoom
     end
 
     def deliver?(uid)
+      MailRoom.logger.info("#{context} Asking #{arbitrator.class.name} if we should deliver #{uid}")
+
       arbitrator.deliver?(uid)
     end
 
@@ -72,12 +74,17 @@ module MailRoom
       body = message.attr['RFC822']
       return true unless body
 
+      MailRoom.logger.info("#{context} Delivering #{message.attr['UID']} through #{delivery.class.name}")
       delivery.deliver(body)
     end
 
     # true, false, or ssl options hash
     def ssl_options
       replace_verify_mode(ssl)
+    end
+
+    def context
+      "[#{self.email}-#{self.name}]:"
     end
 
     private

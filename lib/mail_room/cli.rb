@@ -42,10 +42,12 @@ module MailRoom
     # Start the coordinator running, sets up signal traps
     def start
       Signal.trap(:INT) do
+        logger.info("Interrupt signal received")
         coordinator.running = false
       end
 
       Signal.trap(:TERM) do
+        logger.info("Terminate signal received")
         exit
       end
 

@@ -19,6 +19,7 @@ module MailRoom
         delivered = @mailbox.deliver(message)
 
         if delivered && @mailbox.delete_after_delivery
+          MailRoom.logger.info("#{@mailbox.context} Add DELETED flag to #{message.attr['UID']}")
           @imap.store(message.seqno, "+FLAGS", [Net::IMAP::DELETED])
         end
       end
@@ -43,7 +44,11 @@ module MailRoom
     # search for all new (unseen) message ids
     # @return [Array<Integer>] message ids
     def new_message_ids
-      @imap.uid_search(@mailbox.search_command).select { |uid| @mailbox.deliver?(uid) }
+      all_unread = @imap.uid_search(@mailbox.search_command)
+      MailRoom.logger.info("#{@mailbox.context} #{all_unread.count} new messages with ids: #{all_unread.join(', ')}")
+
+      to_deliver = all_unread.select { |uid| @mailbox.deliver?(uid) }
+      MailRoom.logger.info("#{@mailbox.context} #{to_deliver.count} messages to be delivered by this mailroom instance.\n Their ids: #{all_unread.join(', ')}")
     end
 
     # @private

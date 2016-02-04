@@ -26,7 +26,7 @@ module MailRoom
 
         incr = nil
         redis.multi do |client|
-          # At this point, `incr` is a future, which will get its value after 
+          # At this point, `incr` is a future, which will get its value after
           # the MULTI command returns.
           incr = client.incr(key)
 
@@ -37,7 +37,10 @@ module MailRoom
         # we are the first mail_room to try to deliver this message, so we get to.
         # If we get any other value, another mail_room already (tried to) deliver
         # the message, so we don't have to anymore.
-        incr.value == 1
+        result = incr.value == 1
+        MailRoom.logger.info("Arbitration result for #{uid} =  #{result}")
+
+        result
       end
 
       private

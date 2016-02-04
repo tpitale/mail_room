@@ -73,8 +73,9 @@ describe MailRoom::MailboxWatcher do
   end
 
   describe '#idle' do
-    let(:imap) {stub}
-    let(:watcher) {MailRoom::MailboxWatcher.new(nil)}
+    let(:mailbox) { MailRoom::Mailbox.new(email: "mep@mep.mep", name: "inbox") }
+    let(:imap) { stub }
+    let(:watcher) {MailRoom::MailboxWatcher.new(mailbox) }
 
     before :each do
       watcher.stubs(:imap).returns(imap)
@@ -89,7 +90,7 @@ describe MailRoom::MailboxWatcher do
     end
 
     context "when logged in" do
-      before :each do
+      before do
         imap.stubs(:idle_done)
 
         watcher.stubs(:logged_in?).returns(true)

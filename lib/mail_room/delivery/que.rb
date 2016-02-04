@@ -34,6 +34,7 @@ module MailRoom
       # @param message [String] the email message as a string, RFC822 format
       def deliver(message)
         queue_job(message)
+        MailRoom.logger.info("Message pushed onto Que queue")
       end
 
       private

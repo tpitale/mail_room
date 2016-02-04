@@ -64,9 +64,16 @@ module MailRoom
 
     # log in and set the mailbox
     def setup
+      MailRoom.logger.info("#{@mailbox.context} Setting up watcher")
       reset
+
+      MailRoom.logger.info("#{@mailbox.context} Start TLS session")
       start_tls
+
+      MailRoom.logger.info("#{@mailbox.context} Logging in to the mailbox")
       log_in
+
+      MailRoom.logger.info("#{@mailbox.context} Set the mailbox to #{@mailbox.name}")
       set_mailbox
     end
 
@@ -98,6 +105,7 @@ module MailRoom
     def idle
       return unless ready_to_idle?
 
+      MailRoom.logger.info("#{@mailbox.context} Idling...")
       @idling = true
 
       self.timeout_thread = Thread.start do
@@ -122,7 +130,7 @@ module MailRoom
       return unless idling?
 
       imap.idle_done
-      
+
       idling_thread.join
       self.idling_thread = nil
     end
@@ -146,6 +154,7 @@ module MailRoom
             process_mailbox
           rescue Net::IMAP::Error, IOError => e
             # we've been disconnected, so re-setup
+            MailRoom.logger.warn("#{@mailbox.context} Disconnected")
             setup
           end
         end
@@ -163,6 +172,7 @@ module MailRoom
 
     # trigger the handler to process this mailbox for new messages
     def process_mailbox
+      MailRoom.logger.info("#{@mailbox.context} Processing started")
       handler.process
     end
 

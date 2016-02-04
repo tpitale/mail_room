@@ -29,10 +29,9 @@ module MailRoom
         connection.post do |request|
           request.url @delivery_options.delivery_url
           request.body = message
-          # request.options[:timeout] = 3
-          # request.headers['Content-Type'] = 'text/plain'
         end
 
+        MailRoom.logger.info("Message delivered to #{@delivery_options.delivery_url}")
         true
       end
     end
