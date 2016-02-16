@@ -55,7 +55,7 @@ module MailRoom
       end
 
       if configuration.daemonize
-        Daemons.call do
+        Daemons.call(app_name: "mail_room-#{Rails.env}") do
           coordinator.run
         end.start
       else
