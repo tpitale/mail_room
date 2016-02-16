@@ -14,6 +14,7 @@ module MailRoom
       OptionParser.new do |parser|
         parser.banner = [
           "Usage: #{@name} [-c config_file]\n",
+          "       #{@name} [-d]",
           "       #{@name} --help\n"
         ].compact.join
 
@@ -23,6 +24,10 @@ module MailRoom
 
         parser.on('-q', '--quiet') do
           options[:quiet] = true
+        end
+
+        parser.on('-d', 'Start daemonized') do
+          options[:daemonize] = true
         end
 
         # parser.on("-l", "--log FILE") do |path|
@@ -49,7 +54,13 @@ module MailRoom
         exit
       end
 
-      coordinator.run
+      if configuration.daemonize
+        Daemons.call do
+          coordinator.run
+        end
+      else
+        coordinator.run
+      end
     end
   end
 end

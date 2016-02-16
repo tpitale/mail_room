@@ -10,6 +10,7 @@ module MailRoom
     def initialize(options={})
       self.mailboxes = []
       self.quiet = options.fetch(:quiet, false)
+      self.daemonize = options.fetch(:daemonize, false)
 
       if options.has_key?(:config_path)
         begin
@@ -23,7 +24,7 @@ module MailRoom
     end
 
     # Builds individual mailboxes from YAML configuration
-    # 
+    #
     # @param mailboxes_config
     def set_mailboxes(mailboxes_config)
       mailboxes_config.each do |attributes|
