@@ -9,6 +9,9 @@ mail_room is a configuration based process that will idle on IMAP connections an
 [![Build Status](https://travis-ci.org/tpitale/mail_room.png?branch=master)](https://travis-ci.org/tpitale/mail_room)
 [![Code Climate](https://codeclimate.com/github/tpitale/mail_room/badges/gpa.svg)](https://codeclimate.com/github/tpitale/mail_room)
 
+## About fork ##
+This fork add supply for daemonizing the mail_room gem with the `-d` option.
+
 ## Installation ##
 
 Add this line to your application's Gemfile:
