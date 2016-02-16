@@ -56,10 +56,8 @@ module MailRoom
 
       if configuration.daemonize
         Daemons.call do
-          loop do
-            coordinator.run
-          end
-        end
+          coordinator.run
+        end.start
       else
         coordinator.run
       end

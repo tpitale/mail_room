@@ -19,7 +19,7 @@ module MailRoom
       watchers.each(&:run)
       
       self.running = true
-      
+
       sleep_while_running
     ensure
       quit
