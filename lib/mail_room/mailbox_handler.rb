@@ -49,6 +49,7 @@ module MailRoom
 
       to_deliver = all_unread.select { |uid| @mailbox.deliver?(uid) }
       MailRoom.logger.info("#{@mailbox.context} #{to_deliver.count} messages to be delivered by this mailroom instance.\n Their ids: #{all_unread.join(', ')}")
+      to_deliver
     end
 
     # @private
