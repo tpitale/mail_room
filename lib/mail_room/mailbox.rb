@@ -10,6 +10,7 @@ module MailRoom
     :port,
     :ssl,
     :start_tls,
+    :idle_timeout,
     :search_command,
     :name,
     :delete_after_delivery,
@@ -23,9 +24,17 @@ module MailRoom
     :arbitration_options
   ]
 
+  IdleTimeoutTooLarge = Class.new(RuntimeError)
+
   # Holds configuration for each of the email accounts we wish to monitor
   #   and deliver email to when new emails arrive over imap
   Mailbox = Struct.new(*MAILBOX_FIELDS) do
+    # Keep it to 29 minutes or less
+    # The IMAP serve will close the connection after 30 minutes of inactivity
+    # (which sending IDLE and then nothing technically is), so we re-idle every
+    # 29 minutes, as suggested by the spec: https://tools.ietf.org/html/rfc2177
+    IMAP_IDLE_TIMEOUT = 29 * 60 # 29 minutes in in seconds
+
     # Default attributes for the mailbox configuration
     DEFAULTS = {
       :search_command => 'UNSEEN',
@@ -34,6 +43,7 @@ module MailRoom
       :port => 993,
       :ssl => true,
       :start_tls => false,
+      :idle_timeout => IMAP_IDLE_TIMEOUT,
       :delete_after_delivery => false,
       :delivery_options => {},
       :arbitration_method => 'noop',
@@ -44,6 +54,8 @@ module MailRoom
     # @param attributes [Hash] configuration options
     def initialize(attributes={})
       super(*DEFAULTS.merge(attributes).values_at(*members))
+
+      validate!
     end
 
     def delivery_klass
@@ -78,6 +90,12 @@ module MailRoom
     # true, false, or ssl options hash
     def ssl_options
       replace_verify_mode(ssl)
+    end
+
+    def validate!
+      if self[:idle_timeout] > IMAP_IDLE_TIMEOUT
+        raise IdleTimeoutTooLarge.new("Please use an idle timeout smaller than #{29*60} to prevent IMAP server disconnects")
+      end
     end
 
     private
