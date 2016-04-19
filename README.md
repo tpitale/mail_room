@@ -189,6 +189,11 @@ disabled, you can get the raw string of the email using `request.body.read`.
 I would recommend having the `mail` gem bundled and parse the email using
 `Mail.read_from_string(request.body.read)`.
 
+## idle_timeout ##
+
+By default, the IDLE command will wait for 29 minutes (in order to keep the server connection happy).
+If you'd prefer not to wait that long, you can pass `imap_timeout` in seconds for your mailbox configuration.
+
 ## Search Command ##
 
 This setting allows configuration of the IMAP search command sent to the server. This still defaults 'UNSEEN'. You may find that 'NEW' works better for you.
