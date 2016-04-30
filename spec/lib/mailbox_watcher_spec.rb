@@ -25,14 +25,12 @@ describe MailRoom::MailboxWatcher do
   end
 
   describe '#imap' do
-    let(:mailbox) {MailRoom::Mailbox.new}
-
     it 'builds a new Net::IMAP object' do
-      Net::IMAP.stubs(:new).returns('imap')
+      MailRoom::IMAP.stubs(:new).returns('imap')
 
       MailRoom::MailboxWatcher.new(mailbox).imap.should eq('imap')
 
-      Net::IMAP.should have_received(:new).with('imap.gmail.com', :port => 993, :ssl => true)
+      MailRoom::IMAP.should have_received(:new).with('imap.gmail.com', :port => 993, :ssl => true)
     end
   end
 
@@ -40,7 +38,7 @@ describe MailRoom::MailboxWatcher do
     let(:imap) {stub(:login => true, :select => true)}
 
     let(:mailbox) {
-      MailRoom::Mailbox.new(:email => 'user1@gmail.com', :password => 'password', :name => 'inbox', )
+      MailRoom::Mailbox.new(:email => 'user1@gmail.com', :password => 'password', :name => 'inbox')
     }
 
     let(:watcher) {
@@ -74,7 +72,7 @@ describe MailRoom::MailboxWatcher do
 
   describe '#idle' do
     let(:imap) {stub}
-    let(:watcher) {MailRoom::MailboxWatcher.new(nil)}
+    let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
 
     before :each do
       watcher.stubs(:imap).returns(imap)
