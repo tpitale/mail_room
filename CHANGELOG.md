@@ -1,3 +1,11 @@
+## mail_room 0.7.0 ##
+
+* Backports idle timeout from ruby 2.3.0
+* Sets default to 29 minutes to prevent IMAP disconnects
+* Validates that the timeout does not exceed 29 minutes
+
+    *Tony Pitale <@tpitale>*
+
 ## mail_room 0.6.1 ##
 
 * ERB parsing of configuration yml file to enable using ENV variables
