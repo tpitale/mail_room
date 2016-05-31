@@ -73,6 +73,7 @@ module MailRoom
     # clear disconnected imap
     # reset imap state
     def reset
+      disconnect
       @imap = nil
       @logged_in = false
       @idling = false
@@ -95,6 +96,7 @@ module MailRoom
     end
 
     # maintain an imap idle connection
+    # block for idle_timeout until we stop idling
     def idle
       return unless ready_to_idle?
 
@@ -110,7 +112,7 @@ module MailRoom
       return unless idling?
 
       imap.idle_done
-      
+
       idling_thread.join
       self.idling_thread = nil
     end
@@ -121,22 +123,11 @@ module MailRoom
 
       @running = true
 
-      # prefetch messages before first idle
-      process_mailbox
-
       self.idling_thread = Thread.start do
         while(running?) do
-          begin
-            # block for idle_timeout until we stop idling
-            idle
-
-            # when new messages are ready
-            process_mailbox
-          rescue Net::IMAP::Error, IOError => e
-            # we've been disconnected, so re-setup
-            setup
-          end
+          idle if process_mailbox
         end
+        disconnect
       end
 
       idling_thread.abort_on_exception = true
@@ -146,12 +137,22 @@ module MailRoom
     def quit
       @running = false
       stop_idling
-      # disconnect
     end
 
+    def disconnect
+      @imap.disconnect if @imap
+    end
+
+    # when new messages are ready
     # trigger the handler to process this mailbox for new messages
     def process_mailbox
       handler.process
+      true
+    rescue Net::IMAP::Error, IOError => e
+      warn "Exception in process_mailbox: #{e.class}: #{e.inspect}"
+      # we've been disconnected, so re-setup
+      setup
+      false
     end
 
     private
