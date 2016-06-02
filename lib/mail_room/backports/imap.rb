@@ -28,6 +28,6 @@ module MailRoom
       end
 
       return response
-    end
+    end unless public_method_defined?(:idle)
   end
 end
