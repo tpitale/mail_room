@@ -102,7 +102,9 @@ module MailRoom
 
       @idling = true
 
-      imap.idle(@mailbox.idle_timeout, &idle_handler)
+      protected_call do
+        imap.idle(@mailbox.idle_timeout, &idle_handler)
+      end
     ensure
       @idling = false
     end
@@ -146,19 +148,25 @@ module MailRoom
     # when new messages are ready
     # trigger the handler to process this mailbox for new messages
     def process_mailbox
-      handler.process
-      true
-    rescue Net::IMAP::Error, IOError => e
-      warn "Exception in process_mailbox: #{e.class}: #{e.inspect}"
-      # we've been disconnected, so re-setup
-      setup
-      false
+      protected_call do
+        handler.process
+      end
     end
 
     private
     # @private
     def idle_handler
       lambda {|response| imap.idle_done if message_exists?(response)}
+    end
+
+    def protected_call
+      yield
+      true
+    rescue Net::IMAP::Error, IOError => e
+      warn "Exception in #{caller[1]}: #{e.class}: #{e.inspect}"
+      # we've been disconnected, so re-setup
+      setup
+      false
     end
   end
 end
