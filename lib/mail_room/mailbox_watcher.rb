@@ -163,7 +163,7 @@ module MailRoom
       yield
       true
     rescue Net::IMAP::Error, IOError => e
-      warn "Exception in #{caller[1]}: #{e.class}: #{e.inspect}"
+      warn "#{Time.now} Exception in #{caller[2]}: #{e.class}: #{e.inspect}"
       # we've been disconnected, so re-setup
       setup
       false
