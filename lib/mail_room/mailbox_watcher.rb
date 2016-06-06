@@ -142,7 +142,11 @@ module MailRoom
     end
 
     def disconnect
-      @imap.disconnect if @imap
+      if @imap
+        protected_call do
+          @imap.disconnect
+        end
+      end
     end
 
     # when new messages are ready
