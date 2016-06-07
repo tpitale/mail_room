@@ -142,11 +142,9 @@ module MailRoom
     end
 
     def disconnect
-      if @imap
-        protected_call do
-          @imap.disconnect
-        end
-      end
+      @imap.disconnect if @imap
+    rescue Net::IMAP::Error, IOError => e
+      warn "#{Time.now} Exception in #{caller[1]}: #{e.class}: #{e.inspect}"
     end
 
     # when new messages are ready
