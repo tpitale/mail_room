@@ -144,7 +144,7 @@ module MailRoom
     def disconnect
       @imap.disconnect if @imap
     rescue Net::IMAP::Error, IOError => e
-      warn "#{Time.now} Exception in #{caller[1]}: #{e.class}: #{e.inspect}"
+      warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
     end
 
     # when new messages are ready
@@ -165,7 +165,7 @@ module MailRoom
       yield
       true
     rescue Net::IMAP::Error, IOError => e
-      warn "#{Time.now} Exception in #{caller[2]}: #{e.class}: #{e.inspect}"
+      warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
       # we've been disconnected, so re-setup
       setup
       false
