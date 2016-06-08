@@ -73,7 +73,7 @@ module MailRoom
     # clear disconnected imap
     # reset imap state
     def reset
-      disconnect
+      log_out_and_disconnect
       @imap = nil
       @logged_in = false
       @idling = false
@@ -129,7 +129,7 @@ module MailRoom
         while(running?) do
           idle if process_mailbox
         end
-        disconnect
+        reset
       end
 
       idling_thread.abort_on_exception = true
@@ -141,8 +141,11 @@ module MailRoom
       stop_idling
     end
 
-    def disconnect
-      @imap.disconnect if @imap
+    def log_out_and_disconnect
+      return unless @imap
+
+      @imap.logout
+      @imap.disconnect
     rescue Net::IMAP::Error, IOError => e
       warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
     end
