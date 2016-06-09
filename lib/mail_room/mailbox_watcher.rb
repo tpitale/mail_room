@@ -146,7 +146,7 @@ module MailRoom
 
       @imap.logout
       @imap.disconnect
-    rescue Net::IMAP::Error, IOError => e
+    rescue Net::IMAP::Error, IOError, Errno::EPIPE => e
       warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
     end
 
@@ -167,7 +167,7 @@ module MailRoom
     def protected_call
       yield
       true
-    rescue Net::IMAP::Error, IOError => e
+    rescue Net::IMAP::Error, IOError, Errno::EPIPE => e
       warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
       # we've been disconnected, so re-setup
       setup
