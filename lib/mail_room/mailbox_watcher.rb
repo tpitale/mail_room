@@ -149,7 +149,7 @@ module MailRoom
 
       @imap.logout
       @imap.disconnect
-    rescue RescuedErrors => e
+    rescue *RescuedErrors => e
       warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
     end
 
@@ -170,7 +170,7 @@ module MailRoom
     def protected_call
       yield
       true
-    rescue RescuedErrors => e
+    rescue *RescuedErrors => e
       warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
       # we've been disconnected, so re-setup
       setup
