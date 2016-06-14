@@ -4,6 +4,9 @@ module MailRoom
   # Watch a Mailbox
   # @author Tony Pitale
   class MailboxWatcher
+    RescuedErrors = [Net::IMAP::Error, IOError,
+                     Errno::EPIPE, OpenSSL::SSL::SSLError]
+
     attr_accessor :idling_thread
 
     # Watch a new mailbox
@@ -68,11 +71,13 @@ module MailRoom
       start_tls
       log_in
       set_mailbox
+      @backoff = 1
     end
 
     # clear disconnected imap
     # reset imap state
     def reset
+      log_out_and_disconnect
       @imap = nil
       @logged_in = false
       @idling = false
@@ -95,6 +100,7 @@ module MailRoom
     end
 
     # maintain an imap idle connection
+    # block for idle_timeout until we stop idling
     def idle
       return unless ready_to_idle?
 
@@ -110,7 +116,7 @@ module MailRoom
       return unless idling?
 
       imap.idle_done
-      
+
       idling_thread.join
       self.idling_thread = nil
     end
@@ -121,22 +127,19 @@ module MailRoom
 
       @running = true
 
-      # prefetch messages before first idle
-      process_mailbox
-
       self.idling_thread = Thread.start do
         while(running?) do
-          begin
-            # block for idle_timeout until we stop idling
-            idle
-
-            # when new messages are ready
+          success = protected_call do
             process_mailbox
-          rescue Net::IMAP::Error, IOError => e
-            # we've been disconnected, so re-setup
-            setup
+            idle
+          end if @imap
+
+          unless success
+            sleep(@backoff)
+            protected_setup
           end
         end
+        reset
       end
 
       idling_thread.abort_on_exception = true
@@ -146,9 +149,18 @@ module MailRoom
     def quit
       @running = false
       stop_idling
-      # disconnect
     end
 
+    def log_out_and_disconnect
+      return unless @imap
+
+      protected_call do
+        @imap.logout
+        @imap.disconnect
+      end
+    end
+
+    # when new messages are ready
     # trigger the handler to process this mailbox for new messages
     def process_mailbox
       handler.process
@@ -158,6 +170,18 @@ module MailRoom
     # @private
     def idle_handler
       lambda {|response| imap.idle_done if message_exists?(response)}
+    end
+
+    def protected_setup
+      @backoff *= 2 unless protected_call { setup }
+    end
+
+    def protected_call
+      yield
+      true
+    rescue *RescuedErrors => e
+      warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
+      false
     end
   end
 end

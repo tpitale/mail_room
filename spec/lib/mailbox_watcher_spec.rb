@@ -187,6 +187,7 @@ describe MailRoom::MailboxWatcher do
       Thread.stubs(:start).yields.returns(stub(:abort_on_exception=))
       watcher.stubs(:setup)
       watcher.handler.stubs(:process)
+      watcher.stubs(:log_out_and_disconnect)
     end
 
     it 'sets up' do
@@ -232,7 +233,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.run
 
-      watcher.handler.should have_received(:process).times(2)
+      watcher.handler.should have_received(:process)
     end
   end
 
