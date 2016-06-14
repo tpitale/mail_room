@@ -71,6 +71,7 @@ module MailRoom
       start_tls
       log_in
       set_mailbox
+      @backoff = 1
     end
 
     # clear disconnected imap
@@ -105,9 +106,7 @@ module MailRoom
 
       @idling = true
 
-      protected_call do
-        imap.idle(@mailbox.idle_timeout, &idle_handler)
-      end
+      imap.idle(@mailbox.idle_timeout, &idle_handler)
     ensure
       @idling = false
     end
@@ -130,9 +129,15 @@ module MailRoom
 
       self.idling_thread = Thread.start do
         while(running?) do
-          idle if process_mailbox
-          # we've been disconnected unless @imap, so re-setup
-          protected_call { setup } unless @imap
+          success = protected_call do
+            process_mailbox
+            idle
+          end if @imap
+
+          unless success
+            sleep(@backoff)
+            protected_setup
+          end
         end
         reset
       end
@@ -149,7 +154,7 @@ module MailRoom
     def log_out_and_disconnect
       return unless @imap
 
-      rescued_call do
+      protected_call do
         @imap.logout
         @imap.disconnect
       end
@@ -158,9 +163,7 @@ module MailRoom
     # when new messages are ready
     # trigger the handler to process this mailbox for new messages
     def process_mailbox
-      protected_call do
-        handler.process
-      end
+      handler.process
     end
 
     private
@@ -169,12 +172,15 @@ module MailRoom
       lambda {|response| imap.idle_done if message_exists?(response)}
     end
 
+    def protected_setup
+      @backoff *= 2 unless protected_call { setup }
+    end
+
     def protected_call
       yield
       true
     rescue *RescuedErrors => e
       warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
-      reset
       false
     end
   end
