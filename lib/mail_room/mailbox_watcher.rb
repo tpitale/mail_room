@@ -131,6 +131,8 @@ module MailRoom
       self.idling_thread = Thread.start do
         while(running?) do
           idle if process_mailbox
+          # we've been disconnected unless @imap, so re-setup
+          protected_call { setup } unless @imap
         end
         reset
       end
@@ -147,10 +149,10 @@ module MailRoom
     def log_out_and_disconnect
       return unless @imap
 
-      @imap.logout
-      @imap.disconnect
-    rescue *RescuedErrors => e
-      warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
+      rescued_call do
+        @imap.logout
+        @imap.disconnect
+      end
     end
 
     # when new messages are ready
@@ -172,8 +174,7 @@ module MailRoom
       true
     rescue *RescuedErrors => e
       warn "#{Time.now} #{e.class}: #{e.inspect} in #{caller.take(10)}"
-      # we've been disconnected, so re-setup
-      setup
+      reset
       false
     end
   end
