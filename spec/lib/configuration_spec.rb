@@ -9,7 +9,7 @@ describe MailRoom::Configuration do
 
       configuration = MailRoom::Configuration.new(:config_path => config_path)
 
-      configuration.mailboxes.should eq(['mailbox1', 'mailbox2'])
+      expect(configuration.mailboxes).to eq(['mailbox1', 'mailbox2'])
     end
 
     it 'sets mailboxes to an empty set when config_path is missing' do
@@ -17,9 +17,9 @@ describe MailRoom::Configuration do
 
       configuration = MailRoom::Configuration.new
 
-      configuration.mailboxes.should eq([])
+      expect(configuration.mailboxes).to eq([])
 
-      MailRoom::Mailbox.should have_received(:new).never
+      expect(MailRoom::Mailbox).to have_received(:new).never
     end
   end
 end

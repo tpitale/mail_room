@@ -11,7 +11,7 @@ describe MailRoom::Delivery::Logger do
 
         MailRoom::Delivery::Logger.new(mailbox)
 
-        ::Logger.should have_received(:new).with(STDOUT)
+        expect(::Logger).to have_received(:new).with(STDOUT)
       end
     end
 
@@ -25,8 +25,8 @@ describe MailRoom::Delivery::Logger do
 
         MailRoom::Delivery::Logger.new(mailbox)
 
-        File.should have_received(:open).with('/var/log/mail-room.log', 'a')
-        ::Logger.should have_received(:new).with(file)
+        expect(File).to have_received(:open).with('/var/log/mail-room.log', 'a')
+        expect(::Logger).to have_received(:new).with(file)
       end
     end
   end
@@ -40,7 +40,7 @@ describe MailRoom::Delivery::Logger do
 
       MailRoom::Delivery::Logger.new(mailbox).deliver('a message')
 
-      logger.should have_received(:info).with('a message')
+      expect(logger).to have_received(:info).with('a message')
     end
   end
 end

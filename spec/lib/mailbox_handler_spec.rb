@@ -15,10 +15,10 @@ describe MailRoom::MailboxHandler do
       handler = MailRoom::MailboxHandler.new(mailbox, imap)
       handler.process
 
-      imap.should have_received(:uid_search).with('UNSEEN')
-      imap.should have_received(:uid_fetch).with([1,2], 'RFC822')
-      mailbox.should have_received(:deliver).with(message1)
-      mailbox.should have_received(:deliver).with(message2)
+      expect(imap).to have_received(:uid_search).with('UNSEEN')
+      expect(imap).to have_received(:uid_fetch).with([1,2], 'RFC822')
+      expect(mailbox).to have_received(:deliver).with(message1)
+      expect(mailbox).to have_received(:deliver).with(message2)
     end
 
     it "fetches and delivers all new messages from ids that haven't been processed yet" do
@@ -33,11 +33,11 @@ describe MailRoom::MailboxHandler do
       handler = MailRoom::MailboxHandler.new(mailbox, imap)
       handler.process
 
-      imap.should have_received(:uid_search).with('UNSEEN')
-      imap.should have_received(:uid_fetch).with([2], 'RFC822')
+      expect(imap).to have_received(:uid_search).with('UNSEEN')
+      expect(imap).to have_received(:uid_fetch).with([2], 'RFC822')
 
-      mailbox.should have_received(:deliver).with(message1).never
-      mailbox.should have_received(:deliver).with(message2)
+      expect(mailbox).to have_received(:deliver).with(message1).never
+      expect(mailbox).to have_received(:deliver).with(message2)
     end
 
     it 'returns no messages if there are no ids' do
@@ -49,9 +49,9 @@ describe MailRoom::MailboxHandler do
       handler = MailRoom::MailboxHandler.new(mailbox, imap)
       handler.process
 
-      imap.should have_received(:uid_search).with('NEW')
-      imap.should have_received(:uid_fetch).never
-      mailbox.should have_received(:deliver).never
+      expect(imap).to have_received(:uid_search).with('NEW')
+      expect(imap).to have_received(:uid_fetch).never
+      expect(mailbox).to have_received(:deliver).never
     end
   end
 end

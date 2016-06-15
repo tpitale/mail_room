@@ -12,7 +12,7 @@ describe MailRoom::Mailbox do
 
         mailbox.deliver?(uid)
 
-        noop.should have_received(:deliver?).with(uid)
+        expect(noop).to have_received(:deliver?).with(uid)
       end
     end
 
@@ -26,7 +26,7 @@ describe MailRoom::Mailbox do
         
         mailbox.deliver?(uid)
 
-        redis.should have_received(:deliver?).with(uid)
+        expect(redis).to have_received(:deliver?).with(uid)
       end
     end
 
@@ -38,7 +38,7 @@ describe MailRoom::Mailbox do
 
         mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
 
-        noop.should have_received(:deliver).with('a message')
+        expect(noop).to have_received(:deliver).with('a message')
       end
     end
 
@@ -50,7 +50,7 @@ describe MailRoom::Mailbox do
 
         mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
 
-        logger.should have_received(:deliver).with('a message')
+        expect(logger).to have_received(:deliver).with('a message')
       end
     end
 
@@ -62,7 +62,7 @@ describe MailRoom::Mailbox do
 
         mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
 
-        postback.should have_received(:deliver).with('a message')
+        expect(postback).to have_received(:deliver).with('a message')
       end
     end
 
@@ -74,7 +74,7 @@ describe MailRoom::Mailbox do
 
         mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
 
-        letter_opener.should have_received(:deliver).with('a message')
+        expect(letter_opener).to have_received(:deliver).with('a message')
       end
     end
 
@@ -86,7 +86,7 @@ describe MailRoom::Mailbox do
 
         mailbox.deliver(stub(:attr => {'FLAGS' => [:Seen, :Recent]}))
 
-        noop.should have_received(:deliver).never
+        expect(noop).to have_received(:deliver).never
       end
     end
 
