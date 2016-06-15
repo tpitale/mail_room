@@ -74,6 +74,7 @@ module MailRoom
     # reset imap state
     def reset
       @imap = nil
+      @handler = nil
       @logged_in = false
       @idling = false
     end
