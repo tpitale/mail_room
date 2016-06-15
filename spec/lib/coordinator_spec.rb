@@ -7,15 +7,15 @@ describe MailRoom::Coordinator do
 
       coordinator = MailRoom::Coordinator.new(['mailbox1', 'mailbox2'])
 
-      coordinator.watchers.should eq(['watcher1', 'watcher2'])
+      expect(coordinator.watchers).to eq(['watcher1', 'watcher2'])
 
-      MailRoom::MailboxWatcher.should have_received(:new).with('mailbox1')
-      MailRoom::MailboxWatcher.should have_received(:new).with('mailbox2')
+      expect(MailRoom::MailboxWatcher).to have_received(:new).with('mailbox1')
+      expect(MailRoom::MailboxWatcher).to have_received(:new).with('mailbox2')
     end
 
     it 'makes no watchers when mailboxes is empty' do
       coordinator = MailRoom::Coordinator.new([])
-      coordinator.watchers.should eq([])
+      expect(coordinator.watchers).to eq([])
     end
   end
 
@@ -28,8 +28,8 @@ describe MailRoom::Coordinator do
       coordinator = MailRoom::Coordinator.new(['mailbox1'])
       coordinator.stubs(:sleep_while_running)
       coordinator.run
-      watcher.should have_received(:run)
-      watcher.should have_received(:quit)
+      expect(watcher).to have_received(:run)
+      expect(watcher).to have_received(:quit)
     end
     
     it 'should go to sleep after running watchers' do
@@ -37,15 +37,15 @@ describe MailRoom::Coordinator do
       coordinator.stubs(:running=)
       coordinator.stubs(:running?).returns(false)
       coordinator.run
-      coordinator.should have_received(:running=).with(true)
-      coordinator.should have_received(:running?)
+      expect(coordinator).to have_received(:running=).with(true)
+      expect(coordinator).to have_received(:running?)
     end
 
     it 'should set attribute running to true' do
       coordinator = MailRoom::Coordinator.new([])
       coordinator.stubs(:sleep_while_running)
       coordinator.run
-      coordinator.running.should eq(true)
+      expect(coordinator.running).to eq(true)
     end
   end
 
@@ -55,7 +55,7 @@ describe MailRoom::Coordinator do
       MailRoom::MailboxWatcher.stubs(:new).returns(watcher)
       coordinator = MailRoom::Coordinator.new(['mailbox1'])
       coordinator.quit
-      watcher.should have_received(:quit)
+      expect(watcher).to have_received(:quit)
     end
   end
 end

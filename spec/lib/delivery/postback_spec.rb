@@ -21,11 +21,11 @@ describe MailRoom::Delivery::Postback do
 
       MailRoom::Delivery::Postback.new(mailbox).deliver('a message')
 
-      connection.should have_received(:token_auth).with('abcdefg')
-      connection.should have_received(:post)
+      expect(connection).to have_received(:token_auth).with('abcdefg')
+      expect(connection).to have_received(:post)
 
-      request.should have_received(:url).with('http://localhost/inbox')
-      request.should have_received(:body=).with('a message')
+      expect(request).to have_received(:url).with('http://localhost/inbox')
+      expect(request).to have_received(:body=).with('a message')
     end
   end
 end

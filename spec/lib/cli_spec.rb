@@ -14,13 +14,13 @@ describe MailRoom::CLI do
     end
 
     it 'parses arguments into configuration' do
-      MailRoom::CLI.new(args).configuration.should eq(configuration)
-      MailRoom::Configuration.should have_received(:new).with({:config_path => 'a path'})
+      expect(MailRoom::CLI.new(args).configuration).to eq(configuration)
+      expect(MailRoom::Configuration).to have_received(:new).with({:config_path => 'a path'})
     end
 
     it 'creates a new coordinator with configuration' do
-      MailRoom::CLI.new(args).coordinator.should eq(coordinator)
-      MailRoom::Coordinator.should have_received(:new).with(configuration.mailboxes)
+      expect(MailRoom::CLI.new(args).coordinator).to eq(coordinator)
+      expect(MailRoom::Coordinator).to have_received(:new).with(configuration.mailboxes)
     end
   end
 
@@ -35,7 +35,7 @@ describe MailRoom::CLI do
     it 'starts running the coordinator' do
       cli.start
 
-      coordinator.should have_received(:run)
+      expect(coordinator).to have_received(:run)
     end
   end
 end

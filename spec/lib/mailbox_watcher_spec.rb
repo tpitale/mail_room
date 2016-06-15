@@ -6,21 +6,21 @@ describe MailRoom::MailboxWatcher do
   describe '#running?' do
     it 'is false by default' do
       watcher = MailRoom::MailboxWatcher.new(mailbox)
-      watcher.running?.should eq(false)
+      expect(watcher.running?).to eq(false)
     end
   end
 
   describe '#logged_in?' do
     it 'is false by default' do
       watcher = MailRoom::MailboxWatcher.new(mailbox)
-      watcher.logged_in?.should eq(false)
+      expect(watcher.logged_in?).to eq(false)
     end
   end
 
   describe '#idling?' do
     it 'is false by default' do
       watcher = MailRoom::MailboxWatcher.new(mailbox)
-      watcher.idling?.should eq(false)
+      expect(watcher.idling?).to eq(false)
     end
   end
 
@@ -28,9 +28,9 @@ describe MailRoom::MailboxWatcher do
     it 'builds a new Net::IMAP object' do
       MailRoom::IMAP.stubs(:new).returns('imap')
 
-      MailRoom::MailboxWatcher.new(mailbox).imap.should eq('imap')
+      expect(MailRoom::MailboxWatcher.new(mailbox).imap).to eq('imap')
 
-      MailRoom::IMAP.should have_received(:new).with('imap.gmail.com', :port => 993, :ssl => true)
+      expect(MailRoom::IMAP).to have_received(:new).with('imap.gmail.com', :port => 993, :ssl => true)
     end
   end
 
@@ -50,9 +50,9 @@ describe MailRoom::MailboxWatcher do
 
       watcher.setup
 
-      imap.should have_received(:login).with('user1@gmail.com', 'password')
-      watcher.logged_in?.should eq(true)
-      imap.should have_received(:select).with('inbox')
+      expect(imap).to have_received(:login).with('user1@gmail.com', 'password')
+      expect(watcher.logged_in?).to eq(true)
+      expect(imap).to have_received(:select).with('inbox')
     end
 
     context 'with start_tls configured as true' do
@@ -65,7 +65,7 @@ describe MailRoom::MailboxWatcher do
       it 'sets up tls session on imap setup' do
         watcher.setup
 
-        imap.should have_received(:starttls)
+        expect(imap).to have_received(:starttls)
       end
     end
   end
@@ -83,7 +83,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.idle
 
-      imap.should have_received(:idle).never
+      expect(imap).to have_received(:idle).never
     end
 
     context "when logged in" do
@@ -99,8 +99,8 @@ describe MailRoom::MailboxWatcher do
 
         watcher.idle
 
-        imap.should have_received(:idle)
-        imap.should have_received(:idle_done)
+        expect(imap).to have_received(:idle)
+        expect(imap).to have_received(:idle_done)
       end
 
       it 'does not finish idling when response is not EXISTS' do
@@ -109,8 +109,8 @@ describe MailRoom::MailboxWatcher do
 
         watcher.idle
 
-        imap.should have_received(:idle)
-        imap.should have_received(:idle_done).never
+        expect(imap).to have_received(:idle)
+        expect(imap).to have_received(:idle_done).never
       end
     end
   end
@@ -126,7 +126,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.process_mailbox
 
-      MailRoom::MailboxHandler.should have_received(:new).with(mailbox, imap)
+      expect(MailRoom::MailboxHandler).to have_received(:new).with(mailbox, imap)
     end
 
     it 'processes with the handler' do
@@ -135,7 +135,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.process_mailbox
 
-      handler.should have_received(:process)
+      expect(handler).to have_received(:process)
     end
   end
 
@@ -156,8 +156,8 @@ describe MailRoom::MailboxWatcher do
 
       watcher.stop_idling
 
-      imap.should have_received(:idle_done).never
-      idling_thread.should have_received(:join).never
+      expect(imap).to have_received(:idle_done).never
+      expect(idling_thread).to have_received(:join).never
     end
 
     context "when idling" do
@@ -169,12 +169,12 @@ describe MailRoom::MailboxWatcher do
 
       it 'stops the idle' do
         watcher.stop_idling
-        imap.should have_received(:idle_done)
+        expect(imap).to have_received(:idle_done)
       end
 
       it 'waits on the idling_thread to finish' do
         watcher.stop_idling
-        idling_thread.should have_received(:join)
+        expect(idling_thread).to have_received(:join)
       end
     end
   end
@@ -194,7 +194,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.run
 
-      watcher.should have_received(:setup)
+      expect(watcher).to have_received(:setup)
     end
 
     it 'starts a thread for idling' do
@@ -202,7 +202,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.run
 
-      Thread.should have_received(:start)
+      expect(Thread).to have_received(:start)
     end
 
     it 'loops while running' do
@@ -212,7 +212,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.run
 
-      watcher.should have_received(:running?).times(2)
+      expect(watcher).to have_received(:running?).times(2)
     end
 
     it 'idles' do
@@ -222,7 +222,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.run
 
-      watcher.should have_received(:idle).once
+      expect(watcher).to have_received(:idle).once
     end
 
     it 'processes messages' do
@@ -232,7 +232,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.run
 
-      watcher.handler.should have_received(:process).times(2)
+      expect(watcher.handler).to have_received(:process).times(2)
     end
   end
 
@@ -244,7 +244,7 @@ describe MailRoom::MailboxWatcher do
 
       watcher.quit
 
-      watcher.should have_received(:stop_idling)
+      expect(watcher).to have_received(:stop_idling)
     end
   end
 end
