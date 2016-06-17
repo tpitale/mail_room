@@ -12,6 +12,7 @@ module MailRoom
       @mailbox = mailbox
 
       @running = false
+      @connection = nil
     end
 
     # are we running?
@@ -37,7 +38,7 @@ module MailRoom
       watching_thread.abort_on_exception = true
     end
 
-    # stop running, cleanup
+    # stop running, cleanup connection
     def quit
       @running = false
 

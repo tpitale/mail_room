@@ -11,7 +11,7 @@ describe MailRoom::MailboxWatcher do
   end
 
   describe '#run' do
-    let(:imap) {stub(login: true, select: true)}
+    let(:imap) {stub(:login => true, :select => true)}
     let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
 
     before :each do
@@ -28,6 +28,7 @@ describe MailRoom::MailboxWatcher do
       watcher.stubs(:running?).returns(true).then.returns(false)
 
       watcher.run
+      watcher.watching_thread.join # wait for finishing run
 
       expect(watcher).to have_received(:running?).times(2)
       expect(connection).to have_received(:wait).once
