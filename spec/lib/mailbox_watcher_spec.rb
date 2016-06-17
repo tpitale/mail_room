@@ -36,7 +36,7 @@ describe MailRoom::MailboxWatcher do
   end
 
   describe '#quit' do
-    let(:imap) {stub(login: true, select: true)}
+    let(:imap) {stub(:login => true, :select => true)}
     let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
 
     before :each do
