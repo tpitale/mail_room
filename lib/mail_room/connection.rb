@@ -51,6 +51,7 @@ module MailRoom
         process_mailbox
       rescue Net::IMAP::Error, IOError
         reset
+        setup
       end
     end
 
@@ -154,7 +155,8 @@ module MailRoom
     # search for all new (unseen) message ids
     # @return [Array<Integer>] message ids
     def new_message_ids
-      @imap.uid_search(@mailbox.search_command).select { |uid| @mailbox.deliver?(uid) }
+      # uid_search still leaves messages UNSEEN
+      imap.uid_search(@mailbox.search_command).select { |uid| @mailbox.deliver?(uid) }
     end
 
     # @private
@@ -164,7 +166,8 @@ module MailRoom
     def messages_for_ids(uids)
       return [] if uids.empty?
 
-      @imap.uid_fetch(uids, "RFC822")
+      # uid_fetch marks as SEEN, will not be re-fetched for UNSEEN
+      imap.uid_fetch(uids, "RFC822")
     end
   end
 end
