@@ -33,6 +33,8 @@ module MailRoom
     private
     # @private
     def sleep_while_running
+      # do we need to sweep for dead watchers?
+      # or do we let the mailbox rebuild connections
       while(running?) do; sleep 1; end
     end
   end
