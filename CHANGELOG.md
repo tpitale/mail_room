@@ -1,3 +1,9 @@
+## mail_room 0.8.0 ##
+
+* Rework the mailbox watcher and handler into a new Connection class to abstract away IMAP handling details
+
+    *Tony Pitale <@tpitale>*
+
 ## mail_room 0.7.0 ##
 
 * Backports idle timeout from ruby 2.3.0
