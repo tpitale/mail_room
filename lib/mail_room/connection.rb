@@ -126,11 +126,13 @@ module MailRoom
     def process_mailbox
       return unless @new_message_handler
 
-      new_messages.map do |message|
-        [@new_message_handler.call(message), message]
-      end.each do |success, message|
-        scrub(message) if success
-      end
+      msgs = new_messages
+
+      msgs.
+        map(&@new_message_handler). # deliver each new message, collect success
+        zip(msgs). # include messages with success
+        select(&:first).map(&:last). # filter failed deliveries, collect message
+        each {|message| scrub(message)} # scrub delivered messages
     end
 
     def scrub(message)
