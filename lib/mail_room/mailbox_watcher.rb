@@ -47,7 +47,9 @@ module MailRoom
         @connection = nil
       end
 
-      watching_thread.join
+      if self.watching_thread
+        self.watching_thread.join
+      end
     end
 
     private
