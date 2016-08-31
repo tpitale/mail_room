@@ -1,3 +1,9 @@
+## mail_room 0.8.1 ##
+
+* Check watching thread exists before joining - PR#78
+
+    *Michal Galet <@galet>*
+
 ## mail_room 0.8.0 ##
 
 * Rework the mailbox watcher and handler into a new Connection class to abstract away IMAP handling details
