@@ -3,12 +3,13 @@ require "redis"
 module MailRoom
   module Arbitration
     class Redis
-      Options = Struct.new(:redis_url, :namespace) do
+      Options = Struct.new(:redis_url, :namespace, :sentinels) do
         def initialize(mailbox)
           redis_url = mailbox.arbitration_options[:redis_url] || "redis://localhost:6379"
           namespace = mailbox.arbitration_options[:namespace]
+          sentinels = mailbox.arbitration_options[:sentinels]
 
-          super(redis_url, namespace)
+          super(redis_url, namespace, sentinels)
         end
       end
 
@@ -26,7 +27,7 @@ module MailRoom
 
         incr = nil
         redis.multi do |client|
-          # At this point, `incr` is a future, which will get its value after 
+          # At this point, `incr` is a future, which will get its value after
           # the MULTI command returns.
           incr = client.incr(key)
 
@@ -44,7 +45,12 @@ module MailRoom
 
       def redis
         @redis ||= begin
-          redis = ::Redis.new(url: options.redis_url)
+          sentinels = options.sentinels
+          if sentinels
+            redis = ::Redis.new(url: options.redis_url, sentinels: sentinels)
+          else
+            redis = ::Redis.new(url: options.redis_url)
+          end
 
           namespace = options.namespace
           if namespace
