@@ -50,6 +50,7 @@ describe MailRoom::Delivery::Sidekiq do
     end
 
     context 'when sentinel is specified' do
+      let(:redis_url) { 'redis://:mypassword@sentinel-master:6379' }
       let(:sentinels) { [host: '10.0.0.1', port: '26379'] }
       let(:mailbox) {
         MailRoom::Mailbox.new(
@@ -65,6 +66,8 @@ describe MailRoom::Delivery::Sidekiq do
 
       it 'client has same specified sentinel params' do
         expect(redis.client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
+        expect(redis.client.options[:host]).to eq('sentinel-master')
+        expect(redis.client.options[:password]).to eq('mypassword')
         expect(redis.client.options[:sentinels]).to eq(sentinels)
       end
     end

@@ -103,10 +103,12 @@ describe MailRoom::Arbitration::Redis do
     end
 
     context 'when sentinel is present' do
+      let(:redis_url) { 'redis://:mypassword@sentinel-master:6379' }
       let(:sentinels) { [host: '10.0.0.1', port: '26379'] }
       let(:mailbox) {
         MailRoom::Mailbox.new(
           arbitration_options: {
+            redis_url: redis_url,
             sentinels: sentinels
           }
         )
@@ -116,6 +118,8 @@ describe MailRoom::Arbitration::Redis do
 
       it 'client has same specified sentinel params' do
         expect(redis.client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
+        expect(redis.client.options[:host]).to eq('sentinel-master')
+        expect(redis.client.options[:password]).to eq('mypassword')
         expect(redis.client.options[:sentinels]).to eq(sentinels)
       end
     end
