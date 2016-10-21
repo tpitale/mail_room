@@ -42,11 +42,10 @@ module MailRoom
 
       def client
         sentinels = options.sentinels
-        if sentinels
-          client = Redis.new(url: options.redis_url, sentinels: sentinels)
-        else
-          client = Redis.new(url: options.redis_url)
-        end
+        redis_options = { url: options.redis_url }
+        redis_options[:sentinels] = sentinels if sentinels
+
+        redis = ::Redis.new(redis_options)
 
         namespace = options.namespace
         if namespace
