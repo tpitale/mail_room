@@ -224,19 +224,56 @@ When running multiple instances of MailRoom against a single mailbox, to try to 
     :delivery_options:
       :delivery_url: "http://localhost:3000/inbox"
       :delivery_token: "abcdefg"
-     
+
     :arbitration_method: redis
     :arbitration_options:
       # The Redis server to connect with. Defaults to redis://localhost:6379.
       :redis_url: redis://redis.example.com:6379
-      # The Redis namespace to house the Redis keys under. Optional. 
+      # The Redis namespace to house the Redis keys under. Optional.
       :namespace: mail_room
+  -
+    :email: "user2@gmail.com"
+    :password: "password"
+    :name: "inbox"
+    :delivery_method: postback
+    :delivery_options:
+      :delivery_url: "http://localhost:3000/inbox"
+      :delivery_token: "abcdefg"
 
+    :arbitration_method: redis
+    :arbitration_options:
+      # When pointing to sentinel, follow this sintax for redis URLs:
+      # redis://:<password>@<master-name>/
+      :redis_url: redis://:password@my-redis-sentinel/
+      :sentinels:
+        -
+          :host: 127.0.0.1
+          :port: 26379
+      # The Redis namespace to house the Redis keys under. Optional.
+      :namespace: mail_room
 ```
 
 **Note:** This will likely never be a _perfect_ system for preventing multiple deliveries of the same message, so I would advise checking the unique `message_id` if you are running in this situation.
 
 **Note:** There are other scenarios for preventing duplication of messages at scale that _may_ be more appropriate in your particular setup. One such example is using multiple inboxes in reply-by-email situations. Another is to use labels and configure a different `SEARCH` command for each instance of MailRoom.
+
+## Sentinel Support
+
+Redis Sentinel provides high availability for Redis. Please read their [documentation](http://redis.io/topics/sentinel)
+first, before enabling it with mail_room.
+
+To connect to a Sentinel, you need to setup authentication to both sentinels and redis daemons first, and make sure
+both are binding to a reachable IP address.
+
+In mail_room, when you are connecting to a Sentinel, you have to inform the `master-name` and the `password` through
+`redis_url` param, following this syntax:
+
+```
+redis://:<password>@<master-name>/
+```
+
+You also have to inform at least one pair of `host` and `port` for a sentinel in your cluster.
+To have a minimum reliable setup, you need at least `3` sentinel nodes and `3` redis servers (1 master, 2 slaves).
 
 ## Contributing ##
 

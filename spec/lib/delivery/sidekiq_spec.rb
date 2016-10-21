@@ -51,7 +51,7 @@ describe MailRoom::Delivery::Sidekiq do
 
     context 'when sentinel is specified' do
       let(:redis_url) { 'redis://:mypassword@sentinel-master:6379' }
-      let(:sentinels) { [host: '10.0.0.1', port: '26379'] }
+      let(:sentinels) { [{ host: '10.0.0.1', port: '26379' }] }
       let(:mailbox) {
         MailRoom::Mailbox.new(
           delivery_method: :sidekiq,
