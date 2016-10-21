@@ -44,7 +44,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :delivery_options:
       :delivery_url: "http://localhost:3000/inbox"
       :delivery_token: "abcdefg"
-    
+
   -
     :email: "user2@gmail.com"
     :password: "password"
@@ -76,6 +76,20 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :delivery_options:
       :redis_url: redis://localhost:6379
       :worker: EmailReceiverWorker
+  -
+    :email: "user6@gmail.com"
+    :password: "password"
+    :name: "inbox"
+    :delivery_method: sidekiq
+    :delivery_options:
+      # When pointing to sentinel, follow this sintax for redis URLs:
+      # redis://:<password>@<master-name>/
+      :redis_url: redis://:password@my-redis-sentinel/
+      :sentinels:
+        -
+          :host: 127.0.0.1
+          :port: 26379
+      :worker: EmailReceiverWorker
 ```
 
 ## delivery_method ##
@@ -86,12 +100,12 @@ Requires `faraday` gem be installed.
 
 *NOTE:* If you're using Ruby `>= 2.0`, you'll need to use Faraday from `>= 0.8.9`. Versions before this seem to have some weird behavior with `mail_room`.
 
-The default delivery method, requires `delivery_url` and `delivery_token` in 
+The default delivery method, requires `delivery_url` and `delivery_token` in
 configuration.
 
-As the postback is essentially using your app as if it were an API endpoint, 
-you may need to disable forgery protection as you would with a JSON API. In 
-our case, the postback is plaintext, but the protection will still need to be 
+As the postback is essentially using your app as if it were an API endpoint,
+you may need to disable forgery protection as you would with a JSON API. In
+our case, the postback is plaintext, but the protection will still need to be
 disabled.
 
 ### sidekiq ###
@@ -105,6 +119,8 @@ Configured with `:delivery_method: sidekiq`.
 Delivery options:
 - **redis_url**: The Redis server to connect with. Use the same Redis URL that's used to configure Sidekiq.
   Required, defaults to `redis://localhost:6379`.
+- **sentinels**: A list of sentinels servers used to provide HA to Redis. (see [Sentinel Support](#sentinel-support))
+  Optional.
 - **namespace**: The Redis namespace Sidekiq works under. Use the same Redis namespace that's used to configure Sidekiq.
   Optional.
 - **queue**: The Sidekiq queue the job is pushed onto. Make sure Sidekiq actually reads off this queue.
