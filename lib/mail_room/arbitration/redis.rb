@@ -26,12 +26,12 @@ module MailRoom
         key = "delivered:#{uid}"
 
         incr = nil
-        redis.multi do |client|
+        client.multi do |c|
           # At this point, `incr` is a future, which will get its value after
           # the MULTI command returns.
-          incr = client.incr(key)
+          incr = c.incr(key)
 
-          client.expire(key, EXPIRATION)
+          c.expire(key, EXPIRATION)
         end
 
         # If INCR returns 1, that means the key didn't exist before, which means
@@ -43,8 +43,8 @@ module MailRoom
 
       private
 
-      def redis
-        @redis ||= begin
+      def client
+        @client ||= begin
           sentinels = options.sentinels
           redis_options = { url: options.redis_url }
           redis_options[:sentinels] = sentinels if sentinels
