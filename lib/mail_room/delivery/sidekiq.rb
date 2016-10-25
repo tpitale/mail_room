@@ -41,18 +41,20 @@ module MailRoom
       private
 
       def client
-        sentinels = options.sentinels
-        redis_options = { url: options.redis_url }
-        redis_options[:sentinels] = sentinels if sentinels
+        @client ||= begin
+          sentinels = options.sentinels
+          redis_options = { url: options.redis_url }
+          redis_options[:sentinels] = sentinels if sentinels
 
-        client = ::Redis.new(redis_options)
+          redis = ::Redis.new(redis_options)
 
-        namespace = options.namespace
-        if namespace
-          require 'redis/namespace'
-          Redis::Namespace.new(namespace, redis: client)
-        else
-          client
+          namespace = options.namespace
+          if namespace
+            require 'redis/namespace'
+            Redis::Namespace.new(namespace, redis: redis)
+          else
+            redis
+          end
         end
       end
 
