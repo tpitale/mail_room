@@ -1,3 +1,9 @@
+## mail_room 0.9.0 ##
+
+* Redis Sentinel configuration support - PR#79
+
+    *Gabriel Mazetto <@brodock>*
+
 ## mail_room 0.8.1 ##
 
 * Check watching thread exists before joining - PR#78
