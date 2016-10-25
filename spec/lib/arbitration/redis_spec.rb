@@ -13,7 +13,7 @@ describe MailRoom::Arbitration::Redis do
   subject       { described_class.new(options) }
 
   # Private, but we don't care.
-  let(:redis) { subject.send(:redis) }
+  let(:client) { subject.send(:client) }
 
   describe '#deliver?' do
     context "when called the first time" do
@@ -24,13 +24,13 @@ describe MailRoom::Arbitration::Redis do
       it "increments the delivered flag" do
         subject.deliver?(123)
 
-        expect(redis.get("delivered:123")).to eq("1")
+        expect(client.get("delivered:123")).to eq("1")
       end
 
       it "sets an expiration on the delivered flag" do
         subject.deliver?(123)
 
-        expect(redis.ttl("delivered:123")).to be > 0
+        expect(client.ttl("delivered:123")).to be > 0
       end
     end
 
@@ -46,7 +46,7 @@ describe MailRoom::Arbitration::Redis do
       it "increments the delivered flag" do
         subject.deliver?(123)
 
-        expect(redis.get("delivered:123")).to eq("2")
+        expect(client.get("delivered:123")).to eq("2")
       end
     end
 
@@ -75,11 +75,11 @@ describe MailRoom::Arbitration::Redis do
       it 'client has same specified url' do
         subject.deliver?(123)
 
-        expect(redis.options[:url]).to eq redis_url
+        expect(client.options[:url]).to eq redis_url
       end
 
       it 'client is a instance of Redis class' do
-        expect(redis).to be_a Redis
+        expect(client).to be_a Redis
       end
     end
 
@@ -94,11 +94,11 @@ describe MailRoom::Arbitration::Redis do
       }
 
       it 'client has same specified namespace' do
-        expect(redis.namespace).to eq(namespace)
+        expect(client.namespace).to eq(namespace)
       end
 
       it 'client is a instance of RedisNamespace class' do
-        expect(redis).to be_a ::Redis::Namespace
+        expect(client).to be_a ::Redis::Namespace
       end
     end
 
@@ -117,10 +117,10 @@ describe MailRoom::Arbitration::Redis do
       before { ::Redis::Client::Connector::Sentinel.any_instance.stubs(:resolve).returns(sentinels) }
 
       it 'client has same specified sentinel params' do
-        expect(redis.client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
-        expect(redis.client.options[:host]).to eq('sentinel-master')
-        expect(redis.client.options[:password]).to eq('mypassword')
-        expect(redis.client.options[:sentinels]).to eq(sentinels)
+        expect(client.client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
+        expect(client.client.options[:host]).to eq('sentinel-master')
+        expect(client.client.options[:password]).to eq('mypassword')
+        expect(client.client.options[:sentinels]).to eq(sentinels)
       end
     end
   end
