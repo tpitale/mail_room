@@ -13,7 +13,9 @@ module MailRoom
 
       if options.has_key?(:config_path)
         begin
-          config_file = YAML.load(ERB.new(File.read(options[:config_path])).result)
+          erb = ERB.new(File.read(options[:config_path]))
+          erb.filename = options[:config_path]
+          config_file = YAML.load(erb.result)
 
           set_mailboxes(config_file[:mailboxes])
         rescue => e
@@ -23,7 +25,7 @@ module MailRoom
     end
 
     # Builds individual mailboxes from YAML configuration
-    # 
+    #
     # @param mailboxes_config
     def set_mailboxes(mailboxes_config)
       mailboxes_config.each do |attributes|
