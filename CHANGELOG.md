@@ -1,3 +1,9 @@
+## mail_room 0.9.1 ##
+
+* __FILE__ support in yml ERb config - PR#80
+
+    *Gabriel Mazetto <@brodock>*
+
 ## mail_room 0.9.0 ##
 
 * Redis Sentinel configuration support - PR#79
