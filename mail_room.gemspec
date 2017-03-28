@@ -17,6 +17,8 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
+  gem.add_runtime_dependency "charlock_holmes"
+  
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "mocha"
@@ -30,5 +32,4 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "letter_opener"
   gem.add_development_dependency "redis-namespace"
   gem.add_development_dependency "pg"
-  gem.add_development_dependency "charlock_holmes"
 end
