@@ -10,6 +10,7 @@ module MailRoom
     def initialize(options={})
       self.mailboxes = []
       self.quiet = options.fetch(:quiet, false)
+      self.daemonize = options.fetch(:daemonize, false)
 
       if options.has_key?(:config_path)
         begin

@@ -1,6 +1,7 @@
 require 'net/imap'
 require 'optparse'
 require 'yaml'
+require 'daemons'
 
 module MailRoom
 end
