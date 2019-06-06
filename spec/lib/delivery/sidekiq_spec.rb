@@ -7,7 +7,7 @@ describe MailRoom::Delivery::Sidekiq do
   let(:options) { MailRoom::Delivery::Sidekiq::Options.new(mailbox) }
 
   describe '#options' do
-    let(:redis_url) { 'redis://redis.example.com' }
+    let(:redis_url) { 'redis://localhost' }
 
     context 'when only redis_url is specified' do
       let(:mailbox) {
@@ -20,7 +20,7 @@ describe MailRoom::Delivery::Sidekiq do
       }
 
       it 'client has same specified redis_url' do
-        expect(redis.options[:url]).to eq(redis_url)
+        expect(redis.client.options[:url]).to eq(redis_url)
       end
 
       it 'client is a instance of RedisNamespace class' do
