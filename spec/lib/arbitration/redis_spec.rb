@@ -41,14 +41,13 @@ describe MailRoom::Arbitration::Redis do
       end
 
       it "returns false" do
-        # While we expect false normally, fakeredis converts false into 0 (see command_executor.rb)
-        # so this test has to expect 0.
-        expect(subject.deliver?(123, 2)).to eq(0)
+        # Fails locally because fakeredis returns 0, not false
+        expect(subject.deliver?(123, 2)).to be_falsey
       end
 
       it "after expiration returns true" do
-        # See above; return value is zero under fakeredis
-        expect(subject.deliver?(123, 2)).to eq(0)
+        # Fails locally because fakeredis returns 0, not false
+        expect(subject.deliver?(123, 2)).to be_falsey
         sleep(client.ttl("delivered:123")+1)
         expect(subject.deliver?(123, 2)).to be_truthy
       end
