@@ -22,23 +22,16 @@ module MailRoom
         @options = options
       end
 
-      def deliver?(uid)
+      def deliver?(uid, expiration = EXPIRATION)
         key = "delivered:#{uid}"
 
-        incr = nil
-        client.multi do |c|
-          # At this point, `incr` is a future, which will get its value after
-          # the MULTI command returns.
-          incr = c.incr(key)
-
-          c.expire(key, EXPIRATION)
-        end
-
-        # If INCR returns 1, that means the key didn't exist before, which means
-        # we are the first mail_room to try to deliver this message, so we get to.
-        # If we get any other value, another mail_room already (tried to) deliver
-        # the message, so we don't have to anymore.
-        incr.value == 1
+        # Set the key, but only if it doesn't already exist;
+        # the return value is true if successful, false if the key was already set,
+        # which is conveniently the correct return value for this method
+        # Any subsequent failure in the instance which gets the lock will be dealt
+        # with by the expiration, at which time another instance can pick up the
+        # message and try again.
+        client.set(key, 1, {:nx => true, :ex => expiration})
       end
 
       private

@@ -36,17 +36,21 @@ describe MailRoom::Arbitration::Redis do
 
     context "when called the second time" do
       before do
-        subject.deliver?(123)
+        #Short expiration, for testing
+        subject.deliver?(123, 2)
       end
 
       it "returns false" do
-        expect(subject.deliver?(123)).to be_falsey
+        # While we expect false normally, fakeredis converts false into 0 (see command_executor.rb)
+        # so this test has to expect 0.
+        expect(subject.deliver?(123, 2)).to eq(0)
       end
 
-      it "increments the delivered flag" do
-        subject.deliver?(123)
-
-        expect(client.get("delivered:123")).to eq("2")
+      it "after expiration returns true" do
+        # See above; return value is zero under fakeredis
+        expect(subject.deliver?(123, 2)).to eq(0)
+        sleep(client.ttl("delivered:123")+1)
+        expect(subject.deliver?(123, 2)).to be_truthy
       end
     end
 
