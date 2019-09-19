@@ -75,7 +75,7 @@ module MailRoom
     end
 
     def deliver?(uid)
-      MailRoom.structured_logger.info("#{context} Asking #{arbitrator.class.name} if we should deliver #{uid}")
+      MailRoom.structured_logger.info({context: context, uid: uid, action: "asking arbiter to deliver", arbitrator: arbitrator.class.name})
 
       arbitrator.deliver?(uid)
     end
@@ -86,7 +86,7 @@ module MailRoom
       body = message.attr['RFC822']
       return true unless body
 
-      MailRoom.structured_logger.info("#{context} Delivering #{message.attr['UID']} through #{delivery.class.name} (#{message.attr['RFC822.SIZE']} bytes)")
+      MailRoom.structured_logger.info({context: context, uid: message.attr['UID'], action: "sending to deliverer", deliverer: delivery.class.name, byte_size: message.attr['RFC822.SIZE']})
       delivery.deliver(body)
     end
 
@@ -96,7 +96,7 @@ module MailRoom
     end
 
     def context
-      "[#{self.email}-#{self.name}]:"
+      { email: self.email, name: self.name }
     end
 
     def validate!

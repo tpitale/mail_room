@@ -35,7 +35,7 @@ module MailRoom
 
         client.lpush("queue:#{options.queue}", JSON.generate(item))
 
-        MailRoom.structured_logger.info("Message pushed onto Sidekiq queue")
+        MailRoom.structured_logger.info({ delivery_method: 'Sidekiq', action: 'message pushed' })
         true
       end
 

@@ -23,7 +23,7 @@ module MailRoom
 
     # run the mailbox watcher
     def run
-      MailRoom.structured_logger.info("#{@mailbox.context} Setting up watcher")
+      MailRoom.structured_logger.info({ context: @mailbox.context, action: "Setting up watcher" })
       @running = true
 
       connection.on_new_message do |message|

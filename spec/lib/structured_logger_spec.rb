@@ -7,7 +7,7 @@ describe MailRoom::StructuredLogger do
   subject { described_class.new $stdout }
 
   let!(:now) { Time.now }
-  let(:message) { 'testing 123' }
+  let(:message) { { action: 'exciting development', message: 'testing 123' } }
 
   before do
     Time.stubs(:now).returns(now)
@@ -21,6 +21,10 @@ describe MailRoom::StructuredLogger do
 
   it 'logs unknown' do
     expect { subject.unknown(message) }.to output(json_matching("ANY", message)).to_stdout_from_any_process
+  end
+
+  it 'only accepts strings' do
+    expect { subject.unknown("just a string!") }.to raise_error(ArgumentError, /must be a Hash/)
   end
 
   context 'logging a hash as a message' do
@@ -41,9 +45,8 @@ describe MailRoom::StructuredLogger do
   def json_matching(level, message)
     contents = {
         severity: level,
-        time: now,
-        message: message
-    }
+        time: now
+    }.merge(message)
 
     as_regex(contents)
   end
