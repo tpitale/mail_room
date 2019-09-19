@@ -33,6 +33,7 @@ module MailRoom
           # request.headers['Content-Type'] = 'text/plain'
         end
 
+        MailRoom.structured_logger.info("Message delivered to #{@delivery_options.delivery_url}")
         true
       end
     end

@@ -1,9 +1,23 @@
 require 'spec_helper'
 
 describe MailRoom::Mailbox do
+  let(:sample_message) { {'RFC822' => 'a message', 'UID' => 123} }
+
   describe "#deliver" do
     context "with arbitration_method of noop" do
       it 'arbitrates with a Noop instance' do
+        mailbox = MailRoom::Mailbox.new({:arbitration_method => 'noop'})
+        noop = stub(:deliver?)
+        MailRoom::Arbitration['noop'].stubs(:new => noop)
+
+        uid = 123
+
+        mailbox.deliver?(uid)
+
+        expect(noop).to have_received(:deliver?).with(uid)
+      end
+
+      it 'logs the arbitration' do
         mailbox = MailRoom::Mailbox.new({:arbitration_method => 'noop'})
         noop = stub(:deliver?)
         MailRoom::Arbitration['noop'].stubs(:new => noop)
@@ -36,7 +50,7 @@ describe MailRoom::Mailbox do
         noop = stub(:deliver)
         MailRoom::Delivery['noop'].stubs(:new => noop)
 
-        mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
+        mailbox.deliver(stub(:attr => sample_message))
 
         expect(noop).to have_received(:deliver).with('a message')
       end
@@ -48,7 +62,7 @@ describe MailRoom::Mailbox do
         logger = stub(:deliver)
         MailRoom::Delivery['logger'].stubs(:new => logger)
 
-        mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
+        mailbox.deliver(stub(:attr => sample_message))
 
         expect(logger).to have_received(:deliver).with('a message')
       end
@@ -60,7 +74,7 @@ describe MailRoom::Mailbox do
         postback = stub(:deliver)
         MailRoom::Delivery['postback'].stubs(:new => postback)
 
-        mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
+        mailbox.deliver(stub(:attr => sample_message))
 
         expect(postback).to have_received(:deliver).with('a message')
       end
@@ -72,7 +86,7 @@ describe MailRoom::Mailbox do
         letter_opener = stub(:deliver)
         MailRoom::Delivery['letter_opener'].stubs(:new => letter_opener)
 
-        mailbox.deliver(stub(:attr => {'RFC822' => 'a message'}))
+        mailbox.deliver(stub(:attr => sample_message))
 
         expect(letter_opener).to have_received(:deliver).with('a message')
       end

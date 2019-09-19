@@ -3,12 +3,12 @@ require 'optparse'
 require 'yaml'
 
 module MailRoom
-  def self.logger
-    @logger ||= StructuredLogger.new(STDOUT)
+  def self.structured_logger
+    @structured_logger ||= StructuredLogger.new(STDOUT)
   end
 
-  def self.logger=(logger)
-    @logger = (logger ? logger : StructuredLogger.new("/dev/null"))
+  def self.structured_logger=(structured_logger)
+    @structured_logger = (structured_logger ? structured_logger : StructuredLogger.new("/dev/null"))
   end
 end
 
