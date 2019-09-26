@@ -94,7 +94,7 @@ describe MailRoom::Mailbox do
 
     context "without an RFC822 attribute" do
       it "doesn't deliver the message" do
-        mailbox = MailRoom::Mailbox.new({:delivery_method => 'noop'})
+        mailbox = MailRoom::Mailbox.new({name: "magic mailbox", delivery_method: 'noop'})
         noop = stub(:deliver)
         MailRoom::Delivery['noop'].stubs(:new => noop)
 
@@ -114,13 +114,13 @@ describe MailRoom::Mailbox do
 
     context 'structured logger setup' do
       it 'sets up the logger correctly and does not error' do
-        mailbox = MailRoom::Mailbox.new({structured_logger_file_name: '/dev/null'})
+        mailbox = MailRoom::Mailbox.new({name: "magic mailbox", structured_logger_file_name: '/dev/null'})
 
         expect{ mailbox.structured_logger.info(message: "asdf") }.not_to raise_error
       end
 
       it 'sets up the noop logger correctly and does not error' do
-        mailbox = MailRoom::Mailbox.new({ })
+        mailbox = MailRoom::Mailbox.new({ name: "magic mailbox" })
 
         expect{ mailbox.structured_logger.info(message: "asdf") }.not_to raise_error
       end
