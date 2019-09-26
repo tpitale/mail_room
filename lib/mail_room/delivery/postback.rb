@@ -62,7 +62,7 @@ module MailRoom
           # request.headers['Content-Type'] = 'text/plain'
         end
 
-        @delivery_options.logger.info({ delivery_method: 'Postback', action: 'message pushed', url: @delivery_options.delivery_url })
+        @delivery_options.logger.info({ delivery_method: 'Postback', action: 'message pushed', url: @delivery_options.url })
         true
       end
     end
