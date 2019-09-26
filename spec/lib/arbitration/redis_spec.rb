@@ -13,10 +13,14 @@ describe MailRoom::Arbitration::Redis do
   subject       { described_class.new(options) }
 
   # Private, but we don't care.
-  let(:client) { subject.send(:client) }
+  let(:redis) { subject.send(:client) }
 
   describe '#deliver?' do
     context "when called the first time" do
+      after do
+        redis.del("delivered:123")
+      end
+
       it "returns true" do
         expect(subject.deliver?(123)).to be_truthy
       end
@@ -24,32 +28,35 @@ describe MailRoom::Arbitration::Redis do
       it "increments the delivered flag" do
         subject.deliver?(123)
 
-        expect(client.get("delivered:123")).to eq("1")
+        expect(redis.get("delivered:123")).to eq("1")
       end
 
       it "sets an expiration on the delivered flag" do
         subject.deliver?(123)
 
-        expect(client.ttl("delivered:123")).to be > 0
+        expect(redis.ttl("delivered:123")).to be > 0
       end
     end
 
     context "when called the second time" do
       before do
-        #Short expiration, for testing
-        subject.deliver?(123, 2)
+        #Short expiration, 1 second, for testing
+        subject.deliver?(123, 1)
+      end
+
+      after do
+        redis.del("delivered:123")
       end
 
       it "returns false" do
-        # Fails locally because fakeredis returns 0, not false
-        expect(subject.deliver?(123, 2)).to be_falsey
+        expect(subject.deliver?(123, 1)).to be_falsey
       end
 
       it "after expiration returns true" do
         # Fails locally because fakeredis returns 0, not false
-        expect(subject.deliver?(123, 2)).to be_falsey
-        sleep(client.ttl("delivered:123")+1)
-        expect(subject.deliver?(123, 2)).to be_truthy
+        expect(subject.deliver?(123, 1)).to be_falsey
+        sleep(redis.ttl("delivered:123")+1)
+        expect(subject.deliver?(123, 1)).to be_truthy
       end
     end
 
@@ -58,15 +65,20 @@ describe MailRoom::Arbitration::Redis do
         subject.deliver?(123)
       end
 
+      after do
+        redis.del("delivered:123")
+        redis.del("delivered:124")
+      end
+
       it "returns true" do
-        expect(subject.deliver?(234)).to be_truthy
+        expect(subject.deliver?(124)).to be_truthy
       end
     end
   end
 
   context 'redis client connection params' do
     context 'when only url is present' do
-      let(:redis_url) { "redis://redis.example.com:8888" }
+      let(:redis_url) { "redis://localhost:6379" }
       let(:mailbox) {
         MailRoom::Mailbox.new(
           arbitration_options: {
@@ -75,14 +87,18 @@ describe MailRoom::Arbitration::Redis do
         )
       }
 
+      after do
+        redis.del("delivered:123")
+      end
+
       it 'client has same specified url' do
         subject.deliver?(123)
 
-        expect(client.options[:url]).to eq redis_url
+        expect(redis.client.options[:url]).to eq redis_url
       end
 
       it 'client is a instance of Redis class' do
-        expect(client).to be_a Redis
+        expect(redis).to be_a Redis
       end
     end
 
@@ -97,11 +113,11 @@ describe MailRoom::Arbitration::Redis do
       }
 
       it 'client has same specified namespace' do
-        expect(client.namespace).to eq(namespace)
+        expect(redis.namespace).to eq(namespace)
       end
 
       it 'client is a instance of RedisNamespace class' do
-        expect(client).to be_a ::Redis::Namespace
+        expect(redis).to be_a ::Redis::Namespace
       end
     end
 
@@ -120,10 +136,10 @@ describe MailRoom::Arbitration::Redis do
       before { ::Redis::Client::Connector::Sentinel.any_instance.stubs(:resolve).returns(sentinels) }
 
       it 'client has same specified sentinel params' do
-        expect(client.client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
-        expect(client.client.options[:host]).to eq('sentinel-master')
-        expect(client.client.options[:password]).to eq('mypassword')
-        expect(client.client.options[:sentinels]).to eq(sentinels)
+        expect(redis.client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
+        expect(redis.client.options[:host]).to eq('sentinel-master')
+        expect(redis.client.options[:password]).to eq('mypassword')
+        expect(redis.client.options[:sentinels]).to eq(sentinels)
       end
     end
   end

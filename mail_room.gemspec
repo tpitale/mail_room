@@ -22,12 +22,12 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "mocha"
   gem.add_development_dependency "bourne"
   gem.add_development_dependency "simplecov"
-  gem.add_development_dependency "fakeredis"
 
   # for testing delivery methods
   gem.add_development_dependency "faraday"
   gem.add_development_dependency "mail"
   gem.add_development_dependency "letter_opener"
+  gem.add_development_dependency "redis", "~> 3.3.1"
   gem.add_development_dependency "redis-namespace"
   gem.add_development_dependency "pg"
   gem.add_development_dependency "charlock_holmes"
