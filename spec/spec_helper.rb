@@ -7,7 +7,6 @@ require 'rspec'
 require 'mocha/api'
 require 'bourne'
 require 'fakeredis/rspec'
-require 'mail_room/structured_logger'
 
 require File.expand_path('../../lib/mail_room', __FILE__)
 
@@ -21,8 +20,4 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = 'random'
-
-  config.before do
-    MailRoom.structured_logger = MailRoom::StructuredLogger.new('/dev/null')
-  end
 end

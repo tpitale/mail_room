@@ -6,7 +6,7 @@ module MailRoom
     # Que Delivery method
     # @author Tony Pitale
     class Que
-      Options = Struct.new(:host, :port, :database, :username, :password, :queue, :priority, :job_class) do
+      Options = Struct.new(:host, :port, :database, :username, :password, :queue, :priority, :job_class, :structured_logger) do
         def initialize(mailbox)
           host = mailbox.delivery_options[:host] || "localhost"
           port = mailbox.delivery_options[:port] || 5432
@@ -17,8 +17,9 @@ module MailRoom
           queue = mailbox.delivery_options[:queue] || ''
           priority = mailbox.delivery_options[:priority] || 100 # lowest priority for Que
           job_class = mailbox.delivery_options[:job_class]
+          structured_logger = mailbox.structured_logger
 
-          super(host, port, database, username, password, queue, priority, job_class)
+          super(host, port, database, username, password, queue, priority, job_class, structured_logger)
         end
       end
 
@@ -34,7 +35,7 @@ module MailRoom
       # @param message [String] the email message as a string, RFC822 format
       def deliver(message)
         queue_job(message)
-        MailRoom.structured_logger.info({ delivery_method: 'Que', action: 'message pushed' })
+        @options.structured_logger.info({ delivery_method: 'Que', action: 'message pushed' })
       end
 
       private

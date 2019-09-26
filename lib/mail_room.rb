@@ -3,13 +3,6 @@ require 'optparse'
 require 'yaml'
 
 module MailRoom
-  def self.structured_logger
-    @structured_logger ||= StructuredLogger.new(STDOUT)
-  end
-
-  def self.structured_logger=(structured_logger)
-    @structured_logger = (structured_logger ? structured_logger : StructuredLogger.new("/dev/null"))
-  end
 end
 
 require "mail_room/version"
@@ -20,4 +13,4 @@ require "mail_room/mailbox_watcher"
 require "mail_room/connection"
 require "mail_room/coordinator"
 require "mail_room/cli"
-require "mail_room/structured_logger"
+require 'mail_room/structured_logging/structured_logger'

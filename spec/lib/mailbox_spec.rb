@@ -111,5 +111,19 @@ describe MailRoom::Mailbox do
         expect(mailbox.ssl_options).to eq({:verify_mode => OpenSSL::SSL::VERIFY_NONE})
       end
     end
+
+    context 'structured logger setup' do
+      it 'sets up the logger correctly and does not error' do
+        mailbox = MailRoom::Mailbox.new({structured_logger_file_name: '/dev/null'})
+
+        expect{ mailbox.structured_logger.info(message: "asdf") }.not_to raise_error
+      end
+
+      it 'sets up the noop logger correctly and does not error' do
+        mailbox = MailRoom::Mailbox.new({ })
+
+        expect{ mailbox.structured_logger.info(message: "asdf") }.not_to raise_error
+      end
+    end
   end
 end

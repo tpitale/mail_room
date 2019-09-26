@@ -50,7 +50,7 @@ module MailRoom
 
         process_mailbox
       rescue Net::IMAP::Error, IOError
-        MailRoom.structured_logger.warn({ context: @mailbox.context, action: "Disconnected. Resetting..." })
+        @mailbox.structured_logger.warn({ context: @mailbox.context, action: "Disconnected. Resetting..." })
         reset
         setup
       end
@@ -65,13 +65,13 @@ module MailRoom
     end
 
     def setup
-      MailRoom.structured_logger.info({ context: @mailbox.context, action: "Starting TLS session" })
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Starting TLS session" })
       start_tls
 
-      MailRoom.structured_logger.info({ context: @mailbox.context, action: "Logging into mailbox" })
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Logging into mailbox" })
       log_in
 
-      MailRoom.structured_logger.info({ context: @mailbox.context, action: "Setting mailbox" })
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Setting mailbox" })
       set_mailbox
     end
 
@@ -112,7 +112,7 @@ module MailRoom
     def idle
       return unless ready_to_idle?
 
-      MailRoom.structured_logger.info({ context: @mailbox.context, action: "Idling" })
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Idling" })
       @idling = true
 
       imap.idle(@mailbox.idle_timeout, &idle_handler)
@@ -132,7 +132,7 @@ module MailRoom
 
     def process_mailbox
       return unless @new_message_handler
-      MailRoom.structured_logger.info({ context: @mailbox.context, action: "Processing started" })
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Processing started" })
 
       msgs = new_messages
 
@@ -169,7 +169,7 @@ module MailRoom
       all_unread = @imap.uid_search(@mailbox.search_command)
 
       to_deliver = all_unread.select { |uid| @mailbox.deliver?(uid) }
-      MailRoom.structured_logger.info({ context: @mailbox.context, action: "Getting new messages", unread: {count: all_unread.count, ids: all_unread}, to_be_delivered: { count: to_deliver.count, ids: all_unread } })
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Getting new messages", unread: {count: all_unread.count, ids: all_unread}, to_be_delivered: { count: to_deliver.count, ids: all_unread } })
       to_deliver
     end
 
