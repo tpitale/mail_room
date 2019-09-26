@@ -6,19 +6,7 @@ describe MailRoom::Mailbox do
   describe "#deliver" do
     context "with arbitration_method of noop" do
       it 'arbitrates with a Noop instance' do
-        mailbox = build_mailbox({name: "magic mailbox", :arbitration_method => 'noop'})
-        noop = stub(:deliver?)
-        MailRoom::Arbitration['noop'].stubs(:new => noop)
-
-        uid = 123
-
-        mailbox.deliver?(uid)
-
-        expect(noop).to have_received(:deliver?).with(uid)
-      end
-
-      it 'logs the arbitration' do
-        mailbox = MailRoom::Mailbox.new({ name: "magic mailbox", arbitration_method: 'noop'})
+        mailbox = build_mailbox({:arbitration_method => 'noop'})
         noop = stub(:deliver?)
         MailRoom::Arbitration['noop'].stubs(:new => noop)
 
@@ -32,7 +20,7 @@ describe MailRoom::Mailbox do
 
     context "with arbitration_method of redis" do
       it 'arbitrates with a Redis instance' do
-        mailbox = build_mailbox({name: "magic mailbox", :arbitration_method => 'redis'})
+        mailbox = build_mailbox({:arbitration_method => 'redis'})
         redis = stub(:deliver?)
         MailRoom::Arbitration['redis'].stubs(:new => redis)
 
