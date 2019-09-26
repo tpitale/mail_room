@@ -3,7 +3,7 @@ require 'mail_room/delivery/letter_opener'
 
 describe MailRoom::Delivery::LetterOpener do
   describe '#deliver' do
-    let(:mailbox) {MailRoom::Mailbox.new(:location => '/tmp/somewhere')}
+    let(:mailbox) {build_mailbox(:location => '/tmp/somewhere')}
     let(:delivery_method) {stub(:deliver!)}
     let(:mail) {stub}
 

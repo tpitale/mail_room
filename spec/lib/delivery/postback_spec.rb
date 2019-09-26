@@ -3,7 +3,7 @@ require 'mail_room/delivery/postback'
 
 describe MailRoom::Delivery::Postback do
   describe '#deliver' do
-    let(:mailbox) {MailRoom::Mailbox.new({
+    let(:mailbox) {build_mailbox({
       :delivery_url => 'http://localhost/inbox',
       :delivery_token => 'abcdefg'
     })}

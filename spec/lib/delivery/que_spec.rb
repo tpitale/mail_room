@@ -3,7 +3,7 @@ require 'mail_room/delivery/que'
 
 describe MailRoom::Delivery::Que do
   describe '#deliver' do
-    let(:mailbox) {MailRoom::Mailbox.new({
+    let(:mailbox) {build_mailbox({
       delivery_options: {
         database: 'delivery_test',
         username: 'postgres',
