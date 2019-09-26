@@ -201,6 +201,31 @@ Configured with `:delivery_method: letter_opener`.
 
 Uses Ryan Bates' excellent [letter_opener](https://github.com/ryanb/letter_opener) gem.
 
+## ActionMailbox in Rails ##
+
+MailRoom can deliver mail to Rails using the ActionMailbox [configuration options for an SMTP relay](https://edgeguides.rubyonrails.org/action_mailbox_basics.html#configuration).
+
+In summary (from the ActionMailbox docs)
+
+1. Configure Rails to use the `:relay` ingress option:
+```rb
+# config/environments/production.rb
+config.action_mailbox.ingress = :relay
+```
+
+2. Generate a strong password (e.g., using SecureRandom or something) and add it to Rails config:
+using `rails credentials:edit` under `action_mailbox.ingress_password`.
+
+And finally, configure MailRoom to use the postback configuration with the options:
+
+```yaml
+:delivery_method: postback
+:delivery_options:
+  :delivery_url: https://example.com/rails/action_mailbox/relay/inbound_emails
+  :delivery_username: actionmailbox
+  :delivery_password: <INGRESS_PASSWORD>
+```
+
 ## Receiving `postback` in Rails ##
 
 If you have a controller that you're sending to, with forgery protection
