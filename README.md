@@ -66,6 +66,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :name: "inbox"
     :delivery_method: letter_opener
     :delete_after_delivery: true
+    :expunge_deleted: true
     :delivery_options:
       :location: "/tmp/user4-email"
   -
@@ -91,6 +92,9 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
           :port: 26379
       :worker: EmailReceiverWorker
 ```
+
+**Note:** If using `delete_after_delivery`, you also probably want to use
+`expunge_deleted` unless you really know what you're doing.
 
 ## delivery_method ##
 

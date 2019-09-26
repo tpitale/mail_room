@@ -14,6 +14,7 @@ module MailRoom
     :search_command,
     :name,
     :delete_after_delivery,
+    :expunge_deleted,
     :delivery_method, # :noop, :logger, :postback, :letter_opener
     :log_path, # for logger
     :delivery_url, # for postback
@@ -48,6 +49,7 @@ module MailRoom
       :start_tls => false,
       :idle_timeout => IMAP_IDLE_TIMEOUT,
       :delete_after_delivery => false,
+      :expunge_deleted => false,
       :delivery_options => {},
       :arbitration_method => 'noop',
       :arbitration_options => {}
