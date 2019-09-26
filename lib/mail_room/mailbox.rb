@@ -14,6 +14,8 @@ module MailRoom
     :search_command,
     :name,
     :delete_after_delivery,
+    :expunge_deleted,
+    :delivery_klass,
     :delivery_method, # :noop, :logger, :postback, :letter_opener
     :log_path, # for logger
     :delivery_url, # for postback
@@ -25,6 +27,7 @@ module MailRoom
     :structured_logger_file_name,
   ]
 
+  ConfigurationError = Class.new(RuntimeError)
   IdleTimeoutTooLarge = Class.new(RuntimeError)
 
   # Holds configuration for each of the email accounts we wish to monitor
@@ -36,6 +39,8 @@ module MailRoom
     # 29 minutes, as suggested by the spec: https://tools.ietf.org/html/rfc2177
     IMAP_IDLE_TIMEOUT = 29 * 60 # 29 minutes in in seconds
 
+    REQUIRED_CONFIGURATION = [:name, :email, :password, :host, :port]
+
     # Default attributes for the mailbox configuration
     DEFAULTS = {
       :search_command => 'UNSEEN',
@@ -46,6 +51,7 @@ module MailRoom
       :start_tls => false,
       :idle_timeout => IMAP_IDLE_TIMEOUT,
       :delete_after_delivery => false,
+      :expunge_deleted => false,
       :delivery_options => {},
       :arbitration_method => 'noop',
       :arbitration_options => {},
@@ -64,7 +70,7 @@ module MailRoom
     end
 
     def delivery_klass
-      Delivery[delivery_method]
+      self[:delivery_klass] ||= Delivery[delivery_method]
     end
 
     def arbitration_klass
@@ -106,7 +112,16 @@ module MailRoom
 
     def validate!
       if self[:idle_timeout] > IMAP_IDLE_TIMEOUT
-        raise IdleTimeoutTooLarge.new("Please use an idle timeout smaller than #{29*60} to prevent IMAP server disconnects")
+        raise IdleTimeoutTooLarge,
+              "Please use an idle timeout smaller than #{29*60} to prevent " \
+              "IMAP server disconnects"
+      end
+
+      REQUIRED_CONFIGURATION.each do |k|
+        if self[k].nil?
+          raise ConfigurationError,
+                "Field :#{k} is required in Mailbox: #{inspect}"
+        end
       end
     end
 
@@ -124,18 +139,22 @@ module MailRoom
       return options unless options.is_a?(Hash)
       return options unless options.has_key?(:verify_mode)
 
-      options[:verify_mode] = case options[:verify_mode]
-      when :none, 'none'
-        OpenSSL::SSL::VERIFY_NONE
-      when :peer, 'peer'
-        OpenSSL::SSL::VERIFY_PEER
-      when :client_once, 'client_once'
-        OpenSSL::SSL::VERIFY_CLIENT_ONCE
-      when :fail_if_no_peer_cert, 'fail_if_no_peer_cert'
-        OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
-      end
+      options[:verify_mode] = lookup_verify_mode(options[:verify_mode])
 
       options
+    end
+
+    def lookup_verify_mode(verify_mode)
+      case verify_mode.to_sym
+        when :none
+          OpenSSL::SSL::VERIFY_NONE
+        when :peer
+          OpenSSL::SSL::VERIFY_PEER
+        when :client_once
+          OpenSSL::SSL::VERIFY_CLIENT_ONCE
+        when :fail_if_no_peer_cert
+          OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
+      end
     end
   end
 end

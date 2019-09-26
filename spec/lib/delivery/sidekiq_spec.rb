@@ -7,11 +7,11 @@ describe MailRoom::Delivery::Sidekiq do
   let(:options) { MailRoom::Delivery::Sidekiq::Options.new(mailbox) }
 
   describe '#options' do
-    let(:redis_url) { 'redis://redis.example.com' }
+    let(:redis_url) { 'redis://localhost' }
 
     context 'when only redis_url is specified' do
       let(:mailbox) {
-        MailRoom::Mailbox.new(
+        build_mailbox(
           delivery_method: :sidekiq,
           delivery_options: {
             redis_url: redis_url
@@ -20,7 +20,7 @@ describe MailRoom::Delivery::Sidekiq do
       }
 
       it 'client has same specified redis_url' do
-        expect(redis.options[:url]).to eq(redis_url)
+        expect(redis.client.options[:url]).to eq(redis_url)
       end
 
       it 'client is a instance of RedisNamespace class' do
@@ -31,7 +31,7 @@ describe MailRoom::Delivery::Sidekiq do
     context 'when namespace is specified' do
       let(:namespace) { 'sidekiq_mailman' }
       let(:mailbox) {
-        MailRoom::Mailbox.new(
+        build_mailbox(
           delivery_method: :sidekiq,
           delivery_options: {
             redis_url: redis_url,
@@ -53,7 +53,7 @@ describe MailRoom::Delivery::Sidekiq do
       let(:redis_url) { 'redis://:mypassword@sentinel-master:6379' }
       let(:sentinels) { [{ host: '10.0.0.1', port: '26379' }] }
       let(:mailbox) {
-        MailRoom::Mailbox.new(
+        build_mailbox(
           delivery_method: :sidekiq,
           delivery_options: {
             redis_url: redis_url,

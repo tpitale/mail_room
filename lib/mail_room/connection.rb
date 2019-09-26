@@ -77,7 +77,7 @@ module MailRoom
 
     # build a net/imap connection to google imap
     def imap
-      @imap ||= MailRoom::IMAP.new(@mailbox.host, :port => @mailbox.port, :ssl => @mailbox.ssl_options)
+      @imap ||= Net::IMAP.new(@mailbox.host, :port => @mailbox.port, :ssl => @mailbox.ssl_options)
     end
 
     # start a TLS session
@@ -125,7 +125,7 @@ module MailRoom
       return unless idling?
 
       imap.idle_done
-      
+
       # idling_thread.join
       # self.idling_thread = nil
     end
@@ -136,16 +136,24 @@ module MailRoom
 
       msgs = new_messages
 
-      msgs.
-        map(&@new_message_handler). # deliver each new message, collect success
-        zip(msgs). # include messages with success
-        select(&:first).map(&:last). # filter failed deliveries, collect message
-        each {|message| scrub(message)} # scrub delivered messages
+      any_deletions = msgs.
+                      # deliver each new message, collect success
+                      map(&@new_message_handler).
+                      # include messages with success
+                      zip(msgs).
+                      # filter failed deliveries, collect message
+                      select(&:first).map(&:last).
+                      # scrub delivered messages
+                      map { |message| scrub(message) }.
+                      any?
+
+      imap.expunge if @mailbox.expunge_deleted && any_deletions
     end
 
     def scrub(message)
       if @mailbox.delete_after_delivery
         imap.store(message.seqno, "+FLAGS", [Net::IMAP::DELETED])
+        true
       end
     end
 

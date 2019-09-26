@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe MailRoom::Connection do
   let(:imap) {stub}
-  let(:mailbox) {MailRoom::Mailbox.new(delete_after_delivery: true)}
+  let(:mailbox) {build_mailbox(delete_after_delivery: true, expunge_deleted: true)}
 
   before :each do
-    MailRoom::IMAP.stubs(:new).returns(imap)
+    Net::IMAP.stubs(:new).returns(imap)
   end
 
   context "with imap set up" do
@@ -50,6 +50,7 @@ describe MailRoom::Connection do
       imap.stubs(:uid_search).returns([]).then.returns([1])
       imap.stubs(:uid_fetch).returns([new_message])
       imap.stubs(:store)
+      imap.stubs(:expunge)
 
       connection.wait
 
@@ -58,6 +59,7 @@ describe MailRoom::Connection do
       expect(imap).to have_received(:uid_fetch).with([1], "RFC822")
       expect(mailbox).to have_received(:deliver?).with(1)
       expect(imap).to have_received(:store).with(8, "+FLAGS", [Net::IMAP::DELETED])
+      expect(imap).to have_received(:expunge).once
     end
   end
 end
