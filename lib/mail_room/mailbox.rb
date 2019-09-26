@@ -15,6 +15,7 @@ module MailRoom
     :name,
     :delete_after_delivery,
     :expunge_deleted,
+    :delivery_klass,
     :delivery_method, # :noop, :logger, :postback, :letter_opener
     :log_path, # for logger
     :delivery_url, # for postback
@@ -64,7 +65,7 @@ module MailRoom
     end
 
     def delivery_klass
-      Delivery[delivery_method]
+      self[:delivery_klass] ||= Delivery[delivery_method]
     end
 
     def arbitration_klass
