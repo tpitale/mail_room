@@ -20,3 +20,13 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = 'random'
 end
+
+REQUIRED_MAILBOX_DEFAULTS = {
+  :name => "inbox",
+  :email => "user@example.com",
+  :password => "password123"
+}
+
+def build_mailbox(options = {})
+  MailRoom::Mailbox.new(REQUIRED_MAILBOX_DEFAULTS.merge(options))
+end

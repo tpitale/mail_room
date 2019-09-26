@@ -4,7 +4,7 @@ require 'mail_room/delivery/logger'
 describe MailRoom::Delivery::Logger do
   describe '#initialize' do
     context "without a log path" do
-      let(:mailbox) {MailRoom::Mailbox.new}
+      let(:mailbox) {build_mailbox}
 
       it 'creates a new ruby logger' do
         ::Logger.stubs(:new)
@@ -16,7 +16,7 @@ describe MailRoom::Delivery::Logger do
     end
 
     context "with a log path" do
-      let(:mailbox) {MailRoom::Mailbox.new(:log_path => '/var/log/mail-room.log')}
+      let(:mailbox) {build_mailbox(:log_path => '/var/log/mail-room.log')}
 
       it 'creates a new file to append to' do
         ::Logger.stubs(:new)
@@ -32,7 +32,7 @@ describe MailRoom::Delivery::Logger do
   end
 
   describe '#deliver' do
-    let(:mailbox) {MailRoom::Mailbox.new}
+    let(:mailbox) {build_mailbox}
 
     it 'writes the message to info' do
       logger = stub(:info)

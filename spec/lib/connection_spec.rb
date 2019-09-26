@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MailRoom::Connection do
   let(:imap) {stub}
-  let(:mailbox) {MailRoom::Mailbox.new(delete_after_delivery: true)}
+  let(:mailbox) {build_mailbox(delete_after_delivery: true)}
 
   before :each do
     MailRoom::IMAP.stubs(:new).returns(imap)

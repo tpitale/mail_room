@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe MailRoom::MailboxWatcher do
-  let(:mailbox) {MailRoom::Mailbox.new}
+  let(:mailbox) {build_mailbox}
 
   describe '#running?' do
     it 'is false by default' do

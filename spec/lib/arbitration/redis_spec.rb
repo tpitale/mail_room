@@ -3,7 +3,7 @@ require 'mail_room/arbitration/redis'
 
 describe MailRoom::Arbitration::Redis do
   let(:mailbox) {
-    MailRoom::Mailbox.new(
+    build_mailbox(
       arbitration_options: {
         namespace: "mail_room"
       }
@@ -80,7 +80,7 @@ describe MailRoom::Arbitration::Redis do
     context 'when only url is present' do
       let(:redis_url) { "redis://localhost:6379" }
       let(:mailbox) {
-        MailRoom::Mailbox.new(
+        build_mailbox(
           arbitration_options: {
             redis_url: redis_url
           }
@@ -105,7 +105,7 @@ describe MailRoom::Arbitration::Redis do
     context 'when namespace is present' do
       let(:namespace) { 'mail_room' }
       let(:mailbox) {
-        MailRoom::Mailbox.new(
+        build_mailbox(
           arbitration_options: {
             namespace: namespace
           }
@@ -125,7 +125,7 @@ describe MailRoom::Arbitration::Redis do
       let(:redis_url) { 'redis://:mypassword@sentinel-master:6379' }
       let(:sentinels) { [{ host: '10.0.0.1', port: '26379' }] }
       let(:mailbox) {
-        MailRoom::Mailbox.new(
+        build_mailbox(
           arbitration_options: {
             redis_url: redis_url,
             sentinels: sentinels
