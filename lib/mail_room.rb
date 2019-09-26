@@ -6,7 +6,6 @@ module MailRoom
 end
 
 require "mail_room/version"
-require "mail_room/backports/imap"
 require "mail_room/configuration"
 require "mail_room/mailbox"
 require "mail_room/mailbox_watcher"

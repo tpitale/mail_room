@@ -5,7 +5,7 @@ describe MailRoom::Connection do
   let(:mailbox) {build_mailbox(delete_after_delivery: true)}
 
   before :each do
-    MailRoom::IMAP.stubs(:new).returns(imap)
+    Net::IMAP.stubs(:new).returns(imap)
   end
 
   context "with imap set up" do

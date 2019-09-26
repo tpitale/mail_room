@@ -71,7 +71,7 @@ module MailRoom
 
     # build a net/imap connection to google imap
     def imap
-      @imap ||= MailRoom::IMAP.new(@mailbox.host, :port => @mailbox.port, :ssl => @mailbox.ssl_options)
+      @imap ||= Net::IMAP.new(@mailbox.host, :port => @mailbox.port, :ssl => @mailbox.ssl_options)
     end
 
     # start a TLS session
