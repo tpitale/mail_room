@@ -23,7 +23,8 @@ module MailRoom
     :location, # for letter_opener
     :delivery_options,
     :arbitration_method,
-    :arbitration_options
+    :arbitration_options,
+    :structured_logger_file_name,
   ]
 
   ConfigurationError = Class.new(RuntimeError)
@@ -53,7 +54,7 @@ module MailRoom
       :expunge_deleted => false,
       :delivery_options => {},
       :arbitration_method => 'noop',
-      :arbitration_options => {}
+      :arbitration_options => {},
     }
 
     # Store the configuration and require the appropriate delivery method
@@ -62,6 +63,10 @@ module MailRoom
       super(*DEFAULTS.merge(attributes).values_at(*members))
 
       validate!
+    end
+
+    def structured_logger
+      @structured_logger ||= MailRoom::StructuredLogging::StructuredLogger.new(structured_logger_file_name)
     end
 
     def delivery_klass
@@ -81,6 +86,8 @@ module MailRoom
     end
 
     def deliver?(uid)
+      structured_logger.info({context: context, uid: uid, action: "asking arbiter to deliver", arbitrator: arbitrator.class.name})
+
       arbitrator.deliver?(uid)
     end
 
@@ -90,12 +97,17 @@ module MailRoom
       body = message.attr['RFC822']
       return true unless body
 
+      structured_logger.info({context: context, uid: message.attr['UID'], action: "sending to deliverer", deliverer: delivery.class.name, byte_size: message.attr['RFC822.SIZE']})
       delivery.deliver(body)
     end
 
     # true, false, or ssl options hash
     def ssl_options
       replace_verify_mode(ssl)
+    end
+
+    def context
+      { email: self.email, name: self.name }
     end
 
     def validate!

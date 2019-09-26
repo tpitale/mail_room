@@ -12,3 +12,4 @@ require "mail_room/mailbox_watcher"
 require "mail_room/connection"
 require "mail_room/coordinator"
 require "mail_room/cli"
+require 'mail_room/structured_logging/structured_logger'

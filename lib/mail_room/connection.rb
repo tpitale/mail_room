@@ -50,6 +50,7 @@ module MailRoom
 
         process_mailbox
       rescue Net::IMAP::Error, IOError
+        @mailbox.structured_logger.warn({ context: @mailbox.context, action: "Disconnected. Resetting..." })
         reset
         setup
       end
@@ -64,8 +65,13 @@ module MailRoom
     end
 
     def setup
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Starting TLS session" })
       start_tls
+
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Logging into mailbox" })
       log_in
+
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Setting mailbox" })
       set_mailbox
     end
 
@@ -106,6 +112,7 @@ module MailRoom
     def idle
       return unless ready_to_idle?
 
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Idling" })
       @idling = true
 
       imap.idle(@mailbox.idle_timeout, &idle_handler)
@@ -125,6 +132,7 @@ module MailRoom
 
     def process_mailbox
       return unless @new_message_handler
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Processing started" })
 
       msgs = new_messages
 
@@ -166,7 +174,11 @@ module MailRoom
     # @return [Array<Integer>] message ids
     def new_message_ids
       # uid_search still leaves messages UNSEEN
-      imap.uid_search(@mailbox.search_command).select { |uid| @mailbox.deliver?(uid) }
+      all_unread = @imap.uid_search(@mailbox.search_command)
+
+      to_deliver = all_unread.select { |uid| @mailbox.deliver?(uid) }
+      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Getting new messages", unread: {count: all_unread.count, ids: all_unread}, to_be_delivered: { count: to_deliver.count, ids: all_unread } })
+      to_deliver
     end
 
     # @private
