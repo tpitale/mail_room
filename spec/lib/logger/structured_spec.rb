@@ -1,8 +1,6 @@
 require 'spec_helper'
-require 'mail_room/structured_logging/structured_logger'
-require 'json'
 
-describe MailRoom::StructuredLogging::StructuredLogger do
+describe MailRoom::Logger::Structured do
 
   subject { described_class.new $stdout }
 
@@ -39,20 +37,6 @@ describe MailRoom::StructuredLogging::StructuredLogger do
       }
 
       expect { subject.debug(input) }.to output(as_regex(expected)).to_stdout_from_any_process
-    end
-  end
-
-  describe '#noop?' do
-    it 'is a noop if the delivery log device is nil' do
-      noop_logger = MailRoom::StructuredLogging::StructuredLogger.new(nil)
-
-      expect(noop_logger.noop?).to be_truthy
-    end
-
-    it 'is not a noop if a logfile was provided' do
-      noop_logger = MailRoom::StructuredLogging::StructuredLogger.new(STDOUT)
-
-      expect(noop_logger.noop?).to be_falsey
     end
   end
 

@@ -23,7 +23,7 @@ module MailRoom
 
     # run the mailbox watcher
     def run
-      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Setting up watcher" })
+      @mailbox.logger.info({ context: @mailbox.context, action: "Setting up watcher" })
       @running = true
 
       connection.on_new_message do |message|
@@ -41,7 +41,7 @@ module MailRoom
 
     # stop running, cleanup connection
     def quit
-      @mailbox.structured_logger.info({ context: @mailbox.context, action: "Quitting connection..." })
+      @mailbox.logger.info({ context: @mailbox.context, action: "Quitting connection..." })
       @running = false
 
       if @connection

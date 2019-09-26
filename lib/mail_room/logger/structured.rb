@@ -2,8 +2,8 @@ require 'logger'
 require 'json'
 
 module MailRoom
-  module StructuredLogging
-    class StructuredLogger < Logger
+  module Logger
+    class Structured < ::Logger
 
       def format_message(severity, timestamp, progname, message)
         raise ArgumentError.new("Message must be a Hash") unless message.is_a? Hash
@@ -15,11 +15,6 @@ module MailRoom
         data.merge!(message)
 
         data.to_json + "\n"
-      end
-
-      def noop?
-        # swallow any log messages if no logfile has been set up
-        @logdev.nil?
       end
     end
   end

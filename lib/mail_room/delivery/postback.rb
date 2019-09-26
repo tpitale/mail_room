@@ -5,13 +5,13 @@ module MailRoom
     # Postback Delivery method
     # @author Tony Pitale
     class Postback
-      Options = Struct.new(:delivery_url, :delivery_token, :structured_logger) do
+      Options = Struct.new(:delivery_url, :delivery_token, :logger) do
         def initialize(mailbox)
           delivery_url = mailbox.delivery_url || mailbox.delivery_options[:delivery_url]
           delivery_token = mailbox.delivery_token || mailbox.delivery_options[:delivery_token]
-          structured_logger = mailbox.structured_logger
+          logger = mailbox.logger
 
-          super(delivery_url, delivery_token, structured_logger)
+          super(delivery_url, delivery_token, logger)
         end
       end
 
@@ -34,7 +34,7 @@ module MailRoom
           # request.headers['Content-Type'] = 'text/plain'
         end
 
-        @delivery_options.structured_logger.info({ delivery_method: 'Postback', action: 'message pushed', url: @delivery_options.delivery_url })
+        @delivery_options.logger.info({ delivery_method: 'Postback', action: 'message pushed', url: @delivery_options.delivery_url })
         true
       end
     end

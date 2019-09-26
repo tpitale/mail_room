@@ -104,13 +104,13 @@ describe MailRoom::Mailbox do
       it 'sets up the logger correctly and does not error' do
         mailbox = build_mailbox({ name: "magic mailbox", structured_logger_file_name: '/dev/null' })
 
-        expect{ mailbox.structured_logger.info(message: "asdf") }.not_to raise_error
+        expect{ mailbox.logger.info(message: "asdf") }.not_to raise_error
       end
 
       it 'sets up the noop logger correctly and does not error' do
         mailbox = build_mailbox({ name: "magic mailbox" })
 
-        expect{ mailbox.structured_logger.info(message: "asdf") }.not_to raise_error
+        expect{ mailbox.logger.info(message: "asdf") }.not_to raise_error
       end
     end
   end
