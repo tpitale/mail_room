@@ -62,7 +62,6 @@ module MailRoom
         {
           'class'       => options.worker,
           'args'        => [utf8_encode_message(message)],
-
           'queue'       => options.queue,
           'jid'         => SecureRandom.hex(12),
           'retry'       => false,
