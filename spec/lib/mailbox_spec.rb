@@ -102,7 +102,7 @@ describe MailRoom::Mailbox do
 
     context 'structured logger setup' do
       it 'sets up the logger correctly and does not error' do
-        mailbox = build_mailbox({ name: "magic mailbox", structured_logger_file_name: '/dev/null' })
+        mailbox = build_mailbox({ name: "magic mailbox", logger: { log_path: '/dev/null' } })
 
         expect{ mailbox.logger.info(message: "asdf") }.not_to raise_error
       end

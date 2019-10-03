@@ -24,7 +24,7 @@ module MailRoom
     :delivery_options,
     :arbitration_method,
     :arbitration_options,
-    :structured_logger_file_name,
+    :logger
   ]
 
   ConfigurationError = Class.new(RuntimeError)
@@ -54,7 +54,8 @@ module MailRoom
       :expunge_deleted => false,
       :delivery_options => {},
       :arbitration_method => 'noop',
-      :arbitration_options => {}
+      :arbitration_options => {},
+      :logger => {}
     }
 
     # Store the configuration and require the appropriate delivery method
@@ -66,7 +67,14 @@ module MailRoom
     end
 
     def logger
-      @logger ||= MailRoom::Logger::Structured.new(structured_logger_file_name)
+      @logger ||=
+        case self[:logger]
+          when Logger
+            self[:logger]
+          else
+            self[:logger] ||= {}
+            MailRoom::Logger::Structured.new(self[:logger][:log_path])
+        end
     end
 
     def delivery_klass

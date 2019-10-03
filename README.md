@@ -41,6 +41,8 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :password: "password"
     :name: "inbox"
     :search_command: 'NEW'
+    :logger:
+      :log_path: /path/to/logfile/for/mailroom
     :delivery_options:
       :delivery_url: "http://localhost:3000/inbox"
       :delivery_token: "abcdefg"
@@ -185,7 +187,7 @@ end
 
 Configured with `:delivery_method: logger`.
 
-If `:log_path:` is not provided, defaults to `STDOUT`
+If the `:log_path:` delivery option is not provided, defaults to `STDOUT`
 
 ### noop ###
 
@@ -319,6 +321,12 @@ redis://:<password>@<master-name>/
 
 You also have to inform at least one pair of `host` and `port` for a sentinel in your cluster.
 To have a minimum reliable setup, you need at least `3` sentinel nodes and `3` redis servers (1 master, 2 slaves).
+
+## Logging ##
+
+MailRoom will output JSON-formatted logs to give some observability into its operations.
+
+Simply configure a `log_path` for the `logger` on any of your mailboxes. By default, nothing will be logged.
 
 ## Contributing ##
 
