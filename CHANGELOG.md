@@ -1,3 +1,24 @@
+## mail_room 0.10.0 ##
+
+* Remove imap backports
+* Increase minimum ruby version to 2.3
+* Postback basic_auth support - PR#92
+* Docs for ActionMailbox - PR#92
+* Configuration option for delivery_klass - PR#93
+* Expunge deleted - PR#90
+* Raise error on a few fields of missing configuration - PR#89
+* Remove fakeredis gem - PR#87
+
+    *Tony Pitale <@tpitale>*
+
+* Fix redis arbitration to use NX+EX - PR#86
+
+    *Craig Miskell <@craigmiskell-gitlab>*
+
+* Structured (JSON) logger - PR#88
+
+    *charlie <@cablett>*
+
 ## mail_room 0.9.1 ##
 
 * __FILE__ support in yml ERb config - PR#80
