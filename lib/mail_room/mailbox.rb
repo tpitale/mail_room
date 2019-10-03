@@ -73,7 +73,7 @@ module MailRoom
             self[:logger]
           else
             self[:logger] ||= {}
-            MailRoom::Logger::Structured.new(self[:logger][:log_path])
+            MailRoom::Logger::Structured.new(normalize_log_path(self[:logger][:log_path]))
         end
     end
 
@@ -162,6 +162,19 @@ module MailRoom
           OpenSSL::SSL::VERIFY_CLIENT_ONCE
         when :fail_if_no_peer_cert
           OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
+      end
+    end
+
+    def normalize_log_path(log_path)
+      case log_path
+      when nil, ""
+        nil
+      when :stdout, "STDOUT"
+        STDOUT
+      when :stderr, "STDERR"
+        STDERR
+      else
+        log_path
       end
     end
   end

@@ -107,6 +107,12 @@ describe MailRoom::Mailbox do
         expect{ mailbox.logger.info(message: "asdf") }.not_to raise_error
       end
 
+      it 'accepts stdout symbol to mean STDOUT' do
+        mailbox = build_mailbox({ name: "magic mailbox", logger: { log_path: :stdout } })
+
+        expect{ mailbox.logger.info(message: "asdf") }.not_to raise_error
+      end
+
       it 'sets up the noop logger correctly and does not error' do
         mailbox = build_mailbox({ name: "magic mailbox" })
 
