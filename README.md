@@ -46,6 +46,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :delivery_options:
       :delivery_url: "http://localhost:3000/inbox"
       :delivery_token: "abcdefg"
+      :content_type: "text/plain"
 
   -
     :email: "user2@gmail.com"
@@ -109,10 +110,10 @@ Requires `faraday` gem be installed.
 The default delivery method, requires `delivery_url` and `delivery_token` in
 configuration.
 
+You can pass `content_type:` option to overwrite `faraday's` default content-type(`application/x-www-form-urlencoded`) for post requests, we recommend passing `text/plain` as content-type.
+
 As the postback is essentially using your app as if it were an API endpoint,
-you may need to disable forgery protection as you would with a JSON API. In
-our case, the postback is plaintext, but the protection will still need to be
-disabled.
+you may need to disable forgery protection as you would with a JSON API.
 
 ### sidekiq ###
 
@@ -235,6 +236,9 @@ disabled, you can get the raw string of the email using `request.body.read`.
 
 I would recommend having the `mail` gem bundled and parse the email using
 `Mail.read_from_string(request.body.read)`.
+
+*Note:* If you get the exception (`Rack::QueryParser::InvalidParameterError (invalid %-encoding...`)
+it's probably because the content-type is set to Faraday's default, which is  `HEADERS['content-type'] = 'application/x-www-form-urlencoded'`. It can cause `Rack` to crash due to `InvalidParameterError` exception. When you send a post with `application/x-www-form-urlencoded`, `Rack` will attempt to parse the input and can end up raising an exception, for example if the email that you are forwarding contain `%%` in its content or headers it will cause Rack to crash with the message above.
 
 ## idle_timeout ##
 

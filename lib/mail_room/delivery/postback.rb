@@ -1,11 +1,12 @@
 require 'faraday'
+require 'pry'
 
 module MailRoom
   module Delivery
     # Postback Delivery method
     # @author Tony Pitale
     class Postback
-      Options = Struct.new(:url, :token, :username, :password, :logger) do
+      Options = Struct.new(:url, :token, :username, :password, :logger, :content_type) do
         def initialize(mailbox)
           url =
             mailbox.delivery_url ||
@@ -22,7 +23,9 @@ module MailRoom
 
           logger = mailbox.logger
 
-          super(url, token, username, password, logger)
+          content_type = mailbox.delivery_options[:content_type]
+
+          super(url, token, username, password, logger, content_type)
         end
 
         def token_auth?
@@ -59,7 +62,7 @@ module MailRoom
           request.url @delivery_options.url
           request.body = message
           # request.options[:timeout] = 3
-          # request.headers['Content-Type'] = 'text/plain'
+          request.headers['Content-Type'] = @delivery_options.content_type unless @delivery_options.content_type.nil?
         end
 
         @delivery_options.logger.info({ delivery_method: 'Postback', action: 'message pushed', url: @delivery_options.url })

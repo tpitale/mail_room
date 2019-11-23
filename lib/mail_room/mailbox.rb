@@ -20,6 +20,7 @@ module MailRoom
     :log_path, # for logger
     :delivery_url, # for postback
     :delivery_token, # for postback
+    :content_type, # for postback
     :location, # for letter_opener
     :delivery_options,
     :arbitration_method,
