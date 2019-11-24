@@ -22,7 +22,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "mocha"
   gem.add_development_dependency "bourne"
   gem.add_development_dependency "simplecov"
-  gem.add_development_dependency 'pry'
 
   # for testing delivery methods
   gem.add_development_dependency "faraday"
