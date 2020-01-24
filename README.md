@@ -41,9 +41,12 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :password: "password"
     :name: "inbox"
     :search_command: 'NEW'
+    :logger:
+      :log_path: /path/to/logfile/for/mailroom
     :delivery_options:
       :delivery_url: "http://localhost:3000/inbox"
       :delivery_token: "abcdefg"
+      :content_type: "text/plain"
 
   -
     :email: "user2@gmail.com"
@@ -107,10 +110,10 @@ Requires `faraday` gem be installed.
 The default delivery method, requires `delivery_url` and `delivery_token` in
 configuration.
 
+You can pass `content_type:` option to overwrite `faraday's` default content-type(`application/x-www-form-urlencoded`) for post requests, we recommend passing `text/plain` as content-type.
+
 As the postback is essentially using your app as if it were an API endpoint,
-you may need to disable forgery protection as you would with a JSON API. In
-our case, the postback is plaintext, but the protection will still need to be
-disabled.
+you may need to disable forgery protection as you would with a JSON API.
 
 ### sidekiq ###
 
@@ -185,7 +188,7 @@ end
 
 Configured with `:delivery_method: logger`.
 
-If `:log_path:` is not provided, defaults to `STDOUT`
+If the `:log_path:` delivery option is not provided, defaults to `STDOUT`
 
 ### noop ###
 
@@ -201,6 +204,31 @@ Configured with `:delivery_method: letter_opener`.
 
 Uses Ryan Bates' excellent [letter_opener](https://github.com/ryanb/letter_opener) gem.
 
+## ActionMailbox in Rails ##
+
+MailRoom can deliver mail to Rails using the ActionMailbox [configuration options for an SMTP relay](https://edgeguides.rubyonrails.org/action_mailbox_basics.html#configuration).
+
+In summary (from the ActionMailbox docs)
+
+1. Configure Rails to use the `:relay` ingress option:
+```rb
+# config/environments/production.rb
+config.action_mailbox.ingress = :relay
+```
+
+2. Generate a strong password (e.g., using SecureRandom or something) and add it to Rails config:
+using `rails credentials:edit` under `action_mailbox.ingress_password`.
+
+And finally, configure MailRoom to use the postback configuration with the options:
+
+```yaml
+:delivery_method: postback
+:delivery_options:
+  :delivery_url: https://example.com/rails/action_mailbox/relay/inbound_emails
+  :delivery_username: actionmailbox
+  :delivery_password: <INGRESS_PASSWORD>
+```
+
 ## Receiving `postback` in Rails ##
 
 If you have a controller that you're sending to, with forgery protection
@@ -208,6 +236,9 @@ disabled, you can get the raw string of the email using `request.body.read`.
 
 I would recommend having the `mail` gem bundled and parse the email using
 `Mail.read_from_string(request.body.read)`.
+
+*Note:* If you get the exception (`Rack::QueryParser::InvalidParameterError (invalid %-encoding...`)
+it's probably because the content-type is set to Faraday's default, which is  `HEADERS['content-type'] = 'application/x-www-form-urlencoded'`. It can cause `Rack` to crash due to `InvalidParameterError` exception. When you send a post with `application/x-www-form-urlencoded`, `Rack` will attempt to parse the input and can end up raising an exception, for example if the email that you are forwarding contain `%%` in its content or headers it will cause Rack to crash with the message above.
 
 ## idle_timeout ##
 
@@ -294,6 +325,12 @@ redis://:<password>@<master-name>/
 
 You also have to inform at least one pair of `host` and `port` for a sentinel in your cluster.
 To have a minimum reliable setup, you need at least `3` sentinel nodes and `3` redis servers (1 master, 2 slaves).
+
+## Logging ##
+
+MailRoom will output JSON-formatted logs to give some observability into its operations.
+
+Simply configure a `log_path` for the `logger` on any of your mailboxes. By default, nothing will be logged.
 
 ## Contributing ##
 

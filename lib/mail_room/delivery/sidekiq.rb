@@ -8,15 +8,16 @@ module MailRoom
     # Sidekiq Delivery method
     # @author Douwe Maan
     class Sidekiq
-      Options = Struct.new(:redis_url, :namespace, :sentinels, :queue, :worker) do
+      Options = Struct.new(:redis_url, :namespace, :sentinels, :queue, :worker, :logger) do
         def initialize(mailbox)
           redis_url = mailbox.delivery_options[:redis_url] || "redis://localhost:6379"
           namespace = mailbox.delivery_options[:namespace]
           sentinels = mailbox.delivery_options[:sentinels]
           queue     = mailbox.delivery_options[:queue] || "default"
           worker    = mailbox.delivery_options[:worker]
+          logger = mailbox.logger
 
-          super(redis_url, namespace, sentinels, queue, worker)
+          super(redis_url, namespace, sentinels, queue, worker, logger)
         end
       end
 
@@ -35,6 +36,7 @@ module MailRoom
 
         client.lpush("queue:#{options.queue}", JSON.generate(item))
 
+        @options.logger.info({ delivery_method: 'Sidekiq', action: 'message pushed' })
         true
       end
 
