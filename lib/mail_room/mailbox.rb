@@ -20,10 +20,12 @@ module MailRoom
     :log_path, # for logger
     :delivery_url, # for postback
     :delivery_token, # for postback
+    :content_type, # for postback
     :location, # for letter_opener
     :delivery_options,
     :arbitration_method,
-    :arbitration_options
+    :arbitration_options,
+    :logger
   ]
 
   ConfigurationError = Class.new(RuntimeError)
@@ -53,7 +55,8 @@ module MailRoom
       :expunge_deleted => false,
       :delivery_options => {},
       :arbitration_method => 'noop',
-      :arbitration_options => {}
+      :arbitration_options => {},
+      :logger => {}
     }
 
     # Store the configuration and require the appropriate delivery method
@@ -62,6 +65,17 @@ module MailRoom
       super(*DEFAULTS.merge(attributes).values_at(*members))
 
       validate!
+    end
+
+    def logger
+      @logger ||=
+        case self[:logger]
+          when Logger
+            self[:logger]
+          else
+            self[:logger] ||= {}
+            MailRoom::Logger::Structured.new(self[:logger][:log_path])
+        end
     end
 
     def delivery_klass
@@ -81,6 +95,8 @@ module MailRoom
     end
 
     def deliver?(uid)
+      logger.info({context: context, uid: uid, action: "asking arbiter to deliver", arbitrator: arbitrator.class.name})
+
       arbitrator.deliver?(uid)
     end
 
@@ -90,12 +106,17 @@ module MailRoom
       body = message.attr['RFC822']
       return true unless body
 
+      logger.info({context: context, uid: message.attr['UID'], action: "sending to deliverer", deliverer: delivery.class.name, byte_size: message.attr['RFC822.SIZE']})
       delivery.deliver(body)
     end
 
     # true, false, or ssl options hash
     def ssl_options
       replace_verify_mode(ssl)
+    end
+
+    def context
+      { email: self.email, name: self.name }
     end
 
     def validate!
