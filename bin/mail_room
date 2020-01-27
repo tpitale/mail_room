@@ -2,10 +2,4 @@
 
 require 'mail_room'
 
-begin
-  MailRoom::CLI.new(ARGV).start
-rescue => e
-  json = { time: Time.now, message: e.message, backtrace: e.backtrace }.to_json
-  puts json
-  exit
-end
+MailRoom::CLI.new(ARGV).start
