@@ -21,7 +21,7 @@ describe MailRoom::Logger::Structured do
     expect { subject.unknown(message) }.to output(json_matching("ANY", message)).to_stdout_from_any_process
   end
 
-  it 'only accepts strings' do
+  it 'only accepts hashes' do
     expect { subject.unknown("just a string!") }.to raise_error(ArgumentError, /must be a Hash/)
   end
 

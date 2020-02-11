@@ -13,3 +13,4 @@ require "mail_room/connection"
 require "mail_room/coordinator"
 require "mail_room/cli"
 require 'mail_room/logger/structured'
+require 'mail_room/crash_handler'

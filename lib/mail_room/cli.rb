@@ -2,14 +2,14 @@ module MailRoom
   # The CLI parses ARGV into configuration to start the coordinator with.
   # @author Tony Pitale
   class CLI
-    attr_accessor :configuration, :coordinator
+    attr_accessor :configuration, :coordinator, :options
 
     # Initialize a new CLI instance to handle option parsing from arguments
     #   into configuration to start the coordinator running on all mailboxes
     #
     # @param args [Array] `ARGV` passed from `bin/mail_room`
     def initialize(args)
-      options = {}
+      @options = {}
 
       OptionParser.new do |parser|
         parser.banner = [
@@ -23,6 +23,10 @@ module MailRoom
 
         parser.on('-q', '--quiet') do
           options[:quiet] = true
+        end
+
+        parser.on('--log-exit-as') do |format|
+          options[:exit_error_format] = 'json' unless format.nil?
         end
 
         # parser.on("-l", "--log FILE") do |path|
@@ -50,6 +54,9 @@ module MailRoom
       end
 
       coordinator.run
+    rescue Exception => e # not just Errors, but includes lower-level Exceptions
+      CrashHandler.new(error: e, format: @options[:exit_error_format]).handle
+      exit
     end
   end
 end
