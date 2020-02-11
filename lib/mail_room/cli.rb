@@ -25,8 +25,8 @@ module MailRoom
           options[:quiet] = true
         end
 
-        parser.on('--log-exit-as-json') do
-          options[:json_errors] = true
+        parser.on('--log-exit-as') do |format|
+          options[:exit_error_format] = 'json' unless format.nil?
         end
 
         # parser.on("-l", "--log FILE") do |path|
@@ -54,11 +54,8 @@ module MailRoom
       end
 
       coordinator.run
-    rescue Exception => e
-      raise e unless @options[:json_errors]
-
-      json = { time: Time.now, message: e.message, backtrace: e.backtrace }.to_json
-      puts json
+    rescue Exception => e # not just Errors, but includes lower-level Exceptions
+      CrashHandler.new(error: e, format: @options[:exit_error_format]).handle
       exit
     end
   end
