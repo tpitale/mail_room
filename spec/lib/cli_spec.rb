@@ -37,5 +37,25 @@ describe MailRoom::CLI do
 
       expect(coordinator).to have_received(:run)
     end
+
+    context 'on error' do
+      let(:error_message) { "oh noes!" }
+      let(:coordinator) { OpenStruct.new(run: true, quit: true) }
+
+      before do
+        cli.instance_variable_set(:@options, {exit_error_format: error_format})
+        coordinator.stubs(:run).raises(RuntimeError, error_message)
+      end
+
+      context 'json format provided' do
+        let(:error_format) { 'json' }
+
+        it 'passes onto CrashHandler' do
+          cli.start
+
+          expect(MailRoom::CrashHandler).to have_received(:new).with a_hash_including({format: error_format})
+        end
+      end
+    end
   end
 end
