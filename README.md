@@ -332,6 +332,9 @@ MailRoom will output JSON-formatted logs to give some observability into its ope
 
 Simply configure a `log_path` for the `logger` on any of your mailboxes. By default, nothing will be logged.
 
+If you wish to log to `STDOUT` or `STDERR` instead of a file, you can pass `:stdout` or `:stderr`,
+respectively and MailRoom will log there.
+
 ## Contributing ##
 
 1. Fork it
