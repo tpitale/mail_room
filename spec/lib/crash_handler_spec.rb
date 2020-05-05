@@ -37,5 +37,13 @@ describe MailRoom::CrashHandler do
         expect{ subject.handle }.to raise_error(error.class, error_message)
       end
     end
+
+    context 'when given plain' do
+      let(:format) { "plain" }
+
+      it 'raises an error as designed (plain text, not structured)' do
+        expect{ subject.handle }.to raise_error(error.class, error_message)
+      end
+    end
   end
 end
