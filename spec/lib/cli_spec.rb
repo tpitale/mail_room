@@ -52,22 +52,21 @@ describe MailRoom::CLI do
     end
 
     context 'on error' do
-      let(:error_message) { "oh noes!" }
-      let(:error) { RuntimeError.new(error_message) }
-      let(:coordinator) { OpenStruct.new(run: true, quit: true) }
+      let(:error) { RuntimeError.new("oh noes!") }
+      let(:coordinator) { stub(run: true, quit: true) }
+      let(:crash_handler) { stub(handle: nil) }
 
       before do
         cli.instance_variable_set(:@options, {exit_error_format: error_format})
         coordinator.stubs(:run).raises(error)
+        MailRoom::CrashHandler.stubs(:new).returns(crash_handler)
       end
 
       context 'json format provided' do
         let(:error_format) { 'json' }
 
         it 'passes onto CrashHandler' do
-          handler = stub
-          handler.stubs(:handle)
-          MailRoom::CrashHandler.expects(:new).with({error: error, format: error_format}).returns(handler)
+          handler.expects(:handle).with(error, error_format)
 
           cli.start
         end

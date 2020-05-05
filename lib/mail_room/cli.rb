@@ -55,7 +55,7 @@ module MailRoom
 
       coordinator.run
     rescue Exception => e # not just Errors, but includes lower-level Exceptions
-      CrashHandler.new(error: e, format: @options[:exit_error_format]).handle
+      CrashHandler.new.handle(e, @options[:exit_error_format])
       exit
     end
   end
