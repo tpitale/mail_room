@@ -106,7 +106,7 @@ module MailRoom
       body = message.attr['RFC822']
       return true unless body
 
-      logger.info({context: context, uid: message.attr['UID'], action: "sending to deliverer", deliverer: delivery.class.name, byte_size: message.attr['RFC822.SIZE']})
+      logger.info({context: context, uid: message.attr['UID'], action: "sending to deliverer", deliverer: delivery.class.name, byte_size: body.bytesize})
       delivery.deliver(body)
     end
 
