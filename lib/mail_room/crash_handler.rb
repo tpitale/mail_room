@@ -1,8 +1,7 @@
 
 module MailRoom
   class CrashHandler
-
-    SUPPORTED_FORMATS = %w[json plain]
+    SUPPORTED_FORMATS = %w[json none]
 
     def initialize(stream=STDOUT)
       @stream = stream

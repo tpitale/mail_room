@@ -66,7 +66,7 @@ describe MailRoom::CLI do
         let(:error_format) { 'json' }
 
         it 'passes onto CrashHandler' do
-          handler.expects(:handle).with(error, error_format)
+          crash_handler.expects(:handle).with(error, error_format)
 
           cli.start
         end
