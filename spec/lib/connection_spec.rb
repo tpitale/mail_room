@@ -44,22 +44,14 @@ describe MailRoom::Connection do
         true
       end
 
-      mailbox.stubs(:deliver?).returns(true)
-
-      imap.stubs(:idle)
-      imap.stubs(:uid_search).returns([]).then.returns([1])
-      imap.stubs(:uid_fetch).returns([new_message])
-      imap.stubs(:store)
-      imap.stubs(:expunge)
+      imap.expects(:idle)
+      imap.stubs(:uid_search).with(mailbox.search_command).returns([], [1])
+      imap.expects(:uid_fetch).with([1], "RFC822").returns([new_message])
+      mailbox.expects(:deliver?).with(1).returns(true)
+      imap.expects(:store).with(8, "+FLAGS", [Net::IMAP::DELETED])
+      imap.expects(:expunge).once
 
       connection.wait
-
-      expect(imap).to have_received(:idle)
-      expect(imap).to have_received(:uid_search).with(mailbox.search_command).twice
-      expect(imap).to have_received(:uid_fetch).with([1], "RFC822")
-      expect(mailbox).to have_received(:deliver?).with(1)
-      expect(imap).to have_received(:store).with(8, "+FLAGS", [Net::IMAP::DELETED])
-      expect(imap).to have_received(:expunge).once
     end
   end
 end

@@ -18,19 +18,13 @@ describe MailRoom::Delivery::Postback do
         request = stub
         Faraday.stubs(:new).returns(connection)
 
-        connection.stubs(:token_auth)
-        connection.stubs(:post).yields(request)
+        connection.expects(:token_auth).with('abcdefg')
+        connection.expects(:post).yields(request)
 
-        request.stubs(:url)
-        request.stubs(:body=)
+        request.expects(:url).with('http://localhost/inbox')
+        request.expects(:body=).with('a message')
 
         MailRoom::Delivery::Postback.new(delivery_options).deliver('a message')
-
-        expect(connection).to have_received(:token_auth).with('abcdefg')
-        expect(connection).to have_received(:post)
-
-        expect(request).to have_received(:url).with('http://localhost/inbox')
-        expect(request).to have_received(:body=).with('a message')
       end
     end
 
@@ -52,19 +46,13 @@ describe MailRoom::Delivery::Postback do
         request = stub
         Faraday.stubs(:new).returns(connection)
 
-        connection.stubs(:basic_auth)
-        connection.stubs(:post).yields(request)
+        connection.expects(:basic_auth).with('user1', 'password123abc')
+        connection.expects(:post).yields(request)
 
-        request.stubs(:url)
-        request.stubs(:body=)
+        request.expects(:url).with('http://localhost/inbox')
+        request.expects(:body=).with('a message')
 
         MailRoom::Delivery::Postback.new(delivery_options).deliver('a message')
-
-        expect(connection).to have_received(:basic_auth).with('user1', 'password123abc')
-        expect(connection).to have_received(:post)
-
-        expect(request).to have_received(:url).with('http://localhost/inbox')
-        expect(request).to have_received(:body=).with('a message')
       end
 
       context 'with content type in the delivery options' do
@@ -86,18 +74,14 @@ describe MailRoom::Delivery::Postback do
           connection = stub
           request = stub
           Faraday.stubs(:new).returns(connection)
-  
-          connection.stubs(:basic_auth)
-          connection.stubs(:post).yields(request)
-  
+
+          connection.expects(:post).yields(request)
           request.stubs(:url)
           request.stubs(:body=)
           request.stubs(:headers).returns({})
+          connection.expects(:basic_auth).with('user1', 'password123abc')
 
           MailRoom::Delivery::Postback.new(delivery_options).deliver('a message')
-  
-          expect(connection).to have_received(:basic_auth).with('user1', 'password123abc')
-          expect(connection).to have_received(:post)
           
           expect(request.headers['Content-Type']).to eq('text/plain')
         end

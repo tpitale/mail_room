@@ -12,9 +12,9 @@ describe MailRoom::Mailbox do
 
         uid = 123
 
-        mailbox.deliver?(uid)
+        noop.expects(:deliver?).with(uid)
 
-        expect(noop).to have_received(:deliver?).with(uid)
+        mailbox.deliver?(uid)
       end
     end
 
@@ -23,12 +23,10 @@ describe MailRoom::Mailbox do
         mailbox = build_mailbox({:arbitration_method => 'redis'})
         redis = stub(:deliver?)
         MailRoom::Arbitration['redis'].stubs(:new => redis)
-
         uid = 123
+        redis.expects(:deliver?).with(uid)
 
         mailbox.deliver?(uid)
-
-        expect(redis).to have_received(:deliver?).with(uid)
       end
     end
 
@@ -38,9 +36,9 @@ describe MailRoom::Mailbox do
         noop = stub(:deliver)
         MailRoom::Delivery['noop'].stubs(:new => noop)
 
-        mailbox.deliver(stub(:attr => sample_message))
+        noop.expects(:deliver).with('a message')
 
-        expect(noop).to have_received(:deliver).with('a message')
+        mailbox.deliver(stub(:attr => sample_message))
       end
     end
 
@@ -50,9 +48,9 @@ describe MailRoom::Mailbox do
         logger = stub(:deliver)
         MailRoom::Delivery['logger'].stubs(:new => logger)
 
-        mailbox.deliver(stub(:attr => sample_message))
+        logger.expects(:deliver).with('a message')
 
-        expect(logger).to have_received(:deliver).with('a message')
+        mailbox.deliver(stub(:attr => sample_message))
       end
     end
 
@@ -62,9 +60,9 @@ describe MailRoom::Mailbox do
         postback = stub(:deliver)
         MailRoom::Delivery['postback'].stubs(:new => postback)
 
-        mailbox.deliver(stub(:attr => sample_message))
+        postback.expects(:deliver).with('a message')
 
-        expect(postback).to have_received(:deliver).with('a message')
+        mailbox.deliver(stub(:attr => sample_message))
       end
     end
 
@@ -74,9 +72,9 @@ describe MailRoom::Mailbox do
         letter_opener = stub(:deliver)
         MailRoom::Delivery['letter_opener'].stubs(:new => letter_opener)
 
-        mailbox.deliver(stub(:attr => sample_message))
+        letter_opener.expects(:deliver).with('a message')
 
-        expect(letter_opener).to have_received(:deliver).with('a message')
+        mailbox.deliver(stub(:attr => sample_message))
       end
     end
 
@@ -85,10 +83,9 @@ describe MailRoom::Mailbox do
         mailbox = build_mailbox({ name: "magic mailbox", delivery_method: 'noop' })
         noop = stub(:deliver)
         MailRoom::Delivery['noop'].stubs(:new => noop)
+        noop.expects(:deliver).never
 
         mailbox.deliver(stub(:attr => {'FLAGS' => [:Seen, :Recent]}))
-
-        expect(noop).to have_received(:deliver).never
       end
     end
 

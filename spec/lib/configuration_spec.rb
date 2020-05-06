@@ -19,10 +19,9 @@ describe MailRoom::Configuration do
 
       it 'sets mailboxes to an empty set' do
         MailRoom::Mailbox.stubs(:new)
+        MailRoom::Mailbox.expects(:new).never
 
         expect(configuration.mailboxes).to eq([])
-
-        expect(MailRoom::Mailbox).to have_received(:new).never
       end
     end
   end
