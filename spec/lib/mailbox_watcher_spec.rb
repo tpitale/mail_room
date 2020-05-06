@@ -20,19 +20,15 @@ describe MailRoom::MailboxWatcher do
 
     it 'loops over wait while running' do
       connection = MailRoom::Connection.new(mailbox)
-      connection.stubs(:on_new_message)
-      connection.stubs(:wait)
 
       MailRoom::Connection.stubs(:new).returns(connection)
 
-      watcher.stubs(:running?).returns(true).then.returns(false)
+      watcher.expects(:running?).twice.returns(true, false)
+      connection.expects(:wait).once
+      connection.expects(:on_new_message).once
 
       watcher.run
       watcher.watching_thread.join # wait for finishing run
-
-      expect(watcher).to have_received(:running?).times(2)
-      expect(connection).to have_received(:wait).once
-      expect(connection).to have_received(:on_new_message).once
     end
   end
 
@@ -55,9 +51,10 @@ describe MailRoom::MailboxWatcher do
 
       expect(watcher.running?).to eq(true)
 
+      connection.expects(:quit)
+
       watcher.quit
 
-      expect(connection).to have_received(:quit)
       expect(watcher.running?).to eq(false)
     end
   end

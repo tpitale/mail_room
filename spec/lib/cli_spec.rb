@@ -4,23 +4,35 @@ describe MailRoom::CLI do
   let(:config_path) {File.expand_path('../fixtures/test_config.yml', File.dirname(__FILE__))}
   let!(:configuration) {MailRoom::Configuration.new({:config_path => config_path})}
   let(:coordinator) {stub(:run => true, :quit => true)}
+  let(:configuration_args) { anything }
+  let(:coordinator_args) { anything }
 
   describe '.new' do
     let(:args) {["-c", "a path"]}
 
     before :each do
-      MailRoom::Configuration.stubs(:new).returns(configuration)
-      MailRoom::Coordinator.stubs(:new).returns(coordinator)
+      MailRoom::Configuration.expects(:new).with(configuration_args).returns(configuration)
+      MailRoom::Coordinator.stubs(:new).with(coordinator_args).returns(coordinator)
     end
 
-    it 'parses arguments into configuration' do
-      expect(MailRoom::CLI.new(args).configuration).to eq(configuration)
-      expect(MailRoom::Configuration).to have_received(:new).with({:config_path => 'a path'})
+    context 'with configuration args' do
+      let(:configuration_args) do
+        {:config_path => 'a path'}
+      end
+
+      it 'parses arguments into configuration' do
+        expect(MailRoom::CLI.new(args).configuration).to eq configuration
+      end
     end
 
-    it 'creates a new coordinator with configuration' do
-      expect(MailRoom::CLI.new(args).coordinator).to eq(coordinator)
-      expect(MailRoom::Coordinator).to have_received(:new).with(configuration.mailboxes)
+    context 'with coordinator args' do
+      let(:coordinator_args) do
+        configuration.mailboxes
+      end
+
+      it 'creates a new coordinator with configuration' do
+        expect(MailRoom::CLI.new(args).coordinator).to eq(coordinator)
+      end
     end
   end
 
@@ -30,30 +42,34 @@ describe MailRoom::CLI do
     before :each do
       cli.configuration = configuration
       cli.coordinator = coordinator
+      cli.stubs(:exit)
     end
 
     it 'starts running the coordinator' do
-      cli.start
+      coordinator.expects(:run)
 
-      expect(coordinator).to have_received(:run)
+      cli.start
     end
 
     context 'on error' do
       let(:error_message) { "oh noes!" }
+      let(:error) { RuntimeError.new(error_message) }
       let(:coordinator) { OpenStruct.new(run: true, quit: true) }
 
       before do
         cli.instance_variable_set(:@options, {exit_error_format: error_format})
-        coordinator.stubs(:run).raises(RuntimeError, error_message)
+        coordinator.stubs(:run).raises(error)
       end
 
       context 'json format provided' do
         let(:error_format) { 'json' }
 
         it 'passes onto CrashHandler' do
-          cli.start
+          handler = stub
+          handler.stubs(:handle)
+          MailRoom::CrashHandler.expects(:new).with({error: error, format: error_format}).returns(handler)
 
-          expect(MailRoom::CrashHandler).to have_received(:new).with a_hash_including({format: error_format})
+          cli.start
         end
       end
     end
