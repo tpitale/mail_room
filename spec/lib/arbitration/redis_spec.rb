@@ -78,7 +78,7 @@ describe MailRoom::Arbitration::Redis do
 
   context 'redis client connection params' do
     context 'when only url is present' do
-      let(:redis_url) { "redis://localhost:6379" }
+      let(:redis_url) { ENV.fetch('REDIS_URL', 'redis://localhost:6379') }
       let(:mailbox) {
         build_mailbox(
           arbitration_options: {
