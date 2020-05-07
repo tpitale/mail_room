@@ -5,7 +5,8 @@ describe MailRoom::Arbitration::Redis do
   let(:mailbox) {
     build_mailbox(
       arbitration_options: {
-        namespace: "mail_room"
+        namespace: "mail_room",
+        redis_url: ENV['REDIS_URL']
       }
     )
   }
