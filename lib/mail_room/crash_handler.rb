@@ -1,19 +1,15 @@
 
 module MailRoom
   class CrashHandler
-
-    attr_reader :error, :format
-
     SUPPORTED_FORMATS = %w[json none]
 
-    def initialize(error:, format:)
-      @error = error
-      @format = format
+    def initialize(stream=STDOUT)
+      @stream = stream
     end
 
-    def handle
+    def handle(error, format)
       if format == 'json'
-        puts json
+        @stream.puts json(error)
         return
       end
 
@@ -22,7 +18,7 @@ module MailRoom
 
     private
 
-    def json
+    def json(error)
       { time: Time.now, severity: :fatal, message: error.message, backtrace: error.backtrace }.to_json
     end
   end
