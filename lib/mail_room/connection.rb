@@ -27,7 +27,7 @@ module MailRoom
     # is the imap connection closed?
     # @return [Boolean]
     def disconnected?
-      @imap.disconnected?
+      imap.disconnected?
     end
 
     # is the connection ready to idle?
@@ -174,7 +174,7 @@ module MailRoom
     # @return [Array<Integer>] message ids
     def new_message_ids
       # uid_search still leaves messages UNSEEN
-      all_unread = @imap.uid_search(@mailbox.search_command)
+      all_unread = imap.uid_search(@mailbox.search_command)
 
       to_deliver = all_unread.select { |uid| @mailbox.deliver?(uid) }
       @mailbox.logger.info({ context: @mailbox.context, action: "Getting new messages", unread: {count: all_unread.count, ids: all_unread}, to_be_delivered: { count: to_deliver.count, ids: all_unread } })
