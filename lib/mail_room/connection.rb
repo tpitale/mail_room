@@ -49,8 +49,8 @@ module MailRoom
         idle
 
         process_mailbox
-      rescue Net::IMAP::Error, IOError
-        @mailbox.logger.warn({ context: @mailbox.context, action: "Disconnected. Resetting..." })
+      rescue Net::IMAP::Error, IOError => e
+        @mailbox.logger.warn({ context: @mailbox.context, action: "Disconnected. Resetting...", error: e })
         reset
         setup
       end
@@ -176,8 +176,14 @@ module MailRoom
       # uid_search still leaves messages UNSEEN
       all_unread = imap.uid_search(@mailbox.search_command)
 
+      max_unread = @mailbox.limit_max_unread
+      if (max_unread > 0) && (all_unread.count > max_unread)
+        @mailbox.logger.warn({ context: @mailbox.context, action: "limit all_unread", count: all_unread.count, limit: max_unread})
+        all_unread = all_unread.slice(0, max_unread)
+      end
+
       to_deliver = all_unread.select { |uid| @mailbox.deliver?(uid) }
-      @mailbox.logger.info({ context: @mailbox.context, action: "Getting new messages", unread: {count: all_unread.count, ids: all_unread}, to_be_delivered: { count: to_deliver.count, ids: all_unread } })
+      @mailbox.logger.info({ context: @mailbox.context, action: "Getting new messages", unread: {count: all_unread.count, ids: all_unread}, to_be_delivered: { count: to_deliver.count, ids: to_deliver } })
       to_deliver
     end
 

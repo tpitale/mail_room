@@ -10,6 +10,7 @@ module MailRoom
     :port,
     :ssl,
     :start_tls,
+    :limit_max_unread, #to avoid 'Error in IMAP command UID FETCH: Too long argument'
     :idle_timeout,
     :search_command,
     :name,
@@ -50,6 +51,7 @@ module MailRoom
       :port => 993,
       :ssl => true,
       :start_tls => false,
+      :limit_max_unread => 0,
       :idle_timeout => IMAP_IDLE_TIMEOUT,
       :delete_after_delivery => false,
       :expunge_deleted => false,
