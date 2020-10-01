@@ -50,7 +50,7 @@ module MailRoom
 
         process_mailbox
       rescue Net::IMAP::Error, IOError => e
-        @mailbox.logger.warn({ context: @mailbox.context, action: "Disconnected. Resetting...", error: e })
+        @mailbox.logger.warn({ context: @mailbox.context, action: "Disconnected. Resetting...", error: e.message })
         reset
         setup
       end
