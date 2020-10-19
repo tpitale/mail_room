@@ -176,7 +176,7 @@ module MailRoom
       # uid_search still leaves messages UNSEEN
       all_unread = imap.uid_search(@mailbox.search_command)
 
-      all_unread = all_unread.slice(0, @mailbox.limit_max_unread) unless @mailbox.limit_max_unread.nil? || @mailbox.limit_max_unread == 0
+      all_unread = all_unread.slice(0, @mailbox.limit_max_unread) if @mailbox.limit_max_unread.to_i > 0
 
       to_deliver = all_unread.select { |uid| @mailbox.deliver?(uid) }
       @mailbox.logger.info({ context: @mailbox.context, action: "Getting new messages", unread: {count: all_unread.count, ids: all_unread}, to_be_delivered: { count: to_deliver.count, ids: to_deliver } })
