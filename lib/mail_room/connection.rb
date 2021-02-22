@@ -1,8 +1,23 @@
 # frozen_string_literal: true
 
 module MailRoom
-  module Connection
-    autoload :Base, 'mail_room/connection/base'
-    autoload :IMAP, 'mail_room/connection/imap'
+  class Connection
+    attr_reader :mailbox, :new_message_handler
+
+    def initialize(mailbox)
+      @mailbox = mailbox
+    end
+
+    def on_new_message(&block)
+      @new_message_handler = block
+    end
+
+    def wait
+      raise NotImplementedError
+    end
+
+    def quit
+      raise NotImplementedError
+    end
   end
 end

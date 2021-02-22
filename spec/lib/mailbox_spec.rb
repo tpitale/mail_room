@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe MailRoom::Mailbox do
-  let(:sample_message) { {'RFC822' => 'a message', 'UID' => 123} }
+  let(:sample_message) { MailRoom::Message.new(uid: 123, body: 'a message') }
 
   describe "#deliver" do
     context "with arbitration_method of noop" do
@@ -36,9 +36,9 @@ describe MailRoom::Mailbox do
         noop = stub(:deliver)
         MailRoom::Delivery['noop'].stubs(:new => noop)
 
-        noop.expects(:deliver).with('a message')
+        noop.expects(:deliver).with(sample_message.body)
 
-        mailbox.deliver(stub(:attr => sample_message))
+        mailbox.deliver(sample_message)
       end
     end
 
@@ -48,9 +48,9 @@ describe MailRoom::Mailbox do
         logger = stub(:deliver)
         MailRoom::Delivery['logger'].stubs(:new => logger)
 
-        logger.expects(:deliver).with('a message')
+        logger.expects(:deliver).with(sample_message.body)
 
-        mailbox.deliver(stub(:attr => sample_message))
+        mailbox.deliver(sample_message)
       end
     end
 
@@ -60,9 +60,9 @@ describe MailRoom::Mailbox do
         postback = stub(:deliver)
         MailRoom::Delivery['postback'].stubs(:new => postback)
 
-        postback.expects(:deliver).with('a message')
+        postback.expects(:deliver).with(sample_message.body)
 
-        mailbox.deliver(stub(:attr => sample_message))
+        mailbox.deliver(sample_message)
       end
     end
 
@@ -72,9 +72,9 @@ describe MailRoom::Mailbox do
         letter_opener = stub(:deliver)
         MailRoom::Delivery['letter_opener'].stubs(:new => letter_opener)
 
-        letter_opener.expects(:deliver).with('a message')
+        letter_opener.expects(:deliver).with(sample_message.body)
 
-        mailbox.deliver(stub(:attr => sample_message))
+        mailbox.deliver(sample_message)
       end
     end
 
@@ -85,7 +85,7 @@ describe MailRoom::Mailbox do
         MailRoom::Delivery['noop'].stubs(:new => noop)
         noop.expects(:deliver).never
 
-        mailbox.deliver(stub(:attr => {'FLAGS' => [:Seen, :Recent]}))
+        mailbox.deliver(MailRoom::Message.new(uid: 1234, body: nil))
       end
     end
 

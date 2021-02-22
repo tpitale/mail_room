@@ -1,5 +1,6 @@
 require "mail_room/delivery"
 require "mail_room/arbitration"
+require "mail_room/imap"
 
 module MailRoom
   # Mailbox Configuration fields
@@ -102,13 +103,13 @@ module MailRoom
       arbitrator.deliver?(uid)
     end
 
-    # deliver the imap email message
-    # @param message [Net::IMAP::FetchData]
+    # deliver the email message
+    # @param message [MailRoom::Message]
     def deliver(message)
-      body = message.attr['RFC822']
+      body = message.body
       return true unless body
 
-      logger.info({context: context, uid: message.attr['UID'], action: "sending to deliverer", deliverer: delivery.class.name, byte_size: body.bytesize})
+      logger.info({context: context, uid: message.uid, action: "sending to deliverer", deliverer: delivery.class.name, byte_size: body.bytesize})
       delivery.deliver(body)
     end
 

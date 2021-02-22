@@ -58,7 +58,7 @@ module MailRoom
 
     private
     def connection
-      @connection ||= ::MailRoom::Connection::IMAP.new(@mailbox)
+      @connection ||= ::MailRoom::IMAP::Connection.new(@mailbox)
     end
   end
 end

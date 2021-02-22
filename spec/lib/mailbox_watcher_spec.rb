@@ -19,9 +19,9 @@ describe MailRoom::MailboxWatcher do
     end
 
     it 'loops over wait while running' do
-      connection = MailRoom::Connection::IMAP.new(mailbox)
+      connection = MailRoom::IMAP::Connection.new(mailbox)
 
-      MailRoom::Connection::IMAP.stubs(:new).returns(connection)
+      MailRoom::IMAP::Connection.stubs(:new).returns(connection)
 
       watcher.expects(:running?).twice.returns(true, false)
       connection.expects(:wait).once
@@ -41,11 +41,11 @@ describe MailRoom::MailboxWatcher do
     end
 
     it 'closes and waits for the connection' do
-      connection = MailRoom::Connection::IMAP.new(mailbox)
+      connection = MailRoom::IMAP::Connection.new(mailbox)
       connection.stubs(:wait)
       connection.stubs(:quit)
 
-      MailRoom::Connection::IMAP.stubs(:new).returns(connection)
+      MailRoom::IMAP::Connection.stubs(:new).returns(connection)
 
       watcher.run
 

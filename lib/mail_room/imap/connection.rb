@@ -1,16 +1,14 @@
+# frozen_string_literal: true
+
 module MailRoom
-  module Connection
-    class IMAP < Base
+  module IMAP
+    class Connection < MailRoom::Connection
       def initialize(mailbox)
         super
 
         # log in and set the mailbox
         reset
         setup
-      end
-
-      def on_new_message(&block)
-        @new_message_handler = block
       end
 
       # is the connection logged in?
@@ -135,7 +133,6 @@ module MailRoom
         @mailbox.logger.info({ context: @mailbox.context, action: 'Processing started' })
 
         msgs = new_messages
-
         any_deletions = msgs.
                         # deliver each new message, collect success
                         map(&@new_message_handler).
@@ -187,12 +184,16 @@ module MailRoom
       # @private
       # fetch the email for all given ids in RFC822 format
       # @param ids [Array<Integer>] list of message ids
-      # @return [Array<Net::IMAP::FetchData>] the net/imap messages for the given ids
+      # @return [Array<MailRoom::IMAP::Message>] the net/imap messages for the given ids
       def messages_for_ids(uids)
         return [] if uids.empty?
 
         # uid_fetch marks as SEEN, will not be re-fetched for UNSEEN
-        imap.uid_fetch(uids, 'RFC822')
+        imap_messages = imap.uid_fetch(uids, 'RFC822')
+
+        imap_messages.each_with_object([]) do |msg, messages|
+          messages << ::MailRoom::IMAP::Message.new(uid: msg.attr['UID'], body: msg.attr['RFC822'], seqno: msg.seqno)
+        end
       end
     end
   end
