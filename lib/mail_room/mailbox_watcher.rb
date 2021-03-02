@@ -1,3 +1,5 @@
+require "mail_room/connection"
+
 module MailRoom
   # TODO: split up between processing and idling?
 
@@ -56,7 +58,7 @@ module MailRoom
 
     private
     def connection
-      @connection ||= Connection.new(@mailbox)
+      @connection ||= ::MailRoom::Connection::IMAP.new(@mailbox)
     end
   end
 end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MailRoom::Connection do
+describe MailRoom::Connection::IMAP do
   let(:imap) {stub}
   let(:mailbox) {build_mailbox(delete_after_delivery: true, expunge_deleted: true)}
 
@@ -9,7 +9,7 @@ describe MailRoom::Connection do
   end
 
   context "with imap set up" do
-    let(:connection) {MailRoom::Connection.new(mailbox)}
+    let(:connection) {MailRoom::Connection::IMAP.new(mailbox)}
 
     before :each do
       imap.stubs(:starttls)
