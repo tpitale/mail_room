@@ -15,6 +15,13 @@ describe MailRoom::Coordinator do
       coordinator = MailRoom::Coordinator.new([])
       expect(coordinator.watchers).to eq([])
     end
+
+    it 'sets the health check' do
+      health_check = MailRoom::HealthCheck.new({ address: '127.0.0.1', port: 8080})
+      coordinator = MailRoom::Coordinator.new([], health_check)
+
+      expect(coordinator.health_check).to eq(health_check)
+    end
   end
 
   describe '#run' do
@@ -22,15 +29,22 @@ describe MailRoom::Coordinator do
       watcher = stub
       watcher.stubs(:run)
       watcher.stubs(:quit)
+
+      health_check = stub
+      health_check.stubs(:run)
+      health_check.stubs(:quit)
+
       MailRoom::MailboxWatcher.stubs(:new).returns(watcher)
-      coordinator = MailRoom::Coordinator.new(['mailbox1'])
+      coordinator = MailRoom::Coordinator.new(['mailbox1'], health_check)
       coordinator.stubs(:sleep_while_running)
       watcher.expects(:run)
       watcher.expects(:quit)
+      health_check.expects(:run)
+      health_check.expects(:quit)
 
       coordinator.run
     end
-    
+
     it 'should go to sleep after running watchers' do
       coordinator = MailRoom::Coordinator.new([])
       coordinator.stubs(:running=)
