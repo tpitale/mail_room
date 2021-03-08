@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MailRoom::Connection do
+describe MailRoom::IMAP::Connection do
   let(:imap) {stub}
   let(:mailbox) {build_mailbox(delete_after_delivery: true, expunge_deleted: true)}
 
@@ -9,7 +9,9 @@ describe MailRoom::Connection do
   end
 
   context "with imap set up" do
-    let(:connection) {MailRoom::Connection.new(mailbox)}
+    let(:connection) {MailRoom::IMAP::Connection.new(mailbox)}
+    let(:uid) { 1 }
+    let(:seqno) { 8 }
 
     before :each do
       imap.stubs(:starttls)
@@ -36,19 +38,21 @@ describe MailRoom::Connection do
     end
 
     it "waits for a message to process" do
-      new_message = 'a message'
-      new_message.stubs(:seqno).returns(8)
+      new_message = MailRoom::IMAP::Message.new(uid: uid, body: 'a message', seqno: seqno)
 
       connection.on_new_message do |message|
         expect(message).to eq(new_message)
         true
       end
 
+      attr = { 'UID' => uid, 'RFC822' => new_message.body }
+      fetch_data = Net::IMAP::FetchData.new(seqno, attr)
+
       imap.expects(:idle)
-      imap.stubs(:uid_search).with(mailbox.search_command).returns([], [1])
-      imap.expects(:uid_fetch).with([1], "RFC822").returns([new_message])
-      mailbox.expects(:deliver?).with(1).returns(true)
-      imap.expects(:store).with(8, "+FLAGS", [Net::IMAP::DELETED])
+      imap.stubs(:uid_search).with(mailbox.search_command).returns([], [uid])
+      imap.expects(:uid_fetch).with([uid], "RFC822").returns([fetch_data])
+      mailbox.expects(:deliver?).with(uid).returns(true)
+      imap.expects(:store).with(seqno, "+FLAGS", [Net::IMAP::DELETED])
       imap.expects(:expunge).once
 
       connection.wait
