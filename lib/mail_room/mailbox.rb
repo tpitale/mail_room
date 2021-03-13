@@ -1,11 +1,14 @@
 require "mail_room/delivery"
 require "mail_room/arbitration"
 require "mail_room/imap"
+require "mail_room/microsoft_graph"
 
 module MailRoom
   # Mailbox Configuration fields
   MAILBOX_FIELDS = [
     :email,
+    :inbox_method,
+    :inbox_options,
     :password,
     :host,
     :port,
@@ -42,7 +45,9 @@ module MailRoom
     # 29 minutes, as suggested by the spec: https://tools.ietf.org/html/rfc2177
     IMAP_IDLE_TIMEOUT = 29 * 60 # 29 minutes in in seconds
 
-    REQUIRED_CONFIGURATION = [:name, :email, :password, :host, :port]
+    IMAP_CONFIGURATION = [:name, :email, :password, :host, :port].freeze
+    MICROSOFT_GRAPH_CONFIGURATION = [:name, :email].freeze
+    MICROSOFT_GRAPH_INBOX_OPTIONS = [:tenant_id, :client_id, :client_secret].freeze
 
     # Default attributes for the mailbox configuration
     DEFAULTS = {
@@ -122,14 +127,32 @@ module MailRoom
       { email: self.email, name: self.name }
     end
 
+    def imap?
+      !microsoft_graph?
+    end
+
+    def microsoft_graph?
+      self[:inbox_method].to_s == 'microsoft_graph'
+    end
+
     def validate!
+      if microsoft_graph?
+        validate_microsoft_graph!
+      else
+        validate_imap!
+      end
+    end
+
+    private
+
+    def validate_imap!
       if self[:idle_timeout] > IMAP_IDLE_TIMEOUT
         raise IdleTimeoutTooLarge,
               "Please use an idle timeout smaller than #{29*60} to prevent " \
               "IMAP server disconnects"
       end
 
-      REQUIRED_CONFIGURATION.each do |k|
+      IMAP_CONFIGURATION.each do |k|
         if self[k].nil?
           raise ConfigurationError,
                 "Field :#{k} is required in Mailbox: #{inspect}"
@@ -137,7 +160,23 @@ module MailRoom
       end
     end
 
-    private
+    def validate_microsoft_graph!
+      raise ConfigurationError, "Missing inbox_options in Mailbox: #{inspect}" unless self.inbox_options.is_a?(Hash)
+
+      MICROSOFT_GRAPH_CONFIGURATION.each do |k|
+        if self[k].nil?
+          raise ConfigurationError,
+                "Field :#{k} is required in Mailbox: #{inspect}"
+        end
+      end
+
+      MICROSOFT_GRAPH_INBOX_OPTIONS.each do |k|
+        if self[:inbox_options][k].nil?
+          raise ConfigurationError,
+                "inbox_options field :#{k} is required in Mailbox: #{inspect}"
+        end
+      end
+    end
 
     def parsed_arbitration_options
       arbitration_klass::Options.new(self)

@@ -27,6 +27,16 @@ REQUIRED_MAILBOX_DEFAULTS = {
   :password => "password123"
 }
 
+REQUIRED_MICROSOFT_GRAPH_DEFAULTS = {
+  password: nil,
+  inbox_method: :microsoft_graph,
+  inbox_options: {
+    tenant_id: '98776',
+    client_id: '12345',
+    client_secret: 'MY-SECRET',
+  }.freeze
+}.freeze
+
 def build_mailbox(options = {})
   MailRoom::Mailbox.new(REQUIRED_MAILBOX_DEFAULTS.merge(options))
 end

@@ -57,8 +57,14 @@ module MailRoom
     end
 
     private
+
     def connection
-      @connection ||= ::MailRoom::IMAP::Connection.new(@mailbox)
+      @connection ||=
+        if @mailbox.imap?
+          ::MailRoom::IMAP::Connection.new(@mailbox)
+        else
+          ::MailRoom::MicrosoftGraph::Connection.new(@mailbox)
+        end
     end
   end
 end
