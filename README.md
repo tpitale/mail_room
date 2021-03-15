@@ -35,6 +35,9 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
 
 ```yaml
 ---
+:health_check:
+  :address: "127.0.0.1"
+  :port: 8080
 :mailboxes:
   -
     :email: "user1@gmail.com"
@@ -98,6 +101,16 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
 
 **Note:** If using `delete_after_delivery`, you also probably want to use
 `expunge_deleted` unless you really know what you're doing.
+
+## health_check ##
+
+Requires `webrick` gem to be installed.
+
+This option enables an HTTP server that listens to a bind address
+defined by `address` and `port`. The following endpoints are supported:
+
+* `/liveness`: This returns a 200 status code with `OK` as the body if
+the server is running. Otherwise, it returns a 500 status code.
 
 ## delivery_method ##
 
