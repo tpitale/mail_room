@@ -243,7 +243,7 @@ it's probably because the content-type is set to Faraday's default, which is  `H
 ## idle_timeout ##
 
 By default, the IDLE command will wait for 29 minutes (in order to keep the server connection happy).
-If you'd prefer not to wait that long, you can pass `imap_timeout` in seconds for your mailbox configuration.
+If you'd prefer not to wait that long, you can pass `idle_timeout` in seconds for your mailbox configuration.
 
 ## Search Command ##
 
