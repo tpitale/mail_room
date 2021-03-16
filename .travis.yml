@@ -4,7 +4,7 @@ rvm:
   - 2.4
   - 2.5
   - 2.6
-  - truffleruby-head
+  - truffleruby
 services:
   - redis-server
 script: bundle exec rspec spec
