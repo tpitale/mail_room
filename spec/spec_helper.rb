@@ -2,6 +2,7 @@ require 'simplecov'
 SimpleCov.start
 
 require 'bundler/setup'
+require 'date'
 
 require 'rspec'
 require 'mocha/api'

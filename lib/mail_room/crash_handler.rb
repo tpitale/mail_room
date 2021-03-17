@@ -1,3 +1,4 @@
+require 'date'
 
 module MailRoom
   class CrashHandler
@@ -19,7 +20,7 @@ module MailRoom
     private
 
     def json(error)
-      { time: Time.now, severity: :fatal, message: error.message, backtrace: error.backtrace }.to_json
+      { time: DateTime.now.iso8601(3), severity: :fatal, message: error.message, backtrace: error.backtrace }.to_json
     end
   end
 end
