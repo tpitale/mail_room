@@ -5,8 +5,12 @@ rvm:
   - 3.0
   - truffleruby
 services:
-  - redis-server
+  - redis
 script:
   - bundle exec rspec spec
-  - bundle exec rubocop
-sudo: false
+
+jobs:
+  - language: ruby
+    rvm: 2.7
+    script:
+      - bundle exec rubocop
