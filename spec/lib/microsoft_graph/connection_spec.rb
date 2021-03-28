@@ -132,7 +132,7 @@ describe MailRoom::MicrosoftGraph::Connection do
       end
     end
 
-    context 'invald JSON response' do
+    context 'invalid JSON response' do
       let(:body) { 'this is something' }
 
       it 'ignores the message and logs a warning' do
