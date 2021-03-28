@@ -133,7 +133,7 @@ If you're seeing the error `Please log in via your web browser: https://support.
 
 ### Microsoft Graph configuration
 
-To use the Microsoft Graph API instead of IMA to read e-mail, you will
+To use the Microsoft Graph API instead of IMAP to read e-mail, you will
 need to create an application in the Azure Active Directory. Follow the
 [Microsoft instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-configure-app-expose-web-apis).
 
