@@ -60,10 +60,10 @@ module MailRoom
 
     def connection
       @connection ||=
-        if @mailbox.imap?
-          ::MailRoom::IMAP::Connection.new(@mailbox)
-        else
+        if @mailbox.microsoft_graph?
           ::MailRoom::MicrosoftGraph::Connection.new(@mailbox)
+        else
+          ::MailRoom::IMAP::Connection.new(@mailbox)
         end
     end
   end
