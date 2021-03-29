@@ -110,6 +110,7 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
       :tenant_id: 12345
       :client_id: ABCDE
       :client_secret: YOUR-SECRET-HERE
+      :poll_interval: 60
     :delivery_method: sidekiq
     :delivery_options:
       :redis_url: redis://localhost:6379
@@ -158,7 +159,11 @@ and fill in `inbox_options` with the values obtained above:
       :tenant_id: 12345
       :client_id: ABCDE
       :client_secret: YOUR-SECRET-HERE
+      :poll_interval: 60
 ```
+
+By default, MailRoom will poll for new messages every 60 seconds. `poll_interval` configures the number of
+seconds to poll. Setting the value to 0 or under will default to 60 seconds.
 
 ## delivery_method ##
 

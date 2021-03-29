@@ -47,6 +47,30 @@ describe MailRoom::MicrosoftGraph::Connection do
       connection.stubs(:wait_for_new_messages)
     end
 
+    describe 'poll interval' do
+      it 'defaults to 60 seconds' do
+        expect(connection.send(:poll_interval)).to eq(60)
+      end
+
+      context 'interval set to 10' do
+        let(:options) do
+          {
+            inbox_method: :microsoft_graph,
+            inbox_options: {
+              tenant_id: '98776',
+              client_id: '12345',
+              client_secret: 'MY-SECRET',
+              poll_interval: '10'
+            }
+          }
+        end
+
+        it 'sets the poll interval to 10' do
+          expect(connection.send(:poll_interval)).to eq(10)
+        end
+      end
+    end
+
     context 'with a single message' do
       let(:message_id) { SecureRandom.hex }
       let(:unread_messages_body) { { value: ['id' => message_id] } }

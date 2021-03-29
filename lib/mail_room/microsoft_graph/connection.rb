@@ -8,6 +8,7 @@ module MailRoom
     class Connection < MailRoom::Connection
       SCOPE = 'https://graph.microsoft.com/.default'
       NEXT_PAGE_KEY = '@odata.nextLink'
+      DEFAULT_POLL_INTERVAL_S = 60
 
       TooManyRequestsError = Class.new(RuntimeError)
 
@@ -41,7 +42,7 @@ module MailRoom
       private
 
       def wait_for_new_messages
-        sleep 60
+        sleep poll_interval
       end
 
       def backoff
@@ -85,6 +86,18 @@ module MailRoom
 
       def client_secret
         inbox_options[:client_secret]
+      end
+
+      def poll_interval
+        @poll_interval ||= begin
+          interval = inbox_options[:poll_interval].to_i
+
+          if interval.positive?
+            interval
+          else
+            DEFAULT_POLL_INTERVAL_S
+          end
+        end
       end
 
       def process_mailbox
