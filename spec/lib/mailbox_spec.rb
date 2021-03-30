@@ -3,6 +3,17 @@ require 'spec_helper'
 describe MailRoom::Mailbox do
   let(:sample_message) { MailRoom::Message.new(uid: 123, body: 'a message') }
 
+  context 'with IMAP configuration' do
+    subject { build_mailbox }
+
+    describe '#imap?' do
+      it 'configured as an IMAP inbox' do
+        expect(subject.imap?).to be true
+        expect(subject.microsoft_graph?).to be false
+      end
+    end
+  end
+
   describe "#deliver" do
     context "with arbitration_method of noop" do
       it 'arbitrates with a Noop instance' do
@@ -123,6 +134,43 @@ describe MailRoom::Mailbox do
       it 'raises an error' do
         expect { build_mailbox({:name => nil}) }.to raise_error(MailRoom::ConfigurationError)
         expect { build_mailbox({:host => nil}) }.to raise_error(MailRoom::ConfigurationError)
+      end
+    end
+
+    context "with Microsoft Graph configuration" do
+      let(:options) do
+        {
+          arbitration_method: 'redis',
+        }.merge(REQUIRED_MICROSOFT_GRAPH_DEFAULTS)
+      end
+
+      subject { build_mailbox(options) }
+
+      def delete_inbox_option(key)
+        options[:inbox_options] = options[:inbox_options].dup.delete(key)
+      end
+
+      it 'allows password omission' do
+        expect { subject }.not_to raise_error
+      end
+
+      it 'configured as a Microsoft Graph inbox' do
+        expect(subject.imap?).to be false
+        expect(subject.microsoft_graph?).to be true
+      end
+
+      it 'raises an error when the inbox options are not present' do
+        options.delete(:inbox_options)
+
+        expect { subject }.to raise_error(MailRoom::ConfigurationError)
+      end
+
+      %i[tenant_id client_id client_secret].each do |item|
+        it "raises an error when the #{item} is not present" do
+          delete_inbox_option(item)
+
+          expect { subject }.to raise_error(MailRoom::ConfigurationError)
+        end
       end
     end
   end

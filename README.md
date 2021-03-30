@@ -1,6 +1,13 @@
 # mail_room #
 
-mail_room is a configuration based process that will idle on IMAP connections and execute a delivery method when a new message is received. Examples of delivery methods include:
+mail_room is a configuration based process that will listen for incoming
+e-mail and execute a delivery method when a new message is
+received. mail_room supports the following methods for receiving e-mail:
+
+* IMAP
+* [Microsoft Graph API](https://docs.microsoft.com/en-us/graph/api/resources/mail-api-overview?view=graph-rest-1.0)
+
+Examples of delivery methods include:
 
 * POST to a delivery URL (Postback)
 * Queue a job to Sidekiq or Que for later processing (Sidekiq or Que)
@@ -94,10 +101,69 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
           :host: 127.0.0.1
           :port: 26379
       :worker: EmailReceiverWorker
+  -
+    :email: "user7@outlook365.com"
+    :password: "password"
+    :name: "inbox"
+    :inbox_method: microsoft_graph
+    :inbox_options:
+      :tenant_id: 12345
+      :client_id: ABCDE
+      :client_secret: YOUR-SECRET-HERE
+      :poll_interval: 60
+    :delivery_method: sidekiq
+    :delivery_options:
+      :redis_url: redis://localhost:6379
+      :worker: EmailReceiverWorker
 ```
 
 **Note:** If using `delete_after_delivery`, you also probably want to use
 `expunge_deleted` unless you really know what you're doing.
+
+## inbox_method
+
+By default, IMAP mode is assumed for reading a mailbox.
+
+### IMAP Server Configuration ##
+
+You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), `ssl` (default: true), and `start_tls` (default: false).
+
+If you want to set additional options for IMAP SSL you can pass a YAML hash to match [SSLContext#set_params](http://docs.ruby-lang.org/en/2.2.0/OpenSSL/SSL/SSLContext.html#method-i-set_params). If you set `verify_mode` to `:none` it'll replace with the appropriate constant.
+
+If you're seeing the error `Please log in via your web browser: https://support.google.com/mail/accounts/answer/78754 (Failure)`, you need to configure your Gmail account to allow less secure apps to access it: https://support.google.com/accounts/answer/6010255.
+
+### Microsoft Graph configuration
+
+To use the Microsoft Graph API instead of IMAP to read e-mail, you will
+need to create an application in the Azure Active Directory. Follow the
+[Microsoft instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-configure-app-expose-web-apis).
+
+1. For MailRoom to work as a service account, this application add the
+application permission `Mail.ReadWrite` to read/write mail in *all*
+mailboxes. Delegated permissions for a specific user will NOT work.
+
+1. Be sure to grant admin consent for this application.
+
+1. [Create a client secret](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app?tabs=dotnet#create-a-client-secret).
+
+1. To ensure this application can only read specific mailboxes, [follow these instructions](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access).
+
+1. Obtain the client ID, client secret, and tenant ID for this application.
+
+In the MailRoom, configuration, set `inbox_method` to `microsoft_graph`,
+and fill in `inbox_options` with the values obtained above:
+
+```yaml
+    :inbox_method: microsoft_graph
+    :inbox_options:
+      :tenant_id: 12345
+      :client_id: ABCDE
+      :client_secret: YOUR-SECRET-HERE
+      :poll_interval: 60
+```
+
+By default, MailRoom will poll for new messages every 60 seconds. `poll_interval` configures the number of
+seconds to poll. Setting the value to 0 or under will default to 60 seconds.
 
 ## delivery_method ##
 
@@ -248,14 +314,6 @@ If you'd prefer not to wait that long, you can pass `idle_timeout` in seconds fo
 ## Search Command ##
 
 This setting allows configuration of the IMAP search command sent to the server. This still defaults 'UNSEEN'. You may find that 'NEW' works better for you.
-
-## IMAP Server Configuration ##
-
-You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), `ssl` (default: true), and `start_tls` (default: false).
-
-If you want to set additional options for IMAP SSL you can pass a YAML hash to match [SSLContext#set_params](http://docs.ruby-lang.org/en/2.2.0/OpenSSL/SSL/SSLContext.html#method-i-set_params). If you set `verify_mode` to `:none` it'll replace with the appropriate constant.
-
-If you're seeing the error `Please log in via your web browser: https://support.google.com/mail/accounts/answer/78754 (Failure)`, you need to configure your Gmail account to allow less secure apps to access it: https://support.google.com/accounts/answer/6010255.
 
 ## Running in Production ##
 
