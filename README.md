@@ -135,23 +135,44 @@ If you're seeing the error `Please log in via your web browser: https://support.
 ### Microsoft Graph configuration
 
 To use the Microsoft Graph API instead of IMAP to read e-mail, you will
-need to create an application in the Azure Active Directory. Follow the
-[Microsoft instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-configure-app-expose-web-apis).
+need to create an application in the Azure Active Directory. See the
+[Microsoft instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) for more details:
 
-1. For MailRoom to work as a service account, this application add the
-application permission `Mail.ReadWrite` to read/write mail in *all*
-mailboxes. Delegated permissions for a specific user will NOT work.
+1. Sign in to the [Azure portal](https://portal.azure.com).
+1. Search for and select `Azure Active Directory`.
+1. Under `Manage`, select `App registrations` > `New registration`.
+1. Enter a `Name` for your application, such as `MailRoom`. Users of your app might see this name, and you can change it later.
+1. If `Supported account types` is listed, select the appropriate option.
+1. Leave `Redirect URI` blank. This is not needed.
+1. Select `Register`.
+1. Under `Manage`, select `Certificates & secrets`.
+1. Under `Client secrets`, select `New client secret`, and enter a name.
+1. Under `Expires`, select `Never`, unless you plan on updating the credentials every time it expires.
+1. Select `Add`. Record the secret value in a safe location for use in a later step.
+1. Under `Manage`, select `API Permissions` > `Add a permission`. Select `Microsoft Graph`.
+1. Select `Application permissions`.
+1. Under the `Mail` node, select `Mail.ReadWrite`, and then select Add permissions.
+1. If `User.Read` is listed in the permission list, you can delete this.
+1. Click `Grant admin consent` for these permissions.
 
-1. Be sure to grant admin consent for this application.
+#### Restrict mailbox access
 
-1. [Create a client secret](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app?tabs=dotnet#create-a-client-secret).
+Note that for MailRoom to work as a service account, this application
+must have the `Mail.ReadWrite` to read/write mail in *all*
+mailboxes. However, while this appears to be security risk,
+we can configure an application access policy to limit the
+mailbox access for this account. [Follow these instructions](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access)
+to setup PowerShell and configure this policy.
 
-1. To ensure this application can only read specific mailboxes, [follow these instructions](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access).
+#### MailRoom config for Microsoft Graph
 
-1. Obtain the client ID, client secret, and tenant ID for this application.
+In the MailRoom configuration, set `inbox_method` to `microsoft_graph`.
+You will also need:
 
-In the MailRoom, configuration, set `inbox_method` to `microsoft_graph`,
-and fill in `inbox_options` with the values obtained above:
+* The client and tenant ID from the `Overview` section in the Azure app page
+* The client secret created earlier
+
+Fill in `inbox_options` with these values:
 
 ```yaml
     :inbox_method: microsoft_graph
