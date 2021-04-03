@@ -32,7 +32,7 @@ module MailRoom
         @mailbox.logger.warn({ context: @mailbox.context, action: 'Too many requests, backing off...', backoff_s: backoff_secs, error: e.message, error_backtrace: e.backtrace })
 
         backoff
-      rescue OAuth2::Error, IOError => e
+      rescue IOError => e
         @mailbox.logger.warn({ context: @mailbox.context, action: 'Disconnected. Resetting...', error: e.message, error_backtrace: e.backtrace })
 
         reset
@@ -166,8 +166,9 @@ module MailRoom
       def get(url)
         response = token.get(url, { raise_errors: false })
 
+        # https://docs.microsoft.com/en-us/graph/errors
         case response.status
-        when 429
+        when 509, 429
           raise TooManyRequestsError
         when 400..599
           raise OAuth2::Error, response

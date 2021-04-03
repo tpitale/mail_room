@@ -16,8 +16,6 @@ module MailRoom
       raise NotImplementedError
     end
 
-    def quit
-      raise NotImplementedError
-    end
+    def quit; end
   end
 end
