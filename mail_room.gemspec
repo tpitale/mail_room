@@ -27,6 +27,9 @@ Gem::Specification.new do |gem|
 
   # for testing delivery methods
   gem.add_development_dependency "faraday"
+  # Ruby v3.0.0 made net-http a default gem. This dependency is needed to eliminate
+  # warnings when faraday is used. See https://github.com/lostisland/faraday-net_http/pull/5.
+  gem.add_development_dependency "net-http", "~> 0.1"
   gem.add_development_dependency "mail"
   gem.add_development_dependency "letter_opener"
   gem.add_development_dependency "redis", "~> 3.3.1"
