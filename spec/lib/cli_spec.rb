@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe MailRoom::CLI do
   let(:config_path) {File.expand_path('../fixtures/test_config.yml', File.dirname(__FILE__))}
-  let!(:configuration) {MailRoom::Configuration.new({:config_path => config_path})}
-  let(:coordinator) {stub(:run => true, :quit => true)}
+  let!(:configuration) {MailRoom::Configuration.new({config_path: config_path})}
+  let(:coordinator) {stub(run: true, quit: true)}
   let(:configuration_args) { anything }
   let(:coordinator_args) { anything }
 
@@ -17,7 +17,7 @@ describe MailRoom::CLI do
 
     context 'with configuration args' do
       let(:configuration_args) do
-        {:config_path => 'a path'}
+        {config_path: 'a path'}
       end
 
       it 'parses arguments into configuration' do

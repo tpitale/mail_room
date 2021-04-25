@@ -22,9 +22,9 @@ RSpec.configure do |config|
 end
 
 REQUIRED_MAILBOX_DEFAULTS = {
-  :name => "inbox",
-  :email => "user@example.com",
-  :password => "password123"
+  name: "inbox",
+  email: "user@example.com",
+  password: "password123"
 }
 
 REQUIRED_MICROSOFT_GRAPH_DEFAULTS = {

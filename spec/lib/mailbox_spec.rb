@@ -17,9 +17,9 @@ describe MailRoom::Mailbox do
   describe "#deliver" do
     context "with arbitration_method of noop" do
       it 'arbitrates with a Noop instance' do
-        mailbox = build_mailbox({:arbitration_method => 'noop'})
+        mailbox = build_mailbox({arbitration_method: 'noop'})
         noop = stub(:deliver?)
-        MailRoom::Arbitration['noop'].stubs(:new => noop)
+        MailRoom::Arbitration['noop'].stubs(new: noop)
 
         uid = 123
 
@@ -31,9 +31,9 @@ describe MailRoom::Mailbox do
 
     context "with arbitration_method of redis" do
       it 'arbitrates with a Redis instance' do
-        mailbox = build_mailbox({:arbitration_method => 'redis'})
+        mailbox = build_mailbox({arbitration_method: 'redis'})
         redis = stub(:deliver?)
-        MailRoom::Arbitration['redis'].stubs(:new => redis)
+        MailRoom::Arbitration['redis'].stubs(new: redis)
         uid = 123
         redis.expects(:deliver?).with(uid)
 
@@ -43,9 +43,9 @@ describe MailRoom::Mailbox do
 
     context "with delivery_method of noop" do
       it 'delivers with a Noop instance' do
-        mailbox = build_mailbox({:delivery_method => 'noop'})
+        mailbox = build_mailbox({delivery_method: 'noop'})
         noop = stub(:deliver)
-        MailRoom::Delivery['noop'].stubs(:new => noop)
+        MailRoom::Delivery['noop'].stubs(new: noop)
 
         noop.expects(:deliver).with(sample_message.body)
 
@@ -55,9 +55,9 @@ describe MailRoom::Mailbox do
 
     context "with delivery_method of logger" do
       it 'delivers with a Logger instance' do
-        mailbox = build_mailbox({:delivery_method => 'logger'})
+        mailbox = build_mailbox({delivery_method: 'logger'})
         logger = stub(:deliver)
-        MailRoom::Delivery['logger'].stubs(:new => logger)
+        MailRoom::Delivery['logger'].stubs(new: logger)
 
         logger.expects(:deliver).with(sample_message.body)
 
@@ -67,9 +67,9 @@ describe MailRoom::Mailbox do
 
     context "with delivery_method of postback" do
       it 'delivers with a Postback instance' do
-        mailbox = build_mailbox({:delivery_method => 'postback'})
+        mailbox = build_mailbox({delivery_method: 'postback'})
         postback = stub(:deliver)
-        MailRoom::Delivery['postback'].stubs(:new => postback)
+        MailRoom::Delivery['postback'].stubs(new: postback)
 
         postback.expects(:deliver).with(sample_message.body)
 
@@ -79,9 +79,9 @@ describe MailRoom::Mailbox do
 
     context "with delivery_method of letter_opener" do
       it 'delivers with a LetterOpener instance' do
-        mailbox = build_mailbox({:delivery_method => 'letter_opener'})
+        mailbox = build_mailbox({delivery_method: 'letter_opener'})
         letter_opener = stub(:deliver)
-        MailRoom::Delivery['letter_opener'].stubs(:new => letter_opener)
+        MailRoom::Delivery['letter_opener'].stubs(new: letter_opener)
 
         letter_opener.expects(:deliver).with(sample_message.body)
 
@@ -93,7 +93,7 @@ describe MailRoom::Mailbox do
       it "doesn't deliver the message" do
         mailbox = build_mailbox({ name: "magic mailbox", delivery_method: 'noop' })
         noop = stub(:deliver)
-        MailRoom::Delivery['noop'].stubs(:new => noop)
+        MailRoom::Delivery['noop'].stubs(new: noop)
         noop.expects(:deliver).never
 
         mailbox.deliver(MailRoom::Message.new(uid: 1234, body: nil))
@@ -102,9 +102,9 @@ describe MailRoom::Mailbox do
 
     context "with ssl options hash" do
       it 'replaces verify mode with constant' do
-        mailbox = build_mailbox({:ssl => {:verify_mode => :none}})
+        mailbox = build_mailbox({ssl: {verify_mode: :none}})
 
-        expect(mailbox.ssl_options).to eq({:verify_mode => OpenSSL::SSL::VERIFY_NONE})
+        expect(mailbox.ssl_options).to eq({verify_mode: OpenSSL::SSL::VERIFY_NONE})
       end
     end
 
@@ -132,8 +132,8 @@ describe MailRoom::Mailbox do
   describe "#validate!" do
     context "with missing configuration" do
       it 'raises an error' do
-        expect { build_mailbox({:name => nil}) }.to raise_error(MailRoom::ConfigurationError)
-        expect { build_mailbox({:host => nil}) }.to raise_error(MailRoom::ConfigurationError)
+        expect { build_mailbox({name: nil}) }.to raise_error(MailRoom::ConfigurationError)
+        expect { build_mailbox({host: nil}) }.to raise_error(MailRoom::ConfigurationError)
       end
     end
 

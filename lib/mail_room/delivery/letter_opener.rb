@@ -24,7 +24,7 @@ module MailRoom
       # Trigger `LetterOpener` to deliver our message
       # @param message [String] the email message as a string, RFC822 format
       def deliver(message)
-        method = ::LetterOpener::DeliveryMethod.new(:location => @delivery_options.location)
+        method = ::LetterOpener::DeliveryMethod.new(location: @delivery_options.location)
         method.deliver!(Mail.read_from_string(message))
 
         true

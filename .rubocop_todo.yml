@@ -351,25 +351,6 @@ Style/GuardClause:
     - 'lib/mail_room/imap/connection.rb'
     - 'lib/mail_room/mailbox_watcher.rb'
 
-# Offense count: 62
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, UseHashRocketsWithSymbolValues, PreferHashRocketsForNonAlnumEndingSymbols.
-# SupportedStyles: ruby19, hash_rockets, no_mixed_keys, ruby19_no_mixed_keys
-Style/HashSyntax:
-  Exclude:
-    - 'Rakefile'
-    - 'lib/mail_room/arbitration/redis.rb'
-    - 'lib/mail_room/delivery/letter_opener.rb'
-    - 'lib/mail_room/mailbox.rb'
-    - 'spec/lib/cli_spec.rb'
-    - 'spec/lib/configuration_spec.rb'
-    - 'spec/lib/delivery/letter_opener_spec.rb'
-    - 'spec/lib/delivery/logger_spec.rb'
-    - 'spec/lib/delivery/postback_spec.rb'
-    - 'spec/lib/mailbox_spec.rb'
-    - 'spec/lib/mailbox_watcher_spec.rb'
-    - 'spec/spec_helper.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/IfUnlessModifier:

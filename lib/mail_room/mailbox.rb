@@ -51,20 +51,20 @@ module MailRoom
 
     # Default attributes for the mailbox configuration
     DEFAULTS = {
-      :search_command => 'UNSEEN',
-      :delivery_method => 'postback',
-      :host => 'imap.gmail.com',
-      :port => 993,
-      :ssl => true,
-      :start_tls => false,
-      :limit_max_unread => 0,
-      :idle_timeout => IMAP_IDLE_TIMEOUT,
-      :delete_after_delivery => false,
-      :expunge_deleted => false,
-      :delivery_options => {},
-      :arbitration_method => 'noop',
-      :arbitration_options => {},
-      :logger => {}
+      search_command: 'UNSEEN',
+      delivery_method: 'postback',
+      host: 'imap.gmail.com',
+      port: 993,
+      ssl: true,
+      start_tls: false,
+      limit_max_unread: 0,
+      idle_timeout: IMAP_IDLE_TIMEOUT,
+      delete_after_delivery: false,
+      expunge_deleted: false,
+      delivery_options: {},
+      arbitration_method: 'noop',
+      arbitration_options: {},
+      logger: {}
     }
 
     # Store the configuration and require the appropriate delivery method
