@@ -16,7 +16,7 @@ describe MailRoom::Delivery::Logger do
     end
 
     context "with a log path" do
-      let(:mailbox) {build_mailbox(:log_path => '/var/log/mail-room.log')}
+      let(:mailbox) {build_mailbox(log_path: '/var/log/mail-room.log')}
 
       it 'creates a new file to append to' do
         file = stub(:sync=)

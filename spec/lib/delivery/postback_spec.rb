@@ -5,8 +5,8 @@ describe MailRoom::Delivery::Postback do
   describe '#deliver' do
     context 'with token auth delivery' do
       let(:mailbox) {build_mailbox({
-        :delivery_url => 'http://localhost/inbox',
-        :delivery_token => 'abcdefg'
+        delivery_url: 'http://localhost/inbox',
+        delivery_token: 'abcdefg'
       })}
 
       let(:delivery_options) {
@@ -30,10 +30,10 @@ describe MailRoom::Delivery::Postback do
 
     context 'with basic auth delivery options' do
       let(:mailbox) {build_mailbox({
-        :delivery_options => {
-          :url => 'http://localhost/inbox',
-          :username => 'user1',
-          :password => 'password123abc'
+        delivery_options: {
+          url: 'http://localhost/inbox',
+          username: 'user1',
+          password: 'password123abc'
         }
       })}
 
@@ -57,11 +57,11 @@ describe MailRoom::Delivery::Postback do
 
       context 'with content type in the delivery options' do
         let(:mailbox) {build_mailbox({
-          :delivery_options => {
-            :url => 'http://localhost/inbox',
-            :username => 'user1',
-            :password => 'password123abc',
-            :content_type => 'text/plain'
+          delivery_options: {
+            url: 'http://localhost/inbox',
+            username: 'user1',
+            password: 'password123abc',
+            content_type: 'text/plain'
           }
         })}
 
