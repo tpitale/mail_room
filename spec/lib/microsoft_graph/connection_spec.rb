@@ -143,9 +143,7 @@ describe MailRoom::MicrosoftGraph::Connection do
       end
     end
 
-    context 'too many requests' do
-      let(:status) { 429 }
-
+    shared_examples 'request backoff' do
       it 'backs off' do
         connection.expects(:backoff)
 
@@ -154,6 +152,18 @@ describe MailRoom::MicrosoftGraph::Connection do
 
         expect(connection.throttled_count).to eq(1)
       end
+    end
+
+    context 'too many requests' do
+      let(:status) { 429 }
+
+      it_behaves_like 'request backoff'
+    end
+
+    context 'too much bandwidth' do
+      let(:status) { 509 }
+
+      it_behaves_like 'request backoff'
     end
 
     context 'invalid JSON response' do
@@ -170,13 +180,10 @@ describe MailRoom::MicrosoftGraph::Connection do
     context '500 error' do
       let(:status) { 500 }
 
-      it 'resets the state and logs a warning' do
-        connection.expects(:reset)
-        connection.expects(:setup)
-        mailbox.logger.expects(:warn)
-
+      it 'terminates due to error' do
         connection.on_new_message {}
-        connection.wait
+
+        expect { connection.wait }.to raise_error(OAuth2::Error)
       end
     end
   end
