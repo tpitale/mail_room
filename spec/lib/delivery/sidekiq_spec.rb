@@ -8,23 +8,45 @@ describe MailRoom::Delivery::Sidekiq do
 
   describe '#options' do
     let(:redis_url) { 'redis://localhost' }
+    let(:redis_options) { { redis_url: redis_url } }
 
     context 'when only redis_url is specified' do
       let(:mailbox) {
         build_mailbox(
           delivery_method: :sidekiq,
-          delivery_options: {
-            redis_url: redis_url
-          }
+          delivery_options: redis_options
         )
       }
 
-      it 'client has same specified redis_url' do
-        expect(redis.client.options[:url]).to eq(redis_url)
+      context 'with simple redis url' do
+        it 'client has same specified redis_url' do
+          expect(redis.client.options[:url]).to eq(redis_url)
+        end
+
+        it 'client is a instance of RedisNamespace class' do
+          expect(redis).to be_a ::Redis
+        end
+
+        it 'connection has correct values' do
+          expect(redis.connection[:host]).to eq('localhost')
+          expect(redis.connection[:db]).to eq(0)
+        end
       end
 
-      it 'client is a instance of RedisNamespace class' do
-        expect(redis).to be_a ::Redis
+      context 'with redis_db specified in options' do
+        before do
+          redis_options[:redis_db] = 4
+        end
+
+        it 'client has correct redis_url' do
+          expect(redis.client.options[:url]).to eq(redis_url)
+        end
+
+
+        it 'connection has correct values' do
+          expect(redis.connection[:host]).to eq('localhost')
+          expect(redis.connection[:db]).to eq(4)
+        end
       end
     end
 
