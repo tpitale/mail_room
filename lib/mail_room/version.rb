@@ -1,4 +1,4 @@
 module MailRoom
   # Current version of MailRoom gem
-  VERSION = "0.10.0"
+  VERSION = "0.10.1"
 end
