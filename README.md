@@ -115,6 +115,17 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
     :delivery_options:
       :redis_url: redis://localhost:6379
       :worker: EmailReceiverWorker
+  -
+    :email: "user8@gmail.com"
+    :password: "password"
+    :name: "inbox"
+    :delivery_method: postback
+    :delivery_options:
+      :delivery_url: "http://localhost:3000/inbox"
+      :jwt_auth_header: "Mailroom-Api-Request"
+      :jwt_issuer: "mailroom"
+      :jwt_algorithm: "HS256"
+      :jwt_secret_path: "/etc/secrets/mailroom/.mailroom_secret"
 ```
 
 **Note:** If using `delete_after_delivery`, you also probably want to use

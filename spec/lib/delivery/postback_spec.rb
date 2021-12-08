@@ -65,11 +65,10 @@ describe MailRoom::Delivery::Postback do
           }
         })}
 
-  
         let(:delivery_options) {
           MailRoom::Delivery::Postback::Options.new(mailbox)
         }
-  
+
         it 'posts the message with faraday' do
           connection = stub
           request = stub
@@ -82,8 +81,57 @@ describe MailRoom::Delivery::Postback do
           connection.expects(:basic_auth).with('user1', 'password123abc')
 
           MailRoom::Delivery::Postback.new(delivery_options).deliver('a message')
-          
+
           expect(request.headers['Content-Type']).to eq('text/plain')
+        end
+      end
+
+      context 'with jwt token in the delivery options' do
+        let(:mailbox) {build_mailbox({
+          delivery_options: {
+            url: 'http://localhost/inbox',
+            jwt_auth_header: "Mailroom-Api-Request",
+            jwt_issuer: "mailroom",
+            jwt_algorithm: "HS256",
+            jwt_secret_path: "secret_path"
+          }
+        })}
+
+        let(:delivery_options) {
+          MailRoom::Delivery::Postback::Options.new(mailbox)
+        }
+
+        it 'posts the message with faraday' do
+          connection = stub
+          request = stub
+          Faraday.stubs(:new).returns(connection)
+
+          connection.expects(:post).yields(request).twice
+          request.stubs(:url)
+          request.stubs(:body=)
+          request.stubs(:headers).returns({})
+
+          jwt = stub
+          MailRoom::JWT.expects(:new).with(
+            header: 'Mailroom-Api-Request',
+            issuer: 'mailroom',
+            algorithm: 'HS256',
+            secret_path: 'secret_path'
+          ).returns(jwt)
+          jwt.stubs(:valid?).returns(true)
+          jwt.stubs(:header).returns('Mailroom-Api-Request')
+          jwt.stubs(:token).returns('a_jwt_token')
+
+          delivery = MailRoom::Delivery::Postback.new(delivery_options)
+
+          delivery.deliver('a message')
+          expect(request.headers['Mailroom-Api-Request']).to eql('a_jwt_token')
+
+          # A different jwt token for the second time
+          jwt.stubs(:token).returns('another_jwt_token')
+
+          delivery.deliver('another message')
+          expect(request.headers['Mailroom-Api-Request']).to eql('another_jwt_token')
         end
       end
     end
