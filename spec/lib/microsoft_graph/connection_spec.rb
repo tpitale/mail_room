@@ -17,39 +17,64 @@ describe MailRoom::MicrosoftGraph::Connection do
   let(:base_url) { 'https://graph.microsoft.com/v1.0/users/user@example.com/mailFolders/inbox/messages' }
   let(:message_base_url) { 'https://graph.microsoft.com/v1.0/users/user@example.com/messages' }
 
+  let(:connection) { described_class.new(mailbox) }
+  let(:uid) { 1 }
+  let(:access_token) { SecureRandom.hex }
+  let(:refresh_token) { SecureRandom.hex }
+  let(:expires_in) { Time.now + 3600 }
+  let(:unread_messages_body) { '' }
+  let(:status) { 200 }
+  let!(:stub_token) do
+    stub_request(:post, "https://login.microsoftonline.com/#{tenant_id}/oauth2/v2.0/token").to_return(
+      body: { 'access_token' => access_token, 'refresh_token' => refresh_token, 'expires_in' => expires_in }.to_json,
+      headers: { 'Content-Type' => 'application/json' }
+    )
+  end
+  let!(:stub_unread_messages_request) do
+    stub_request(:get, "#{base_url}?$filter=isRead%20eq%20false").to_return(
+      status: status,
+      body: unread_messages_body.to_json,
+      headers: { 'Content-Type' => 'application/json' }
+    )
+  end
+
   before do
     WebMock.enable!
   end
 
-  context '#wait' do
-    let(:connection) { described_class.new(mailbox) }
-    let(:uid) { 1 }
-    let(:access_token) { SecureRandom.hex }
-    let(:refresh_token) { SecureRandom.hex }
-    let(:expires_in) { Time.now + 3600 }
-    let(:unread_messages_body) { '' }
-    let(:status) { 200 }
-    let!(:stub_token) do
-      stub_request(:post, "https://login.microsoftonline.com/#{tenant_id}/oauth2/v2.0/token").to_return(
-        body: { 'access_token' => access_token, 'refresh_token' => refresh_token, 'expires_in' => expires_in }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
-    end
-    let!(:stub_unread_messages_request) do
-      stub_request(:get, "#{base_url}?$filter=isRead%20eq%20false").to_return(
-        status: status,
-        body: unread_messages_body.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+  context '#quit' do
+    it 'returns false' do
+      expect(connection.stopped?).to be_falsey
     end
 
+    it 'returns true' do
+      connection.quit
+
+      expect(connection.stopped?).to be_truthy
+    end
+
+    it 'does not attempt to process the mailbox' do
+      connection.quit
+
+      connection.expects(:process_mailbox).times(0)
+      connection.wait
+    end
+  end
+
+  context '#wait' do
     before do
-      connection.stubs(:wait_for_new_messages)
+      connection.stubs(:do_sleep)
     end
 
     describe 'poll interval' do
       it 'defaults to 60 seconds' do
         expect(connection.send(:poll_interval)).to eq(60)
+      end
+
+      it 'calls do_sleep 60 times' do
+        connection.expects(:do_sleep).with(1).times(60)
+
+        connection.wait
       end
 
       context 'interval set to 10' do
@@ -67,6 +92,12 @@ describe MailRoom::MicrosoftGraph::Connection do
 
         it 'sets the poll interval to 10' do
           expect(connection.send(:poll_interval)).to eq(10)
+        end
+
+        it 'calls do_sleep 10 times' do
+          connection.expects(:do_sleep).with(1).times(10)
+
+          connection.wait
         end
       end
     end

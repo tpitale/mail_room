@@ -6,16 +6,23 @@ module MailRoom
 
     def initialize(mailbox)
       @mailbox = mailbox
+      @stopped = false
     end
 
     def on_new_message(&block)
       @new_message_handler = block
     end
 
+    def stopped?
+      @stopped
+    end
+
     def wait
       raise NotImplementedError
     end
 
-    def quit; end
+    def quit
+      @stopped = true
+    end
   end
 end
