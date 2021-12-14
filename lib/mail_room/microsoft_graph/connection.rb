@@ -22,6 +22,8 @@ module MailRoom
       end
 
       def wait
+        return if stopped?
+
         process_mailbox
 
         @throttled_count = 0
@@ -42,15 +44,28 @@ module MailRoom
       private
 
       def wait_for_new_messages
-        sleep poll_interval
+        sleep_while_running(poll_interval)
       end
 
       def backoff
-        sleep backoff_secs
+        sleep_while_running(backoff_secs)
       end
 
       def backoff_secs
         [60 * 10, 2**throttled_count].min
+      end
+
+      # Unless wake up periodically, we won't notice that the thread was stopped
+      # if we sleep the entire interval.
+      def sleep_while_running(sleep_interval)
+        sleep_interval.times do
+          do_sleep(1)
+          return if stopped?
+        end
+      end
+
+      def do_sleep(interval)
+        sleep(interval)
       end
 
       def reset
