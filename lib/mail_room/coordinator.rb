@@ -7,7 +7,7 @@ module MailRoom
     # build watchers for a set of mailboxes
     # @params mailboxes [Array<MailRoom::Mailbox>] mailboxes to be watched
     # @params health_check <MailRoom::HealthCheck> health checker to run
-    def initialize(mailboxes, health_check = nil)
+    def initialize(mailboxes, health_check = MailRoom::NopHealthCheck.new)
       self.watchers = []
 
       @health_check = health_check
@@ -18,7 +18,7 @@ module MailRoom
 
     # start each of the watchers to running
     def run
-      health_check&.run
+      health_check.run
       watchers.each(&:run)
 
       self.running = true
@@ -30,7 +30,7 @@ module MailRoom
 
     # quit each of the watchers when we're done running
     def quit
-      health_check&.quit
+      health_check.quit
       watchers.each(&:quit)
     end
 

@@ -17,7 +17,7 @@ describe MailRoom::Coordinator do
     end
 
     it 'sets the health check' do
-      health_check = MailRoom::HealthCheck.new({ address: '127.0.0.1', port: 8080})
+      health_check = MailRoom::HealthCheck.new({ address: '127.0.0.1', port: 8080 })
       coordinator = MailRoom::Coordinator.new([], health_check)
 
       expect(coordinator.health_check).to eq(health_check)

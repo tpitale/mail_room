@@ -38,9 +38,8 @@ module MailRoom
     #
     # @param health_check_config nil or a Hash containing :address and :port
     def set_health_check(health_check_config)
-      return unless health_check_config
-
-      self.health_check = HealthCheck.new(health_check_config)
+      self.health_check = HealthCheck.create(health_check_config)
+      self.health_check.validate!
     end
   end
 end

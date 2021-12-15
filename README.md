@@ -43,8 +43,10 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
 ```yaml
 ---
 :health_check:
-  :address: "127.0.0.1"
-  :port: 8080
+  :type: "http"
+  :options:
+    :address: "127.0.0.1"
+    :port: 8080
 :mailboxes:
   -
     :email: "user1@gmail.com"
@@ -136,7 +138,6 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
 **Note:** If using `delete_after_delivery`, you also probably want to use
 `expunge_deleted` unless you really know what you're doing.
 
-<<<<<<< HEAD
 ## inbox_method
 
 By default, IMAP mode is assumed for reading a mailbox.
@@ -224,7 +225,19 @@ for Microsoft Cloud for US Government:
 
 ## health_check ##
 
-Requires `webrick` gem to be installed.
+MailRoom can be configured to serve a liveness check via an HTTP
+endpoint. In the MailRoom configuration, set the `health_check` section
+with `type: "http"`:
+
+```yaml
+:health_check:
+  :type: "http"
+  :options:
+    :address: "127.0.0.1"
+    :port: 8080
+```
+
+This requires `webrick` gem to be installed.
 
 This option enables an HTTP server that listens to a bind address
 defined by `address` and `port`. The following endpoints are supported:
