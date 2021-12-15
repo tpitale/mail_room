@@ -10,6 +10,7 @@ module MailRoom
     def initialize(options={})
       self.mailboxes = []
       self.quiet = options.fetch(:quiet, false)
+      self.health_check = HealthCheck::Factory.create
 
       if options.has_key?(:config_path)
         begin
@@ -38,7 +39,7 @@ module MailRoom
     #
     # @param health_check_config nil or a Hash containing :address and :port
     def set_health_check(health_check_config)
-      self.health_check = HealthCheck.create(health_check_config)
+      self.health_check = HealthCheck::Factory.create(health_check_config)
       self.health_check.validate!
     end
   end

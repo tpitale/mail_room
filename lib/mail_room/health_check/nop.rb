@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
 module MailRoom
-  class NopHealthCheck < HealthCheck
-    def initialize(attributes = {}); end
+  module HealthCheck
+    class Nop
+      def initialize(attributes = {}); end
 
-    def run; end
+      def quit; end
 
-    def validate!; end
+      def run; end
+
+      def validate!; end
+    end
   end
 end

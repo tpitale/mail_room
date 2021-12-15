@@ -14,7 +14,7 @@ describe MailRoom::Configuration do
       end
 
       it 'parses health check' do
-        expect(configuration.health_check).to be_a(MailRoom::HealthCheck)
+        expect(configuration.health_check).to be_a(MailRoom::HealthCheck::Http)
       end
     end
 
@@ -29,7 +29,7 @@ describe MailRoom::Configuration do
       end
 
       it 'sets the health check to nil' do
-        expect(configuration.health_check).to be_nil
+        expect(configuration.health_check).to be_a(MailRoom::HealthCheck::Nop)
       end
     end
   end

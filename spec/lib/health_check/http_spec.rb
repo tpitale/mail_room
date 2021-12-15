@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe MailRoom::HttpHealthCheck do
+describe MailRoom::HealthCheck::Http do
   let(:address) { '127.0.0.1' }
   let(:port) { 8000 }
   let(:params) { { address: address, port: port } }
