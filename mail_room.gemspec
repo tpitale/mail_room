@@ -19,11 +19,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency             "net-imap", ">= 0.2.1"
   gem.add_dependency             "oauth2", "~> 1.4.4"
-
-  # Pinning io-wait to 0.1.0, which is the last version to support Ruby < 3
-  gem.add_dependency              "io-wait", "~> 0.1.0"
-
-  gem.add_dependency              "jwt", ">= 2.0"
+  gem.add_dependency             "jwt", ">= 2.0"
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec", "~> 3.9"
