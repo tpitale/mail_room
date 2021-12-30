@@ -26,7 +26,11 @@ module MailRoom
       return nil unless valid?
 
       secret = Base64.strict_decode64(File.read(@secret_path).chomp)
-      payload = { nonce: SecureRandom.hex(12), iss: @issuer }
+      payload = {
+        nonce: SecureRandom.hex(12),
+        iat: Time.now.to_i, # https://github.com/jwt/ruby-jwt#issued-at-claim
+        iss: @issuer
+      }
       ::JWT.encode payload, secret, @algorithm
     end
   end

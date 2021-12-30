@@ -24,14 +24,15 @@ describe MailRoom::JWT do
 
       payload = nil
       expect do
-        payload = JWT.decode(token, secret, true, iss: 'mailroom', verify_iss: true, algorithm: 'HS256')
+        payload = JWT.decode(token, secret, true, iss: 'mailroom', verify_iat: true, verify_iss: true, algorithm: 'HS256')
       end.not_to raise_error
       expect(payload).to be_an(Array)
       expect(payload).to match(
         [
           a_hash_including(
             'iss' => 'mailroom',
-            'nonce' => be_a(String)
+            'nonce' => be_a(String),
+            'iat' => be_a(Integer)
           ),
           { 'alg' => 'HS256' }
         ]
