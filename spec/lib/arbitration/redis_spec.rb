@@ -15,6 +15,7 @@ describe MailRoom::Arbitration::Redis do
 
   # Private, but we don't care.
   let(:redis) { subject.send(:client) }
+  let(:raw_client) { redis._client }
 
   describe '#deliver?' do
     context "when called the first time" do
@@ -95,7 +96,7 @@ describe MailRoom::Arbitration::Redis do
       it 'client has same specified url' do
         subject.deliver?(123)
 
-        expect(redis.client.options[:url]).to eq redis_url
+        expect(raw_client.options[:url]).to eq redis_url
       end
 
       it 'client is a instance of Redis class' do
@@ -137,10 +138,10 @@ describe MailRoom::Arbitration::Redis do
       before { ::Redis::Client::Connector::Sentinel.any_instance.stubs(:resolve).returns(sentinels) }
 
       it 'client has same specified sentinel params' do
-        expect(redis.client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
-        expect(redis.client.options[:host]).to eq('sentinel-master')
-        expect(redis.client.options[:password]).to eq('mypassword')
-        expect(redis.client.options[:sentinels]).to eq(sentinels)
+        expect(raw_client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
+        expect(raw_client.options[:host]).to eq('sentinel-master')
+        expect(raw_client.options[:password]).to eq('mypassword')
+        expect(raw_client.options[:sentinels]).to eq(sentinels)
       end
     end
   end
