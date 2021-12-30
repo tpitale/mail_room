@@ -4,6 +4,7 @@ require 'mail_room/delivery/sidekiq'
 describe MailRoom::Delivery::Sidekiq do
   subject { described_class.new(options) }
   let(:redis) { subject.send(:client) }
+  let(:raw_client) { redis._client }
   let(:options) { MailRoom::Delivery::Sidekiq::Options.new(mailbox) }
 
   describe '#options' do
@@ -20,7 +21,7 @@ describe MailRoom::Delivery::Sidekiq do
 
       context 'with simple redis url' do
         it 'client has same specified redis_url' do
-          expect(redis.client.options[:url]).to eq(redis_url)
+          expect(raw_client.options[:url]).to eq(redis_url)
         end
 
         it 'client is a instance of RedisNamespace class' do
@@ -39,7 +40,7 @@ describe MailRoom::Delivery::Sidekiq do
         end
 
         it 'client has correct redis_url' do
-          expect(redis.client.options[:url]).to eq(redis_url)
+          expect(raw_client.options[:url]).to eq(redis_url)
         end
 
 
@@ -87,10 +88,10 @@ describe MailRoom::Delivery::Sidekiq do
       before { ::Redis::Client::Connector::Sentinel.any_instance.stubs(:resolve).returns(sentinels) }
 
       it 'client has same specified sentinel params' do
-        expect(redis.client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
-        expect(redis.client.options[:host]).to eq('sentinel-master')
-        expect(redis.client.options[:password]).to eq('mypassword')
-        expect(redis.client.options[:sentinels]).to eq(sentinels)
+        expect(raw_client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
+        expect(raw_client.options[:host]).to eq('sentinel-master')
+        expect(raw_client.options[:password]).to eq('mypassword')
+        expect(raw_client.options[:sentinels]).to eq(sentinels)
       end
     end
 
