@@ -31,7 +31,7 @@ module MailRoom
         # Any subsequent failure in the instance which gets the lock will be dealt
         # with by the expiration, at which time another instance can pick up the
         # message and try again.
-        client.set(key, 1, {nx: true, ex: expiration})
+        client.set(key, 1, nx: true, ex: expiration)
       end
 
       private
