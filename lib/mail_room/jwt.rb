@@ -2,6 +2,8 @@
 
 require 'faraday'
 require 'securerandom'
+require 'jwt'
+require 'base64'
 
 module MailRoom
   # Responsible for validating and generating JWT token
