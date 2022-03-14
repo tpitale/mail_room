@@ -43,7 +43,6 @@ describe MailRoom::Delivery::Sidekiq do
           expect(raw_client.options[:url]).to eq(redis_url)
         end
 
-
         it 'connection has correct values' do
           expect(redis.connection[:host]).to eq('localhost')
           expect(redis.connection[:db]).to eq(4)
