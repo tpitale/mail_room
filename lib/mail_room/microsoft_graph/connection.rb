@@ -6,7 +6,6 @@ require 'oauth2'
 module MailRoom
   module MicrosoftGraph
     class Connection < MailRoom::Connection
-      SCOPE = 'https://graph.microsoft.com/.default'
       NEXT_PAGE_KEY = '@odata.nextLink'
       DEFAULT_POLL_INTERVAL_S = 60
 
@@ -76,12 +75,12 @@ module MailRoom
       def setup
         @mailbox.logger.info({ context: @mailbox.context, action: 'Retrieving OAuth2 token...' })
 
-        @token = client.client_credentials.get_token({ scope: SCOPE })
+        @token = client.client_credentials.get_token({ scope: scope })
       end
 
       def client
         @client ||= OAuth2::Client.new(client_id, client_secret,
-                                       site: 'https://login.microsoftonline.com',
+                                       site: azure_ad_endpoint,
                                        authorize_url: "/#{tenant_id}/oauth2/v2.0/authorize",
                                        token_url: "/#{tenant_id}/oauth2/v2.0/token",
                                        auth_scheme: :basic_auth)
@@ -207,7 +206,7 @@ module MailRoom
       end
 
       def base_url
-        "https://graph.microsoft.com/v1.0/users/#{mailbox.email}/mailFolders/#{mailbox.name}/messages"
+        "#{graph_endpoint}/v1.0/users/#{mailbox.email}/mailFolders/#{mailbox.name}/messages"
       end
 
       def unread_messages_url
@@ -216,7 +215,7 @@ module MailRoom
 
       def msg_url(id)
         # Attempting to use the base_url fails with "The OData request is not supported"
-        "https://graph.microsoft.com/v1.0/users/#{mailbox.email}/messages/#{id}"
+        "#{graph_endpoint}/v1.0/users/#{mailbox.email}/messages/#{id}"
       end
 
       def rfc822_msg_url(id)
@@ -226,6 +225,18 @@ module MailRoom
 
       def log_exception(message, exception)
         @mailbox.logger.warn({ context: @mailbox.context, message: message, exception: exception.to_s })
+      end
+
+      def scope
+        "#{graph_endpoint}/.default"
+      end
+
+      def graph_endpoint
+        inbox_options[:graph_endpoint] || 'https://graph.microsoft.com'
+      end
+
+      def azure_ad_endpoint
+        inbox_options[:azure_ad_endpoint] || 'https://login.microsoftonline.com'
       end
     end
   end

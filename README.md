@@ -111,6 +111,8 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
       :client_id: ABCDE
       :client_secret: YOUR-SECRET-HERE
       :poll_interval: 60
+      :azure_ad_endpoint: https://login.microsoftonline.com
+      :graph_endpoint: https://graph.microsoft.com
     :delivery_method: sidekiq
     :delivery_options:
       :redis_url: redis://localhost:6379
@@ -196,6 +198,25 @@ Fill in `inbox_options` with these values:
 
 By default, MailRoom will poll for new messages every 60 seconds. `poll_interval` configures the number of
 seconds to poll. Setting the value to 0 or under will default to 60 seconds.
+
+### Alternative Azure cloud deployments
+
+MailRoom will default to using the standard Azure HTTPS endpoints. To
+configure MailRoom with Microsoft Cloud for US Government or other
+[national cloud deployments](https://docs.microsoft.com/en-us/graph/deployments), set
+the `azure_ad_endpoint` and `graph_endpoint` accordingly. For example,
+for Microsoft Cloud for US Government:
+
+```yaml
+    :inbox_method: microsoft_graph
+    :inbox_options:
+      :tenant_id: 12345
+      :client_id: ABCDE
+      :client_secret: YOUR-SECRET-HERE
+      :poll_interval: 60
+      :azure_ad_endpoint: https://login.microsoftonline.us
+      :graph_endpoint: https://graph.microsoft.us
+```
 
 ## delivery_method ##
 

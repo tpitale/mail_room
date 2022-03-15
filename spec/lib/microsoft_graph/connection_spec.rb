@@ -14,8 +14,10 @@ describe MailRoom::MicrosoftGraph::Connection do
     }.merge(REQUIRED_MICROSOFT_GRAPH_DEFAULTS)
   end
   let(:mailbox) { build_mailbox(options) }
-  let(:base_url) { 'https://graph.microsoft.com/v1.0/users/user@example.com/mailFolders/inbox/messages' }
-  let(:message_base_url) { 'https://graph.microsoft.com/v1.0/users/user@example.com/messages' }
+  let(:graph_endpoint) { 'https://graph.microsoft.com' }
+  let(:azure_ad_endpoint) { 'https://login.microsoftonline.com' }
+  let(:base_url) { "#{graph_endpoint}/v1.0/users/user@example.com/mailFolders/inbox/messages" }
+  let(:message_base_url) { "#{graph_endpoint}/v1.0/users/user@example.com/messages" }
 
   let(:connection) { described_class.new(mailbox) }
   let(:uid) { 1 }
@@ -25,7 +27,7 @@ describe MailRoom::MicrosoftGraph::Connection do
   let(:unread_messages_body) { '' }
   let(:status) { 200 }
   let!(:stub_token) do
-    stub_request(:post, "https://login.microsoftonline.com/#{tenant_id}/oauth2/v2.0/token").to_return(
+    stub_request(:post, "#{azure_ad_endpoint}/#{tenant_id}/oauth2/v2.0/token").to_return(
       body: { 'access_token' => access_token, 'refresh_token' => refresh_token, 'expires_in' => expires_in }.to_json,
       headers: { 'Content-Type' => 'application/json' }
     )
@@ -102,7 +104,7 @@ describe MailRoom::MicrosoftGraph::Connection do
       end
     end
 
-    context 'with a single message' do
+    shared_examples 'with a single message' do
       let(:message_id) { SecureRandom.hex }
       let(:unread_messages_body) { { value: ['id' => message_id] } }
       let(:message_url) { "#{message_base_url}/#{message_id}" }
@@ -134,9 +136,38 @@ describe MailRoom::MicrosoftGraph::Connection do
       end
     end
 
+    context 'with default Azure settings' do
+      before do
+        puts options
+      end
+      it_behaves_like 'with a single message'
+    end
+
+    # https://docs.microsoft.com/en-us/graph/deployments
+    context 'with an alternative Azure deployment' do
+      let(:graph_endpoint) { 'https://graph.microsoft.us' }
+      let(:azure_ad_endpoint) { 'https://login.microsoftonline.us' }
+      let(:options) do
+        {
+          inbox_method: :microsoft_graph,
+          delete_after_delivery: true,
+          expunge_deleted: true,
+          inbox_options: {
+            tenant_id: '98776',
+            client_id: '12345',
+            client_secret: 'MY-SECRET',
+            graph_endpoint: 'https://graph.microsoft.us',
+            azure_ad_endpoint: 'https://login.microsoftonline.us'
+          }
+        }
+      end
+
+      it_behaves_like 'with a single message'
+    end
+
     context 'with multiple pages of messages' do
       let(:message_ids) { [SecureRandom.hex, SecureRandom.hex] }
-      let(:next_page_url) { 'https://graph.microsoft.com/v1.0/nextPage' }
+      let(:next_page_url) { "#{graph_endpoint}/v1.0/nextPage" }
       let(:unread_messages_body) { { value: ['id' => message_ids.first], '@odata.nextLink' => next_page_url } }
       let(:message_body) { 'hello world' }
 
