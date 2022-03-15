@@ -111,6 +111,8 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
       :client_id: ABCDE
       :client_secret: YOUR-SECRET-HERE
       :poll_interval: 60
+      :azure_ad_endpoint: https://login.microsoftonline.com
+      :graph_endpoint: https://graph.microsoft.com
     :delivery_method: sidekiq
     :delivery_options:
       :redis_url: redis://localhost:6379
