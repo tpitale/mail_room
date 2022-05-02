@@ -344,8 +344,8 @@ And finally, configure MailRoom to use the postback configuration with the optio
 :delivery_method: postback
 :delivery_options:
   :delivery_url: https://example.com/rails/action_mailbox/relay/inbound_emails
-  :delivery_username: actionmailbox
-  :delivery_password: <INGRESS_PASSWORD>
+  :username: actionmailbox
+  :password: <INGRESS_PASSWORD>
 ```
 
 ## Receiving `postback` in Rails ##
