@@ -46,7 +46,11 @@ module MailRoom
       def client
         @client ||= begin
           sentinels = options.sentinels
-          redis_options = { url: options.redis_url, db: options.redis_db }
+          redis_options = {
+            url: options.redis_url,
+            db: options.redis_db,
+            ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+          }
           redis_options[:sentinels] = sentinels if sentinels
 
           redis = ::Redis.new(redis_options)
