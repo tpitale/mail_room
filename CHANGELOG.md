@@ -1,3 +1,7 @@
+## mail_room 0.10.1 ##
+
+* Fix db attribute on redis URL PR#130 - @jarkaK
+
 ## mail_room 0.10.0 ##
 
 * Remove imap backports

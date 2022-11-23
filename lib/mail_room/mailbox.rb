@@ -1,15 +1,20 @@
 require "mail_room/delivery"
 require "mail_room/arbitration"
+require "mail_room/imap"
+require "mail_room/microsoft_graph"
 
 module MailRoom
   # Mailbox Configuration fields
   MAILBOX_FIELDS = [
     :email,
+    :inbox_method,
+    :inbox_options,
     :password,
     :host,
     :port,
     :ssl,
     :start_tls,
+    :limit_max_unread, #to avoid 'Error in IMAP command UID FETCH: Too long argument'
     :idle_timeout,
     :search_command,
     :name,
@@ -40,23 +45,26 @@ module MailRoom
     # 29 minutes, as suggested by the spec: https://tools.ietf.org/html/rfc2177
     IMAP_IDLE_TIMEOUT = 29 * 60 # 29 minutes in in seconds
 
-    REQUIRED_CONFIGURATION = [:name, :email, :password, :host, :port]
+    IMAP_CONFIGURATION = [:name, :email, :password, :host, :port].freeze
+    MICROSOFT_GRAPH_CONFIGURATION = [:name, :email].freeze
+    MICROSOFT_GRAPH_INBOX_OPTIONS = [:tenant_id, :client_id, :client_secret].freeze
 
     # Default attributes for the mailbox configuration
     DEFAULTS = {
-      :search_command => 'UNSEEN',
-      :delivery_method => 'postback',
-      :host => 'imap.gmail.com',
-      :port => 993,
-      :ssl => true,
-      :start_tls => false,
-      :idle_timeout => IMAP_IDLE_TIMEOUT,
-      :delete_after_delivery => false,
-      :expunge_deleted => false,
-      :delivery_options => {},
-      :arbitration_method => 'noop',
-      :arbitration_options => {},
-      :logger => {}
+      search_command: 'UNSEEN',
+      delivery_method: 'postback',
+      host: 'imap.gmail.com',
+      port: 993,
+      ssl: true,
+      start_tls: false,
+      limit_max_unread: 0,
+      idle_timeout: IMAP_IDLE_TIMEOUT,
+      delete_after_delivery: false,
+      expunge_deleted: false,
+      delivery_options: {},
+      arbitration_method: 'noop',
+      arbitration_options: {},
+      logger: {}
     }
 
     # Store the configuration and require the appropriate delivery method
@@ -100,13 +108,13 @@ module MailRoom
       arbitrator.deliver?(uid)
     end
 
-    # deliver the imap email message
-    # @param message [Net::IMAP::FetchData]
+    # deliver the email message
+    # @param message [MailRoom::Message]
     def deliver(message)
-      body = message.attr['RFC822']
+      body = message.body
       return true unless body
 
-      logger.info({context: context, uid: message.attr['UID'], action: "sending to deliverer", deliverer: delivery.class.name, byte_size: message.attr['RFC822.SIZE']})
+      logger.info({context: context, uid: message.uid, action: "sending to deliverer", deliverer: delivery.class.name, byte_size: body.bytesize})
       delivery.deliver(body)
     end
 
@@ -119,14 +127,32 @@ module MailRoom
       { email: self.email, name: self.name }
     end
 
+    def imap?
+      !microsoft_graph?
+    end
+
+    def microsoft_graph?
+      self[:inbox_method].to_s == 'microsoft_graph'
+    end
+
     def validate!
+      if microsoft_graph?
+        validate_microsoft_graph!
+      else
+        validate_imap!
+      end
+    end
+
+    private
+
+    def validate_imap!
       if self[:idle_timeout] > IMAP_IDLE_TIMEOUT
         raise IdleTimeoutTooLarge,
               "Please use an idle timeout smaller than #{29*60} to prevent " \
               "IMAP server disconnects"
       end
 
-      REQUIRED_CONFIGURATION.each do |k|
+      IMAP_CONFIGURATION.each do |k|
         if self[k].nil?
           raise ConfigurationError,
                 "Field :#{k} is required in Mailbox: #{inspect}"
@@ -134,7 +160,23 @@ module MailRoom
       end
     end
 
-    private
+    def validate_microsoft_graph!
+      raise ConfigurationError, "Missing inbox_options in Mailbox: #{inspect}" unless self.inbox_options.is_a?(Hash)
+
+      MICROSOFT_GRAPH_CONFIGURATION.each do |k|
+        if self[k].nil?
+          raise ConfigurationError,
+                "Field :#{k} is required in Mailbox: #{inspect}"
+        end
+      end
+
+      MICROSOFT_GRAPH_INBOX_OPTIONS.each do |k|
+        if self[:inbox_options][k].nil?
+          raise ConfigurationError,
+                "inbox_options field :#{k} is required in Mailbox: #{inspect}"
+        end
+      end
+    end
 
     def parsed_arbitration_options
       arbitration_klass::Options.new(self)

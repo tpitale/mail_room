@@ -9,24 +9,22 @@ describe MailRoom::Delivery::Logger do
       it 'creates a new ruby logger' do
         ::Logger.stubs(:new)
 
-        MailRoom::Delivery::Logger.new(mailbox)
+        ::Logger.expects(:new).with(STDOUT)
 
-        expect(::Logger).to have_received(:new).with(STDOUT)
+        MailRoom::Delivery::Logger.new(mailbox)
       end
     end
 
     context "with a log path" do
-      let(:mailbox) {build_mailbox(:log_path => '/var/log/mail-room.log')}
+      let(:mailbox) {build_mailbox(log_path: '/var/log/mail-room.log')}
 
       it 'creates a new file to append to' do
-        ::Logger.stubs(:new)
         file = stub(:sync=)
-        ::File.stubs(:open).returns(file)
+
+        File.expects(:open).with('/var/log/mail-room.log', 'a').returns(file)
+        ::Logger.stubs(:new).with(file)
 
         MailRoom::Delivery::Logger.new(mailbox)
-
-        expect(File).to have_received(:open).with('/var/log/mail-room.log', 'a')
-        expect(::Logger).to have_received(:new).with(file)
       end
     end
   end
@@ -38,9 +36,9 @@ describe MailRoom::Delivery::Logger do
       logger = stub(:info)
       ::Logger.stubs(:new).returns(logger)
 
-      MailRoom::Delivery::Logger.new(mailbox).deliver('a message')
+      logger.expects(:info).with('a message')
 
-      expect(logger).to have_received(:info).with('a message')
+      MailRoom::Delivery::Logger.new(mailbox).deliver('a message')
     end
   end
 end

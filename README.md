@@ -1,6 +1,13 @@
 # mail_room #
 
-mail_room is a configuration based process that will idle on IMAP connections and execute a delivery method when a new message is received. Examples of delivery methods include:
+mail_room is a configuration based process that will listen for incoming
+e-mail and execute a delivery method when a new message is
+received. mail_room supports the following methods for receiving e-mail:
+
+* IMAP
+* [Microsoft Graph API](https://docs.microsoft.com/en-us/graph/api/resources/mail-api-overview?view=graph-rest-1.0)
+
+Examples of delivery methods include:
 
 * POST to a delivery URL (Postback)
 * Queue a job to Sidekiq or Que for later processing (Sidekiq or Que)
@@ -94,10 +101,122 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
           :host: 127.0.0.1
           :port: 26379
       :worker: EmailReceiverWorker
+  -
+    :email: "user7@outlook365.com"
+    :password: "password"
+    :name: "inbox"
+    :inbox_method: microsoft_graph
+    :inbox_options:
+      :tenant_id: 12345
+      :client_id: ABCDE
+      :client_secret: YOUR-SECRET-HERE
+      :poll_interval: 60
+      :azure_ad_endpoint: https://login.microsoftonline.com
+      :graph_endpoint: https://graph.microsoft.com
+    :delivery_method: sidekiq
+    :delivery_options:
+      :redis_url: redis://localhost:6379
+      :worker: EmailReceiverWorker
+  -
+    :email: "user8@gmail.com"
+    :password: "password"
+    :name: "inbox"
+    :delivery_method: postback
+    :delivery_options:
+      :delivery_url: "http://localhost:3000/inbox"
+      :jwt_auth_header: "Mailroom-Api-Request"
+      :jwt_issuer: "mailroom"
+      :jwt_algorithm: "HS256"
+      :jwt_secret_path: "/etc/secrets/mailroom/.mailroom_secret"
 ```
 
 **Note:** If using `delete_after_delivery`, you also probably want to use
 `expunge_deleted` unless you really know what you're doing.
+
+## inbox_method
+
+By default, IMAP mode is assumed for reading a mailbox.
+
+### IMAP Server Configuration ##
+
+You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), `ssl` (default: true), and `start_tls` (default: false).
+
+If you want to set additional options for IMAP SSL you can pass a YAML hash to match [SSLContext#set_params](http://docs.ruby-lang.org/en/2.2.0/OpenSSL/SSL/SSLContext.html#method-i-set_params). If you set `verify_mode` to `:none` it'll replace with the appropriate constant.
+
+If you're seeing the error `Please log in via your web browser: https://support.google.com/mail/accounts/answer/78754 (Failure)`, you need to configure your Gmail account to allow less secure apps to access it: https://support.google.com/accounts/answer/6010255.
+
+### Microsoft Graph configuration
+
+To use the Microsoft Graph API instead of IMAP to read e-mail, you will
+need to create an application in the Azure Active Directory. See the
+[Microsoft instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) for more details:
+
+1. Sign in to the [Azure portal](https://portal.azure.com).
+1. Search for and select `Azure Active Directory`.
+1. Under `Manage`, select `App registrations` > `New registration`.
+1. Enter a `Name` for your application, such as `MailRoom`. Users of your app might see this name, and you can change it later.
+1. If `Supported account types` is listed, select the appropriate option.
+1. Leave `Redirect URI` blank. This is not needed.
+1. Select `Register`.
+1. Under `Manage`, select `Certificates & secrets`.
+1. Under `Client secrets`, select `New client secret`, and enter a name.
+1. Under `Expires`, select `Never`, unless you plan on updating the credentials every time it expires.
+1. Select `Add`. Record the secret value in a safe location for use in a later step.
+1. Under `Manage`, select `API Permissions` > `Add a permission`. Select `Microsoft Graph`.
+1. Select `Application permissions`.
+1. Under the `Mail` node, select `Mail.ReadWrite`, and then select Add permissions.
+1. If `User.Read` is listed in the permission list, you can delete this.
+1. Click `Grant admin consent` for these permissions.
+
+#### Restrict mailbox access
+
+Note that for MailRoom to work as a service account, this application
+must have the `Mail.ReadWrite` to read/write mail in *all*
+mailboxes. However, while this appears to be security risk,
+we can configure an application access policy to limit the
+mailbox access for this account. [Follow these instructions](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access)
+to setup PowerShell and configure this policy.
+
+#### MailRoom config for Microsoft Graph
+
+In the MailRoom configuration, set `inbox_method` to `microsoft_graph`.
+You will also need:
+
+* The client and tenant ID from the `Overview` section in the Azure app page
+* The client secret created earlier
+
+Fill in `inbox_options` with these values:
+
+```yaml
+    :inbox_method: microsoft_graph
+    :inbox_options:
+      :tenant_id: 12345
+      :client_id: ABCDE
+      :client_secret: YOUR-SECRET-HERE
+      :poll_interval: 60
+```
+
+By default, MailRoom will poll for new messages every 60 seconds. `poll_interval` configures the number of
+seconds to poll. Setting the value to 0 or under will default to 60 seconds.
+
+### Alternative Azure cloud deployments
+
+MailRoom will default to using the standard Azure HTTPS endpoints. To
+configure MailRoom with Microsoft Cloud for US Government or other
+[national cloud deployments](https://docs.microsoft.com/en-us/graph/deployments), set
+the `azure_ad_endpoint` and `graph_endpoint` accordingly. For example,
+for Microsoft Cloud for US Government:
+
+```yaml
+    :inbox_method: microsoft_graph
+    :inbox_options:
+      :tenant_id: 12345
+      :client_id: ABCDE
+      :client_secret: YOUR-SECRET-HERE
+      :poll_interval: 60
+      :azure_ad_endpoint: https://login.microsoftonline.us
+      :graph_endpoint: https://graph.microsoft.us
+```
 
 ## delivery_method ##
 
@@ -225,8 +344,8 @@ And finally, configure MailRoom to use the postback configuration with the optio
 :delivery_method: postback
 :delivery_options:
   :delivery_url: https://example.com/rails/action_mailbox/relay/inbound_emails
-  :delivery_username: actionmailbox
-  :delivery_password: <INGRESS_PASSWORD>
+  :username: actionmailbox
+  :password: <INGRESS_PASSWORD>
 ```
 
 ## Receiving `postback` in Rails ##
@@ -243,19 +362,11 @@ it's probably because the content-type is set to Faraday's default, which is  `H
 ## idle_timeout ##
 
 By default, the IDLE command will wait for 29 minutes (in order to keep the server connection happy).
-If you'd prefer not to wait that long, you can pass `imap_timeout` in seconds for your mailbox configuration.
+If you'd prefer not to wait that long, you can pass `idle_timeout` in seconds for your mailbox configuration.
 
 ## Search Command ##
 
 This setting allows configuration of the IMAP search command sent to the server. This still defaults 'UNSEEN'. You may find that 'NEW' works better for you.
-
-## IMAP Server Configuration ##
-
-You can set per-mailbox configuration for the IMAP server's `host` (default: 'imap.gmail.com'), `port` (default: 993), `ssl` (default: true), and `start_tls` (default: false).
-
-If you want to set additional options for IMAP SSL you can pass a YAML hash to match [SSLContext#set_params](http://docs.ruby-lang.org/en/2.2.0/OpenSSL/SSL/SSLContext.html#method-i-set_params). If you set `verify_mode` to `:none` it'll replace with the appropriate constant.
-
-If you're seeing the error `Please log in via your web browser: https://support.google.com/mail/accounts/answer/78754 (Failure)`, you need to configure your Gmail account to allow less secure apps to access it: https://support.google.com/accounts/answer/6010255.
 
 ## Running in Production ##
 

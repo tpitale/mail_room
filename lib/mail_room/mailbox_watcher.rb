@@ -1,3 +1,5 @@
+require "mail_room/connection"
+
 module MailRoom
   # TODO: split up between processing and idling?
 
@@ -55,8 +57,14 @@ module MailRoom
     end
 
     private
+
     def connection
-      @connection ||= Connection.new(@mailbox)
+      @connection ||=
+        if @mailbox.microsoft_graph?
+          ::MailRoom::MicrosoftGraph::Connection.new(@mailbox)
+        else
+          ::MailRoom::IMAP::Connection.new(@mailbox)
+        end
     end
   end
 end

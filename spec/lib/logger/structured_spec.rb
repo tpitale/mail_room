@@ -5,6 +5,7 @@ describe MailRoom::Logger::Structured do
   subject { described_class.new $stdout }
 
   let!(:now) { Time.now }
+  let(:timestamp) { now.to_datetime.iso8601(3) }
   let(:message) { { action: 'exciting development', message: 'testing 123' } }
 
   before do
@@ -32,7 +33,7 @@ describe MailRoom::Logger::Structured do
       }
       expected = {
           severity: 'DEBUG',
-          time: now,
+          time: timestamp,
           additional_field: "some value"
       }
 
@@ -40,10 +41,41 @@ describe MailRoom::Logger::Structured do
     end
   end
 
+  describe '#format_message' do
+    shared_examples 'timestamp formatting' do
+      it 'outputs ISO8601 timestamps' do
+        data = JSON.parse(subject.format_message('debug', input_timestamp, 'test', { message: 'hello' } ))
+
+        expect(data['time']).to eq(expected_timestamp)
+      end
+    end
+
+    context 'with no timestamp' do
+      let(:input_timestamp) { nil }
+      let(:expected_timestamp) { timestamp }
+
+      it_behaves_like 'timestamp formatting'
+    end
+
+    context 'with DateTime' do
+      let(:input_timestamp) { now.to_datetime }
+      let(:expected_timestamp) { timestamp }
+
+      it_behaves_like 'timestamp formatting'
+    end
+
+    context 'with string' do
+      let(:input_timestamp) { now.to_s }
+      let(:expected_timestamp) { input_timestamp }
+
+      it_behaves_like 'timestamp formatting'
+    end
+  end
+
   def json_matching(level, message)
     contents = {
         severity: level,
-        time: now
+        time: timestamp
     }.merge(message)
 
     as_regex(contents)

@@ -8,16 +8,17 @@ module MailRoom
     # Sidekiq Delivery method
     # @author Douwe Maan
     class Sidekiq
-      Options = Struct.new(:redis_url, :namespace, :sentinels, :queue, :worker, :logger) do
+      Options = Struct.new(:redis_url, :namespace, :sentinels, :queue, :worker, :logger, :redis_db) do
         def initialize(mailbox)
           redis_url = mailbox.delivery_options[:redis_url] || "redis://localhost:6379"
+          redis_db  = mailbox.delivery_options[:redis_db] || 0
           namespace = mailbox.delivery_options[:namespace]
           sentinels = mailbox.delivery_options[:sentinels]
           queue     = mailbox.delivery_options[:queue] || "default"
           worker    = mailbox.delivery_options[:worker]
           logger = mailbox.logger
 
-          super(redis_url, namespace, sentinels, queue, worker, logger)
+          super(redis_url, namespace, sentinels, queue, worker, logger, redis_db)
         end
       end
 
@@ -45,7 +46,7 @@ module MailRoom
       def client
         @client ||= begin
           sentinels = options.sentinels
-          redis_options = { url: options.redis_url }
+          redis_options = { url: options.redis_url, db: options.redis_db }
           redis_options[:sentinels] = sentinels if sentinels
 
           redis = ::Redis.new(redis_options)

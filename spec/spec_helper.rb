@@ -2,10 +2,10 @@ require 'simplecov'
 SimpleCov.start
 
 require 'bundler/setup'
+require 'date'
 
 require 'rspec'
 require 'mocha/api'
-require 'bourne'
 
 require File.expand_path('../../lib/mail_room', __FILE__)
 
@@ -22,10 +22,20 @@ RSpec.configure do |config|
 end
 
 REQUIRED_MAILBOX_DEFAULTS = {
-  :name => "inbox",
-  :email => "user@example.com",
-  :password => "password123"
+  name: "inbox",
+  email: "user@example.com",
+  password: "password123"
 }
+
+REQUIRED_MICROSOFT_GRAPH_DEFAULTS = {
+  password: nil,
+  inbox_method: :microsoft_graph,
+  inbox_options: {
+    tenant_id: '98776',
+    client_id: '12345',
+    client_secret: 'MY-SECRET',
+  }.freeze
+}.freeze
 
 def build_mailbox(options = {})
   MailRoom::Mailbox.new(REQUIRED_MAILBOX_DEFAULTS.merge(options))

@@ -1,64 +1,77 @@
 require 'spec_helper'
 
 describe MailRoom::MailboxWatcher do
-  let(:mailbox) {build_mailbox}
+  context 'with IMAP configured' do
+    let(:mailbox) {build_mailbox}
 
-  describe '#running?' do
-    it 'is false by default' do
-      watcher = MailRoom::MailboxWatcher.new(mailbox)
-      expect(watcher.running?).to eq(false)
+    describe '#running?' do
+      it 'is false by default' do
+        watcher = MailRoom::MailboxWatcher.new(mailbox)
+        expect(watcher.running?).to eq(false)
+      end
+    end
+
+    describe '#run' do
+      let(:imap) {stub(login: true, select: true)}
+      let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
+
+      before :each do
+        Net::IMAP.stubs(:new).returns(imap) # prevent connection
+      end
+
+      it 'loops over wait while running' do
+        connection = MailRoom::IMAP::Connection.new(mailbox)
+
+        MailRoom::IMAP::Connection.stubs(:new).returns(connection)
+
+        watcher.expects(:running?).twice.returns(true, false)
+        connection.expects(:wait).once
+        connection.expects(:on_new_message).once
+
+        watcher.run
+        watcher.watching_thread.join # wait for finishing run
+      end
+    end
+
+    describe '#quit' do
+      let(:imap) {stub(login: true, select: true)}
+      let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
+
+      before :each do
+        Net::IMAP.stubs(:new).returns(imap) # prevent connection
+      end
+
+      it 'closes and waits for the connection' do
+        connection = MailRoom::IMAP::Connection.new(mailbox)
+        connection.stubs(:wait)
+        connection.stubs(:quit)
+
+        MailRoom::IMAP::Connection.stubs(:new).returns(connection)
+
+        watcher.run
+
+        expect(watcher.running?).to eq(true)
+
+        connection.expects(:quit)
+
+        watcher.quit
+
+        expect(watcher.running?).to eq(false)
+      end
     end
   end
 
-  describe '#run' do
-    let(:imap) {stub(:login => true, :select => true)}
-    let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
+  context 'with Microsoft Graph configured' do
+    let(:mailbox) { build_mailbox(REQUIRED_MICROSOFT_GRAPH_DEFAULTS) }
 
-    before :each do
-      Net::IMAP.stubs(:new).returns(imap) # prevent connection
-    end
+    subject { described_class.new(mailbox) }
 
-    it 'loops over wait while running' do
-      connection = MailRoom::Connection.new(mailbox)
-      connection.stubs(:on_new_message)
-      connection.stubs(:wait)
+    it 'initializes a Microsoft Graph connection' do
+      connection = stub(on_new_message: nil)
 
-      MailRoom::Connection.stubs(:new).returns(connection)
+      MailRoom::MicrosoftGraph::Connection.stubs(:new).returns(connection)
 
-      watcher.stubs(:running?).returns(true).then.returns(false)
-
-      watcher.run
-      watcher.watching_thread.join # wait for finishing run
-
-      expect(watcher).to have_received(:running?).times(2)
-      expect(connection).to have_received(:wait).once
-      expect(connection).to have_received(:on_new_message).once
-    end
-  end
-
-  describe '#quit' do
-    let(:imap) {stub(:login => true, :select => true)}
-    let(:watcher) {MailRoom::MailboxWatcher.new(mailbox)}
-
-    before :each do
-      Net::IMAP.stubs(:new).returns(imap) # prevent connection
-    end
-
-    it 'closes and waits for the connection' do
-      connection = MailRoom::Connection.new(mailbox)
-      connection.stubs(:wait)
-      connection.stubs(:quit)
-
-      MailRoom::Connection.stubs(:new).returns(connection)
-
-      watcher.run
-
-      expect(watcher.running?).to eq(true)
-
-      watcher.quit
-
-      expect(connection).to have_received(:quit)
-      expect(watcher.running?).to eq(false)
+      expect(subject.send(:connection)).to eq(connection)
     end
   end
 end

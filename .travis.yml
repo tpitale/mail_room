@@ -1,10 +1,17 @@
 language: ruby
 rvm:
-  - 2.3.0
-  - 2.4
   - 2.5
   - 2.6
+  - 2.7
+  - 3.0
+  - truffleruby
 services:
-  - redis-server
-script: bundle exec rspec spec
-sudo: false
+  - redis
+script:
+  - bundle exec rspec spec
+
+jobs:
+  - language: ruby
+    rvm: 2.7
+    script:
+      - bundle exec rubocop

@@ -1,9 +1,15 @@
 # Cache gems in between builds
 
+services:
+  - redis:latest
+
 .test-template: &test
   cache:
     paths:
       - vendor/ruby
+  variables:
+    REDIS_URL: redis://redis:6379
+
   script:
     - bundle exec rspec spec
   before_script:
