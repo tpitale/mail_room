@@ -19,7 +19,8 @@ describe MailRoom::Delivery::Logger do
       let(:mailbox) {build_mailbox(log_path: '/var/log/mail-room.log')}
 
       it 'creates a new file to append to' do
-        file = stub(:sync=)
+        file = stub
+        file.stubs(:sync=)
 
         File.expects(:open).with('/var/log/mail-room.log', 'a').returns(file)
         ::Logger.stubs(:new).with(file)

@@ -4,12 +4,13 @@ require 'mail_room/delivery/letter_opener'
 describe MailRoom::Delivery::LetterOpener do
   describe '#deliver' do
     let(:mailbox) {build_mailbox(location: '/tmp/somewhere')}
-    let(:delivery_method) {stub(:deliver!)}
+    let(:delivery_method) {stub}
     let(:mail) {stub}
 
     before :each do
       Mail.stubs(:read_from_string).returns(mail)
       ::LetterOpener::DeliveryMethod.stubs(:new).returns(delivery_method)
+      delivery_method.stubs(:deliver!)
     end
 
     it 'creates a new LetterOpener::DeliveryMethod' do
