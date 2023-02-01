@@ -25,7 +25,8 @@ module MailRoom
             mailbox.delivery_options[:delivery_username]
           password = 
             mailbox.delivery_options[:password] ||
-            mailbox.delivery_options[:delivery_password]
+            mailbox.delivery_options[:delivery_password] ||
+            ENV['delivery_password']
 
           logger = mailbox.logger
 

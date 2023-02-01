@@ -129,6 +129,10 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
       :jwt_algorithm: "HS256"
       :jwt_secret_path: "/etc/secrets/mailroom/.mailroom_secret"
 ```
+**Note:** :password can be set by a ENV variable
+```
+password=email_password mail_room -c mail_room_config_file.yml
+```
 
 **Note:** If using `delete_after_delivery`, you also probably want to use
 `expunge_deleted` unless you really know what you're doing.
@@ -347,6 +351,12 @@ And finally, configure MailRoom to use the postback configuration with the optio
   :username: actionmailbox
   :password: <INGRESS_PASSWORD>
 ```
+
+password can also be set by ENV variable like this:
+```
+delivery_password=<INGRESS_PASSWORD> mail_room -c mail_room_config_file.yml
+```
+
 
 ## Receiving `postback` in Rails ##
 
