@@ -70,6 +70,7 @@ module MailRoom
     # Store the configuration and require the appropriate delivery method
     # @param attributes [Hash] configuration options
     def initialize(attributes={})
+      attributes[:password] = ENV['password'] if ENV['password']
       super(*DEFAULTS.merge(attributes).values_at(*members))
 
       validate!
