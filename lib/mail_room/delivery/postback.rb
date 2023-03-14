@@ -20,10 +20,10 @@ module MailRoom
 
           jwt = initialize_jwt(mailbox.delivery_options)
 
-          username = 
+          username =
             mailbox.delivery_options[:username] ||
             mailbox.delivery_options[:delivery_username]
-          password = 
+          password =
             mailbox.delivery_options[:password] ||
             mailbox.delivery_options[:delivery_password]
 
