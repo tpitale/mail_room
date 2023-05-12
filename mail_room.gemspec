@@ -26,6 +26,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rubocop", "~> 1.11"
   gem.add_development_dependency "mocha", "~> 1.11"
   gem.add_development_dependency "simplecov"
+  gem.add_development_dependency "webrick", "~> 1.6"
 
   # for testing delivery methods
   gem.add_development_dependency "faraday"

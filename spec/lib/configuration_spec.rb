@@ -3,7 +3,7 @@ require 'spec_helper'
 describe MailRoom::Configuration do
   let(:config_path) {File.expand_path('../fixtures/test_config.yml', File.dirname(__FILE__))}
 
-  describe 'set_mailboxes' do
+  describe '#initalize' do
     context 'with config_path' do
       let(:configuration) { MailRoom::Configuration.new(config_path: config_path) }
 
@@ -11,6 +11,10 @@ describe MailRoom::Configuration do
         MailRoom::Mailbox.stubs(:new).returns('mailbox1', 'mailbox2')
 
         expect(configuration.mailboxes).to eq(['mailbox1', 'mailbox2'])
+      end
+
+      it 'parses health check' do
+        expect(configuration.health_check).to be_a(MailRoom::HealthCheck)
       end
     end
 
@@ -22,6 +26,10 @@ describe MailRoom::Configuration do
         MailRoom::Mailbox.expects(:new).never
 
         expect(configuration.mailboxes).to eq([])
+      end
+
+      it 'sets the health check to nil' do
+        expect(configuration.health_check).to be_nil
       end
     end
   end

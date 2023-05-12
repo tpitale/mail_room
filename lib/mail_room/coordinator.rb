@@ -2,13 +2,15 @@ module MailRoom
   # Coordinate the mailbox watchers
   # @author Tony Pitale
   class Coordinator
-    attr_accessor :watchers, :running
+    attr_accessor :watchers, :running, :health_check
 
     # build watchers for a set of mailboxes
     # @params mailboxes [Array<MailRoom::Mailbox>] mailboxes to be watched
-    def initialize(mailboxes)
+    # @params health_check <MailRoom::HealthCheck> health checker to run
+    def initialize(mailboxes, health_check = nil)
       self.watchers = []
 
+      @health_check = health_check
       mailboxes.each {|box| self.watchers << MailboxWatcher.new(box)}
     end
 
@@ -16,10 +18,11 @@ module MailRoom
 
     # start each of the watchers to running
     def run
+      health_check&.run
       watchers.each(&:run)
-      
+
       self.running = true
-      
+
       sleep_while_running
     ensure
       quit
@@ -27,6 +30,7 @@ module MailRoom
 
     # quit each of the watchers when we're done running
     def quit
+      health_check&.quit
       watchers.each(&:quit)
     end
 

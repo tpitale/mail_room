@@ -5,14 +5,14 @@ describe MailRoom::CLI do
   let!(:configuration) {MailRoom::Configuration.new({config_path: config_path})}
   let(:coordinator) {stub(run: true, quit: true)}
   let(:configuration_args) { anything }
-  let(:coordinator_args) { anything }
+  let(:coordinator_args) { [anything, anything] }
 
   describe '.new' do
     let(:args) {["-c", "a path"]}
 
     before :each do
       MailRoom::Configuration.expects(:new).with(configuration_args).returns(configuration)
-      MailRoom::Coordinator.stubs(:new).with(coordinator_args).returns(coordinator)
+      MailRoom::Coordinator.stubs(:new).with(*coordinator_args).returns(coordinator)
     end
 
     context 'with configuration args' do
@@ -27,7 +27,7 @@ describe MailRoom::CLI do
 
     context 'with coordinator args' do
       let(:coordinator_args) do
-        configuration.mailboxes
+        [configuration.mailboxes, anything]
       end
 
       it 'creates a new coordinator with configuration' do
