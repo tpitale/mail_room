@@ -20,6 +20,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency             "net-imap", ">= 0.2.1"
   gem.add_dependency             "oauth2", [">= 1.4.4", "< 3"]
   gem.add_dependency             "jwt", ">= 2.0"
+  gem.add_dependency             "redis", [">= 4", "< 6"]
+  gem.add_dependency             "redis-namespace", '>= 1.8.2'
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec", "~> 3.9"
@@ -31,8 +33,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "faraday"
   gem.add_development_dependency "mail"
   gem.add_development_dependency "letter_opener"
-  gem.add_development_dependency "redis", "~> 4"
-  gem.add_development_dependency "redis-namespace"
   gem.add_development_dependency "pg"
   gem.add_development_dependency "charlock_holmes"
   gem.add_development_dependency "webmock"
