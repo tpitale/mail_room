@@ -73,10 +73,18 @@ module MailRoom
         if @delivery_options.token_auth?
           connection.token_auth @delivery_options.token
         elsif @delivery_options.basic_auth?
-          connection.basic_auth(
-            @delivery_options.username,
-            @delivery_options.password
-          )
+          if defined?(connection.basic_auth)
+            connection.basic_auth(
+              @delivery_options.username,
+              @delivery_options.password
+            )
+          else
+            connection.request(
+              :authorization, :basic, 
+              @delivery_options.username,
+              @delivery_options.password
+            )
+          end
         end
 
         connection.post do |request|
