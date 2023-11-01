@@ -80,7 +80,7 @@ module MailRoom
             )
           else
             connection.request(
-              :authorization, :basic, 
+              :authorization, :basic,
               @delivery_options.username,
               @delivery_options.password
             )
