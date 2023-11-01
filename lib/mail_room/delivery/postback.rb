@@ -73,18 +73,7 @@ module MailRoom
         if @delivery_options.token_auth?
           connection.token_auth @delivery_options.token
         elsif @delivery_options.basic_auth?
-          if defined?(connection.basic_auth)
-            connection.basic_auth(
-              @delivery_options.username,
-              @delivery_options.password
-            )
-          else
-            connection.request(
-              :authorization, :basic, 
-              @delivery_options.username,
-              @delivery_options.password
-            )
-          end
+          config_basic_auth(connection)
         end
 
         connection.post do |request|
@@ -110,6 +99,21 @@ module MailRoom
         return unless @delivery_options.jwt_auth?
 
         request.headers[@delivery_options.jwt.header] = @delivery_options.jwt.token
+      end
+
+      def config_basic_auth(connection)
+        if defined?(connection.basic_auth)
+          connection.basic_auth(
+            @delivery_options.username,
+            @delivery_options.password
+          )
+        else
+          connection.request(
+            :authorization, :basic,
+            @delivery_options.username,
+            @delivery_options.password
+          )
+        end
       end
     end
   end
