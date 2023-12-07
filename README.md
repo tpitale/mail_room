@@ -148,11 +148,11 @@ If you're seeing the error `Please log in via your web browser: https://support.
 ### Microsoft Graph configuration
 
 To use the Microsoft Graph API instead of IMAP to read e-mail, you will
-need to create an application in the Azure Active Directory. See the
-[Microsoft instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) for more details:
+need to create an application in Microsoft Entra ID (formerly known as Azure Active Directory). See the
+[Microsoft instructions](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app) for more details:
 
 1. Sign in to the [Azure portal](https://portal.azure.com).
-1. Search for and select `Azure Active Directory`.
+1. Search for and select `Microsoft Entra ID`.
 1. Under `Manage`, select `App registrations` > `New registration`.
 1. Enter a `Name` for your application, such as `MailRoom`. Users of your app might see this name, and you can change it later.
 1. If `Supported account types` is listed, select the appropriate option.
