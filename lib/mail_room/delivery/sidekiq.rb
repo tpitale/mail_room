@@ -18,6 +18,13 @@ module MailRoom
           worker    = mailbox.delivery_options[:worker]
           logger = mailbox.logger
 
+          if namespace
+            warn <<~MSG
+              Redis namespaces are deprecated. This option will be ignored in future versions.
+              See https://github.com/sidekiq/sidekiq/issues/2586 for more details."
+            MSG
+          end
+
           super(redis_url, namespace, sentinels, queue, worker, logger, redis_db)
         end
       end
