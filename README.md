@@ -247,7 +247,7 @@ Delivery options:
   Required, defaults to `redis://localhost:6379`.
 - **sentinels**: A list of sentinels servers used to provide HA to Redis. (see [Sentinel Support](#sentinel-support))
   Optional.
-- **namespace**: The Redis namespace Sidekiq works under. Use the same Redis namespace that's used to configure Sidekiq.
+- **namespace**: [DEPRECATED] The Redis namespace Sidekiq works under. Use the same Redis namespace that's used to configure Sidekiq.
   Optional.
 - **queue**: The Sidekiq queue the job is pushed onto. Make sure Sidekiq actually reads off this queue.
   Required, defaults to `default`.
@@ -391,7 +391,7 @@ When running multiple instances of MailRoom against a single mailbox, to try to 
     :arbitration_options:
       # The Redis server to connect with. Defaults to redis://localhost:6379.
       :redis_url: redis://redis.example.com:6379
-      # The Redis namespace to house the Redis keys under. Optional.
+      # [DEPRECATED] The Redis namespace to house the Redis keys under. Optional.
       :namespace: mail_room
   -
     :email: "user2@gmail.com"
@@ -411,7 +411,7 @@ When running multiple instances of MailRoom against a single mailbox, to try to 
         -
           :host: 127.0.0.1
           :port: 26379
-      # The Redis namespace to house the Redis keys under. Optional.
+      # [DEPRECATED] The Redis namespace to house the Redis keys under. Optional.
       :namespace: mail_room
 ```
 

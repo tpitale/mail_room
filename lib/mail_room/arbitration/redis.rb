@@ -9,6 +9,13 @@ module MailRoom
           namespace = mailbox.arbitration_options[:namespace]
           sentinels = mailbox.arbitration_options[:sentinels]
 
+          if namespace
+            warn <<~MSG
+              Redis namespaces are deprecated. This option will be ignored in future versions.
+              See https://github.com/sidekiq/sidekiq/issues/2586 for more details."
+            MSG
+          end
+
           super(redis_url, namespace, sentinels)
         end
       end
