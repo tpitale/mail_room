@@ -454,13 +454,3 @@ respectively and MailRoom will log there.
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 6. If accepted, ask for commit rights
-
-## TODO ##
-
-1. specs, this is just a (working) proof of concept √
-2. finish code for POSTing to callback with auth √
-3. accept mailbox configuration for one account directly on the commandline; or ask for it
-4. add example rails endpoint, with auth examples
-5. add example configs for upstart/init.d √
-6. log to stdout √
-7. add a development mode that opens in letter_opener by ryanb √

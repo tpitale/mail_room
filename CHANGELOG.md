@@ -1,3 +1,7 @@
+## mail_room 0.11.0 ##
+
+https://github.com/tpitale/mail_room/compare/v0.10.1...v0.11.0
+
 ## mail_room 0.10.1 ##
 
 * Fix db attribute on redis URL PR#130 - @jarkaK
