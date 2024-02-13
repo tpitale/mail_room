@@ -102,6 +102,7 @@ module MailRoom
       end
 
       def config_token_auth(connection)
+        # connection.token_auth was removed in Faraday v2 in favor of connection.request(:authorization, 'Token', token)
         if defined?(connection.token_auth)
           connection.token_auth @delivery_options.token
         else
