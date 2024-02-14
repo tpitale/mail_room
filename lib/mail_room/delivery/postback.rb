@@ -71,7 +71,7 @@ module MailRoom
         connection = Faraday.new
 
         if @delivery_options.token_auth?
-          connection.token_auth @delivery_options.token
+          config_token_auth(connection)
         elsif @delivery_options.basic_auth?
           config_basic_auth(connection)
         end
@@ -99,6 +99,18 @@ module MailRoom
         return unless @delivery_options.jwt_auth?
 
         request.headers[@delivery_options.jwt.header] = @delivery_options.jwt.token
+      end
+
+      def config_token_auth(connection)
+        # connection.token_auth was removed in Faraday v2 in favor of connection.request(:authorization, 'Token', token)
+        if defined?(connection.token_auth)
+          connection.token_auth @delivery_options.token
+        else
+          connection.request(
+            :authorization, 'Token',
+            @delivery_options.token
+          )
+        end
       end
 
       def config_basic_auth(connection)
