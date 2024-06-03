@@ -8,12 +8,14 @@ module MailRoom
     # Sidekiq Delivery method
     # @author Douwe Maan
     class Sidekiq
-      Options = Struct.new(:redis_url, :namespace, :sentinels, :queue, :worker, :logger, :redis_db) do
+      Options = Struct.new(:redis_url, :namespace, :sentinels, :queue, :worker, :logger, :redis_db, :sentinel_username, :sentinel_password) do
         def initialize(mailbox)
           redis_url = mailbox.delivery_options[:redis_url] || "redis://localhost:6379"
           redis_db  = mailbox.delivery_options[:redis_db] || 0
           namespace = mailbox.delivery_options[:namespace]
           sentinels = mailbox.delivery_options[:sentinels]
+          sentinel_username = mailbox.delivery_options[:sentinel_username]
+          sentinel_password = mailbox.delivery_options[:sentinel_password]
           queue     = mailbox.delivery_options[:queue] || "default"
           worker    = mailbox.delivery_options[:worker]
           logger = mailbox.logger
@@ -25,7 +27,7 @@ module MailRoom
             MSG
           end
 
-          super(redis_url, namespace, sentinels, queue, worker, logger, redis_db)
+          super(redis_url, namespace, sentinels, queue, worker, logger, redis_db, sentinel_username, sentinel_password)
         end
       end
 
@@ -55,6 +57,8 @@ module MailRoom
           sentinels = options.sentinels
           redis_options = { url: options.redis_url, db: options.redis_db }
           redis_options[:sentinels] = sentinels if sentinels
+          redis_options[:sentinel_username] = options.sentinel_username if options.sentinel_username
+          redis_options[:sentinel_password] = options.sentinel_password if options.sentinel_password
 
           redis = ::Redis.new(redis_options)
 

@@ -3,11 +3,13 @@ require "redis"
 module MailRoom
   module Arbitration
     class Redis
-      Options = Struct.new(:redis_url, :namespace, :sentinels) do
+      Options = Struct.new(:redis_url, :namespace, :sentinels, :sentinel_username, :sentinel_password) do
         def initialize(mailbox)
           redis_url = mailbox.arbitration_options[:redis_url] || "redis://localhost:6379"
           namespace = mailbox.arbitration_options[:namespace]
           sentinels = mailbox.arbitration_options[:sentinels]
+          sentinel_username = mailbox.arbitration_options[:sentinel_username]
+          sentinel_password = mailbox.arbitration_options[:sentinel_password]
 
           if namespace
             warn <<~MSG
@@ -16,7 +18,7 @@ module MailRoom
             MSG
           end
 
-          super(redis_url, namespace, sentinels)
+          super(redis_url, namespace, sentinels, sentinel_username, sentinel_password)
         end
       end
 
@@ -48,6 +50,8 @@ module MailRoom
           sentinels = options.sentinels
           redis_options = { url: options.redis_url }
           redis_options[:sentinels] = sentinels if sentinels
+          redis_options[:sentinel_username] = options.sentinel_username if options.sentinel_username
+          redis_options[:sentinel_password] = options.sentinel_password if options.sentinel_password
 
           redis = ::Redis.new(redis_options)
 
