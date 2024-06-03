@@ -96,7 +96,7 @@ describe MailRoom::Arbitration::Redis do
       it 'client has same specified url' do
         subject.deliver?(123)
 
-        expect(raw_client.options[:url]).to eq redis_url
+        expect(raw_client.config.server_url).to eq redis_url
       end
 
       it 'client is a instance of Redis class' do
@@ -135,13 +135,14 @@ describe MailRoom::Arbitration::Redis do
         )
       }
 
-      before { ::Redis::Client::Connector::Sentinel.any_instance.stubs(:resolve).returns(sentinels) }
+      before { ::RedisClient::SentinelConfig.any_instance.stubs(:resolve_master).returns(RedisClient::Config.new(**sentinels.first)) }
 
       it 'client has same specified sentinel params' do
-        expect(raw_client.instance_variable_get(:@connector)).to be_a Redis::Client::Connector::Sentinel
-        expect(raw_client.options[:host]).to eq('sentinel-master')
-        expect(raw_client.options[:password]).to eq('mypassword')
-        expect(raw_client.options[:sentinels]).to eq(sentinels)
+        expect(raw_client.config).to be_a RedisClient::SentinelConfig
+        expect(raw_client.config.name).to eq('sentinel-master')
+        expect(raw_client.config.host).to eq('10.0.0.1')
+        expect(raw_client.config.password).to eq('mypassword')
+        expect(raw_client.config.sentinels.map(&:server_url)).to eq(["redis://10.0.0.1:26379"])
       end
     end
   end
