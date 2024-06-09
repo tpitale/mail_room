@@ -93,7 +93,32 @@ describe MailRoom::Delivery::Sidekiq do
         expect(raw_client.config.password).to eq('mypassword')
         expect(raw_client.config.sentinels.map(&:server_url)).to eq(["redis://10.0.0.1:26379"])
       end
-    end
 
+      context 'with separate Sentinel username and password' do
+        let(:sentinel_username) { 'my-sentinel-user' }
+        let(:sentinel_password) { 'my-sentinel-pass' }
+        let(:mailbox) {
+          build_mailbox(
+            delivery_method: :sidekiq,
+            delivery_options: {
+              redis_url: redis_url,
+              sentinels: sentinels,
+              sentinel_username: sentinel_username,
+              sentinel_password: sentinel_password
+            }
+          )
+        }
+
+        it 'client uses Sentinel username and password' do
+          expect(raw_client.config).to be_a RedisClient::SentinelConfig
+          expect(raw_client.config.password).to eq('mypassword')
+
+          sentinels = raw_client.config.sentinels
+
+          expect(sentinels.map(&:username).uniq).to eq([sentinel_username])
+          expect(sentinels.map(&:password).uniq).to eq([sentinel_password])
+        end
+      end
+    end
   end
 end
