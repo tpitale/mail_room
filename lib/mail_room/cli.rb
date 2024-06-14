@@ -40,7 +40,7 @@ module MailRoom
       end.parse!(args)
 
       self.configuration = Configuration.new(options)
-      self.coordinator = Coordinator.new(configuration.mailboxes)
+      self.coordinator = Coordinator.new(configuration.mailboxes, configuration.health_check)
     end
 
     # Start the coordinator running, sets up signal traps

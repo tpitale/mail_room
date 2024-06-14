@@ -42,6 +42,11 @@ You will also need to install `faraday` or `letter_opener` if you use the `postb
 
 ```yaml
 ---
+:health_check:
+  :type: "http"
+  :options:
+    :address: "127.0.0.1"
+    :port: 8080
 :mailboxes:
   -
     :email: "user1@gmail.com"
@@ -217,6 +222,28 @@ for Microsoft Cloud for US Government:
       :azure_ad_endpoint: https://login.microsoftonline.us
       :graph_endpoint: https://graph.microsoft.us
 ```
+
+## health_check ##
+
+MailRoom can be configured to serve a liveness check via an HTTP
+endpoint. In the MailRoom configuration, set the `health_check` section
+with `type: "http"`:
+
+```yaml
+:health_check:
+  :type: "http"
+  :options:
+    :address: "127.0.0.1"
+    :port: 8080
+```
+
+This requires `webrick` gem to be installed.
+
+This option enables an HTTP server that listens to a bind address
+defined by `address` and `port`. The following endpoints are supported:
+
+* `/liveness`: This returns a 200 status code with `OK` as the body if
+the server is running. Otherwise, it returns a 500 status code.
 
 ## delivery_method ##
 
