@@ -76,14 +76,14 @@ module MailRoom
           config_basic_auth(connection)
         end
 
-        connection.post do |request|
+        result = connection.post do |request|
           request.url @delivery_options.url
           request.body = message
           config_request_content_type(request)
           config_request_jwt_auth(request)
         end
 
-        @delivery_options.logger.info({ delivery_method: 'Postback', action: 'message pushed', url: @delivery_options.url })
+        @delivery_options.logger.info({ delivery_method: 'Postback', action: 'message pushed', url: @delivery_options.url, status_code: result.status })
         true
       end
 
