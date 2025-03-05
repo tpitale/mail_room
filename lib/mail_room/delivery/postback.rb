@@ -61,7 +61,6 @@ module MailRoom
       # Build a new delivery, hold the delivery options
       # @param [MailRoom::Delivery::Postback::Options]
       def initialize(delivery_options)
-        puts delivery_options
         @delivery_options = delivery_options
       end
 
