@@ -25,7 +25,6 @@ Gemspec/RequiredRubyVersion:
 # This cop supports safe autocorrection (--autocorrect).
 Layout/BlockEndNewline:
   Exclude:
-    - 'spec/lib/delivery/postback_spec.rb'
     - 'spec/lib/delivery/que_spec.rb'
 
 # Offense count: 5
@@ -75,7 +74,6 @@ Layout/EmptyLinesAroundClassBody:
 # SupportedStyles: special_inside_parentheses, consistent, align_braces
 Layout/FirstHashElementIndentation:
   Exclude:
-    - 'spec/lib/delivery/postback_spec.rb'
     - 'spec/lib/delivery/que_spec.rb'
     - 'spec/lib/logger/structured_spec.rb'
 
@@ -101,7 +99,6 @@ Layout/LeadingCommentSpace:
 # This cop supports safe autocorrection (--autocorrect).
 Layout/MultilineBlockLayout:
   Exclude:
-    - 'spec/lib/delivery/postback_spec.rb'
     - 'spec/lib/delivery/que_spec.rb'
 
 # Offense count: 3
@@ -153,7 +150,6 @@ Layout/SpaceInsideBlockBraces:
     - 'spec/lib/configuration_spec.rb'
     - 'spec/lib/delivery/letter_opener_spec.rb'
     - 'spec/lib/delivery/logger_spec.rb'
-    - 'spec/lib/delivery/postback_spec.rb'
     - 'spec/lib/delivery/que_spec.rb'
     - 'spec/lib/imap/connection_spec.rb'
     - 'spec/lib/mailbox_watcher_spec.rb'
@@ -273,7 +269,6 @@ Style/Alias:
 Style/BlockDelimiters:
   Exclude:
     - 'spec/lib/arbitration/redis_spec.rb'
-    - 'spec/lib/delivery/postback_spec.rb'
     - 'spec/lib/delivery/que_spec.rb'
     - 'spec/lib/delivery/sidekiq_spec.rb'
 
