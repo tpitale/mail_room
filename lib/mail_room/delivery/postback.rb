@@ -75,9 +75,7 @@ module MailRoom
           config_basic_auth(connection)
         end
 
-        result = connection.post do |request|
-          request.url @delivery_options.url
-          request.body = message
+        result = connection.post(@delivery_options.url, message) do |request|
           config_request_content_type(request)
           config_request_jwt_auth(request)
         end
