@@ -7,6 +7,7 @@ end
 
 require "mail_room/version"
 require "mail_room/configuration"
+require "mail_room/health_check"
 require "mail_room/mailbox"
 require "mail_room/mailbox_watcher"
 require "mail_room/message"
