@@ -50,7 +50,9 @@ module MailRoom
       def client
         @client ||= begin
           sentinels = options.sentinels
-          redis_options = { url: options.redis_url }
+          redis_options = { url: options.redis_url, db: options.redis_db }
+          # Needed for redis-client 0.26.2 and older: https://github.com/redis-rb/redis-client/pull/277
+          redis_options[:ssl] = true if options.redis_url.start_with?("rediss://")
           redis_options[:ssl_params] = options.redis_ssl_params if options.redis_ssl_params
           redis_options[:sentinels] = sentinels if sentinels
           redis_options[:sentinel_username] = options.sentinel_username if options.sentinel_username
