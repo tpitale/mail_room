@@ -15,7 +15,7 @@ module MailRoom
         begin
           erb = ERB.new(File.read(options[:config_path]))
           erb.filename = options[:config_path]
-          config_file = YAML.load(erb.result)
+          config_file = YAML.load(erb.result, symbolize_names: true)
 
           set_mailboxes(config_file[:mailboxes])
         rescue => e

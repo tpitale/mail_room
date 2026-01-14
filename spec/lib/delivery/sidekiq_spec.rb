@@ -120,5 +120,23 @@ describe MailRoom::Delivery::Sidekiq do
         end
       end
     end
+
+    context 'when redis_ssl_params is specified' do
+      let(:redis_url) { ENV['REDIS_URL'] }
+      let(:redis_ssl_params) { { verify_mode: OpenSSL::SSL::VERIFY_NONE } }
+      let(:mailbox) {
+        build_mailbox(
+          delivery_method: :sidekiq,
+          delivery_options: {
+            redis_url: redis_url,
+            redis_ssl_params: redis_ssl_params
+          }
+        )
+      }
+
+      it 'client has same specified ssl_params' do
+        expect(raw_client.config.ssl_params).to eq(redis_ssl_params)
+      end
+    end
   end
 end
